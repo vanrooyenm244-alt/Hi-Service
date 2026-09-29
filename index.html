@@ -61,10 +61,10 @@ addItem.onclick=async()=>{let item=prompt('Description');if(!item)return;let cod
 importCsv.onclick=()=>csv.click();
 csv.onchange=async()=>{
   let f=csv.files[0]; if(!f)return;
-  stockMsg.textContent='Reading '+f.name+'…';
-  if(/\.xlsx$/i.test(f.name)){stockMsg.textContent='Excel .xlsx selected. Save/export it as CSV first, then upload the CSV. No stock was changed.';csv.value='';return}
+  stockMsg.textContent='Reading '+f.name+'…'; importCsv.disabled=true; importCsv.textContent='Reading file…'; await new Promise(x=>setTimeout(x,50));
+  if(/\.xlsx$/i.test(f.name)){stockMsg.textContent='Excel .xlsx selected. Save/export it as CSV first, then upload the CSV. No stock was changed.';csv.value='';importCsv.disabled=false;importCsv.textContent='Upload stock file';return}
   let rows;try{rows=parseCSV(await f.text())}catch(e){stockMsg.textContent='Could not read CSV: '+e.message;csv.value='';return}
-  if(!rows.length){stockMsg.textContent='CSV has no data rows.';csv.value='';return}
+  if(!rows.length){stockMsg.textContent='CSV has no data rows.';csv.value='';importCsv.disabled=false;importCsv.textContent='Upload stock file';return}
   let existing=new Map();
   S.items.forEach(x=>{if(x.code)existing.set('c:'+String(x.code).trim().toLowerCase(),x);if(x.item||x.description)existing.set('n:'+String(x.item||x.description).trim().toLowerCase(),x)});
   let incoming=[],newItems=[],updates=[];
@@ -78,10 +78,10 @@ csv.onchange=async()=>{
     let rec={item:x,match,counts};
     incoming.push(rec); if(match)updates.push(rec);else newItems.push(rec);
   });
-  if(!incoming.length){stockMsg.textContent='No stock rows recognised.';csv.value='';return}
+  if(!incoming.length){stockMsg.textContent='No stock rows recognised.';csv.value='';importCsv.disabled=false;importCsv.textContent='Upload stock file';return}
   let qtyUpdates=updates.filter(x=>Object.keys(x.counts).length);
   let msg='Stock upload preview\n\n'+newItems.length+' new items found\n'+updates.length+' existing items matched\n'+qtyUpdates.length+' existing items have quantities to update\n\nNothing has changed yet. Continue?';
-  if(!confirm(msg)){stockMsg.textContent='Upload cancelled — no stock changed.';csv.value='';return}
+  importCsv.disabled=false;importCsv.textContent='Upload stock file';if(!confirm(msg)){stockMsg.textContent='Upload cancelled — no stock changed.';csv.value='';return}
   let added=0,changed=0,failed=[];
   for(let i=0;i<newItems.length;i++){let x=newItems[i];stockMsg.textContent='Adding new item '+(i+1)+' of '+newItems.length+'…';try{await api({action:'hiStockAdd',item:x.item});added++}catch(e){failed.push((x.item.code||x.item.item)+': '+String(e.message||e))}}
   for(let i=0;i<qtyUpdates.length;i++){let x=qtyUpdates[i],key=(x.match.code||x.match.item||x.item.code||x.item.item);for(let p of Object.keys(x.counts)){stockMsg.textContent='Updating quantities '+(i+1)+' of '+qtyUpdates.length+'…';try{let counts={};counts[key]=x.counts[p];await api({action:'hiStockCount',place:p,counts});changed++}catch(e){failed.push(key+' '+p+': '+String(e.message||e))}}}
