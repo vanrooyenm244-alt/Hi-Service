@@ -3,162 +3,80 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Hi-Service Field Operations — Prototype</title>
+<title>Hi Service Stock Count</title>
 <style>
-:root{--green:#159447;--dark:#101714;--muted:#6d7772;--line:#dfe5e1;--bg:#f4f7f5;--white:#fff;--warn:#e9a21a;--red:#d94a4a}
-*{box-sizing:border-box} body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:#17201b}
-.app{display:flex;min-height:100vh}.side{width:245px;background:var(--dark);color:white;padding:20px 14px;position:fixed;inset:0 auto 0 0}
-.brand{display:flex;align-items:center;gap:10px;padding:8px 10px 24px;font-weight:800;font-size:20px}.mark{width:38px;height:38px;border-radius:10px;background:var(--green);display:grid;place-items:center;font-weight:900}
-.nav button{display:block;width:100%;padding:12px 14px;border:0;background:transparent;color:#c9d2cd;text-align:left;border-radius:9px;margin:4px 0;font-size:14px;cursor:pointer}.nav button.active,.nav button:hover{background:#1d2b25;color:#fff}
-.sync{position:absolute;bottom:18px;left:18px;right:18px;background:#18231f;border:1px solid #2b3933;border-radius:10px;padding:12px;font-size:12px}.dot{display:inline-block;width:8px;height:8px;background:#35c979;border-radius:50%;margin-right:6px}
-.main{margin-left:245px;width:calc(100% - 245px);padding:24px;max-width:1450px}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}.top h1{margin:0;font-size:25px}.top p{margin:5px 0 0;color:var(--muted);font-size:13px}.actions{display:flex;gap:8px}.btn{border:1px solid var(--line);background:#fff;border-radius:8px;padding:10px 14px;cursor:pointer;font-weight:650}.btn.primary{background:var(--green);border-color:var(--green);color:#fff}
-.page{display:none}.page.active{display:block}
-.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:17px}.label{font-size:12px;color:var(--muted)}.big{font-size:28px;font-weight:800;margin-top:5px}.green{color:var(--green)}.yellow{color:#a66c00}.red{color:var(--red)}
-.grid{display:grid;grid-template-columns:1.5fr 1fr;gap:16px;margin-top:16px}.panel{background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px}.panel h2{font-size:16px;margin:0 0 14px}.list{display:grid;gap:9px}.row{display:flex;justify-content:space-between;align-items:center;border:1px solid var(--line);border-radius:9px;padding:12px}.row strong{font-size:13px}.sub{font-size:11px;color:var(--muted);margin-top:3px}.pill{font-size:11px;padding:5px 8px;border-radius:999px;background:#edf7f1;color:#187443;font-weight:700}.pill.warn{background:#fff5dd;color:#8b6200}.pill.red{background:#fdeaea;color:#9d2f2f}
-table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:left;padding:12px 9px;border-bottom:1px solid var(--line)}th{color:var(--muted);font-size:11px;text-transform:uppercase}
-.form{display:grid;grid-template-columns:1fr 1fr;gap:13px}.field label{display:block;font-size:11px;color:var(--muted);margin-bottom:5px}.field input,.field select,.field textarea{width:100%;border:1px solid var(--line);border-radius:8px;padding:10px;background:#fff;font:inherit}.field.full{grid-column:1/-1}
-.steps{display:flex;gap:8px;margin-bottom:18px}.step{padding:8px 12px;border-radius:999px;background:#e8eeeb;font-size:11px}.step.on{background:var(--green);color:#fff}
-.checks{display:grid;grid-template-columns:1fr 1fr;gap:9px}.check{border:1px solid var(--line);padding:12px;border-radius:9px;display:flex;justify-content:space-between;align-items:center}.check input{width:18px;height:18px}
-.media{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.mediaBox{height:145px;border-radius:10px;border:1px dashed #aeb9b3;background:#f8faf9;display:grid;place-items:center;text-align:center;color:var(--muted);cursor:pointer}.mediaBox b{display:block;color:#233029;margin-bottom:4px}.video{background:#101714;color:#fff;border-style:solid}
-.timeline{display:grid;gap:12px}.event{display:flex;gap:10px}.event .ico{width:30px;height:30px;border-radius:8px;background:#e9f6ef;display:grid;place-items:center}.event small{color:var(--muted)}
-.detail{display:grid;grid-template-columns:2fr 1fr;gap:16px}.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.mini{background:#f7f9f8;border-radius:9px;padding:12px}.mini b{display:block;font-size:12px}.mini span{font-size:11px;color:var(--muted)}
-@media(max-width:900px){.side{width:72px}.brand span,.nav button span,.sync{display:none}.main{margin-left:72px;width:calc(100% - 72px)}.cards{grid-template-columns:1fr 1fr}.grid,.detail{grid-template-columns:1fr}.form{grid-template-columns:1fr}}
+:root{--green:#159447;--dark:#101714;--muted:#6d7772;--line:#dfe5e1;--bg:#f4f7f5;--white:#fff;--red:#c0392b}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:#17201b}
+.wrap{max-width:980px;margin:0 auto;padding:18px}.head{display:flex;align-items:center;gap:14px;margin-bottom:16px}.logo{width:58px;height:58px;border-radius:14px;background:var(--green);color:#fff;display:grid;place-items:center;font-weight:900;font-size:20px}.head h1{margin:0;font-size:24px}.head p{margin:4px 0 0;color:var(--muted);font-size:13px}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}.row{display:flex;gap:10px;flex-wrap:wrap}.field{flex:1;min-width:180px}.field label{display:block;font-size:11px;color:var(--muted);margin-bottom:5px}.field input,.field select{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px}
+.btn{border:1px solid var(--line);background:#fff;border-radius:8px;padding:10px 14px;font-weight:700;cursor:pointer}.btn.primary{background:var(--green);color:white;border-color:var(--green)}.btn.danger{color:var(--red)}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.search{width:100%;padding:11px;border:1px solid var(--line);border-radius:9px}
+.item{display:grid;grid-template-columns:1.6fr .7fr .7fr auto;gap:8px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}.item:last-child{border-bottom:0}.item input{width:100%;padding:9px;border:1px solid var(--line);border-radius:7px}.name{font-weight:700}.sub{font-size:11px;color:var(--muted);margin-top:3px}.empty{color:var(--muted);padding:16px;text-align:center}.status{font-size:12px;color:var(--muted);margin-top:8px}.topline{display:flex;justify-content:space-between;gap:8px;align-items:center}.pill{font-size:11px;background:#edf7f1;color:#187443;padding:5px 8px;border-radius:999px;font-weight:700}
+@media(max-width:700px){.item{grid-template-columns:1fr 90px 70px}.item .delete{grid-column:1/-1;justify-self:end}.head{align-items:flex-start}.logo{width:48px;height:48px}}
 </style>
 </head>
 <body>
-<div class="app">
-<aside class="side">
-  <div class="brand"><div class="mark">HS</div><span>Hi-Service</span></div>
-  <nav class="nav">
-    <button class="active" onclick="show('dashboard',this)">▦ <span>Dashboard</span></button>
-    <button onclick="show('jobs',this)">▣ <span>Jobs</span></button>
-    <button onclick="show('inspection',this)">✓ <span>New COC Inspection</span></button>
-    <button onclick="show('records',this)">◫ <span>Inspections</span></button>
-    <button onclick="show('media',this)">▶ <span>Media</span></button>
-    <button onclick="show('reports',this)">▤ <span>Reports</span></button>
-    <button onclick="show('settings',this)">⚙ <span>Settings</span></button>
-  </nav>
-  <div class="sync"><span class="dot"></span> Synced · Offline-ready<br><span style="color:#8f9a94">Last sync 12:42</span></div>
-</aside>
+<div class="wrap">
+  <div class="head">
+    <div class="logo">HS</div>
+    <div><h1>Hi Service Stock Count</h1><p>Main user: André · uses the same Google Apps Script backend</p></div>
+  </div>
 
-<main class="main">
-<section id="dashboard" class="page active">
-<div class="top"><div><h1>Good morning, Hi-Service</h1><p>Field operations overview</p></div><div class="actions"><button class="btn">Sync now</button><button class="btn primary" onclick="show('inspection')">+ New Inspection</button></div></div>
-<div class="cards">
- <div class="card"><div class="label">Open Jobs</div><div class="big">18</div><div class="label">4 scheduled today</div></div>
- <div class="card"><div class="label">Inspections</div><div class="big green">12</div><div class="label">This week</div></div>
- <div class="card"><div class="label">Awaiting Review</div><div class="big yellow">5</div><div class="label">Office action required</div></div>
- <div class="card"><div class="label">COC Ready</div><div class="big green">7</div><div class="label">Documentation complete</div></div>
+  <div class="card">
+    <div class="topline"><b>Connection</b><span class="pill">Hi Service</span></div>
+    <div class="row" style="margin-top:10px">
+      <div class="field"><label>Google Apps Script URL</label><input id="scriptUrl" placeholder="https://script.google.com/macros/s/.../exec"></div>
+      <div class="field"><label>User</label><input id="user" value="Andre"></div>
+    </div>
+    <div class="toolbar">
+      <button class="btn" id="saveSettings">Save settings</button>
+      <button class="btn" id="syncList">Import from Google Sheet</button>
+      <button class="btn primary" id="sendCount">Send stock count</button>
+    </div>
+    <div class="status" id="status">Not connected yet.</div>
+  </div>
+
+  <div class="card">
+    <div class="topline"><b>Stock list</b><span class="pill" id="countTag">0 items</span></div>
+    <div class="toolbar">
+      <input class="search" id="search" placeholder="Search stock">
+      <button class="btn" id="importCsv">Import CSV</button>
+      <input id="csvFile" type="file" accept=".csv,text/csv" hidden>
+      <button class="btn" id="addItem">+ Add item</button>
+    </div>
+    <div id="list"></div>
+  </div>
 </div>
-<div class="grid">
- <div class="panel"><h2>Today's Jobs</h2><div class="list">
-  <div class="row"><div><strong>HS-2026-0148 · Van der Merwe</strong><div class="sub">Somerset West · Gas COC inspection</div></div><span class="pill">In progress</span></div>
-  <div class="row"><div><strong>HS-2026-0149 · Jacobs</strong><div class="sub">Strand · Installation inspection</div></div><span class="pill warn">Scheduled</span></div>
-  <div class="row"><div><strong>HS-2026-0150 · Naidoo</strong><div class="sub">Paarl · Remedial inspection</div></div><span class="pill red">Action needed</span></div>
- </div></div>
- <div class="panel"><h2>Recent Activity</h2><div class="timeline">
-  <div class="event"><div class="ico">✓</div><div><b>HS-2026-0147 completed</b><br><small>COC inspection submitted · 11:58</small></div></div>
-  <div class="event"><div class="ico">▶</div><div><b>Video uploaded</b><br><small>HS-2026-0148 · 11:41</small></div></div>
-  <div class="event"><div class="ico">▣</div><div><b>New job assigned</b><br><small>HS-2026-0150 · 10:16</small></div></div>
- </div></div>
-</div>
-</section>
 
-<section id="jobs" class="page">
-<div class="top"><div><h1>Jobs</h1><p>One record from booking to completed COC</p></div><button class="btn primary" onclick="show('inspection')">+ New Job</button></div>
-<div class="panel"><table><thead><tr><th>Job</th><th>Client</th><th>Location</th><th>Type</th><th>Status</th><th>Assigned</th></tr></thead>
-<tbody>
-<tr><td><b>HS-2026-0148</b></td><td>Van der Merwe</td><td>Somerset West</td><td>Gas COC</td><td><span class="pill">In progress</span></td><td>Ryan</td></tr>
-<tr><td><b>HS-2026-0149</b></td><td>Jacobs</td><td>Strand</td><td>Installation</td><td><span class="pill warn">Scheduled</span></td><td>André</td></tr>
-<tr><td><b>HS-2026-0150</b></td><td>Naidoo</td><td>Paarl</td><td>Remedial</td><td><span class="pill red">Action needed</span></td><td>Kia</td></tr>
-</tbody></table></div>
-</section>
-
-<section id="inspection" class="page">
-<div class="top"><div><h1>Gas COC Inspection</h1><p>HS-2026-0151 · New field record</p></div><button class="btn primary" onclick="alert('Prototype: inspection saved locally and queued for sync.')">Save Inspection</button></div>
-<div class="steps"><span class="step on">1 Job</span><span class="step on">2 Installation</span><span class="step">3 Tests</span><span class="step">4 Media</span><span class="step">5 Sign-off</span></div>
-<div class="panel">
-<h2>Job & Client</h2>
-<div class="form">
-<div class="field"><label>Client name *</label><input value="Van der Merwe"></div>
-<div class="field"><label>Inspection date *</label><input type="date" value="2026-09-01"></div>
-<div class="field"><label>Address *</label><input value="12 Example Street, Somerset West"></div>
-<div class="field"><label>Inspector *</label><select><option>Ryan</option><option>André</option><option>Kia</option></select></div>
-<div class="field"><label>Registration / PIRB no.</label><input placeholder="Registration number"></div>
-<div class="field"><label>Appliance type</label><select><option>Gas geyser</option><option>Gas hob</option><option>Gas fireplace</option><option>Other</option></select></div>
-<div class="field full"><label>General notes</label><textarea rows="3" placeholder="Inspection notes..."></textarea></div>
-</div>
-</div>
-<div class="panel" style="margin-top:16px"><h2>Inspection Checklist</h2><div class="checks">
-<div class="check">Installation condition <input type="checkbox" checked></div>
-<div class="check">Gas pipework <input type="checkbox" checked></div>
-<div class="check">Isolation valve <input type="checkbox"></div>
-<div class="check">Ventilation <input type="checkbox"></div>
-<div class="check">Flue / combustion gases <input type="checkbox"></div>
-<div class="check">Gas leak test <input type="checkbox"></div>
-<div class="check">Appliance operation <input type="checkbox"></div>
-<div class="check">Labelling / notices <input type="checkbox"></div>
-</div></div>
-<div class="panel" style="margin-top:16px"><h2>Evidence</h2><p class="label">Every photo/video is automatically attached to this inspection record.</p><div class="media">
-<div class="mediaBox"><div><b>＋ Take Photo</b>Installation detail</div></div>
-<div class="mediaBox video"><div><b>● Record Video</b>Gas / appliance evidence</div></div>
-<div class="mediaBox"><div><b>＋ Add Media</b>From device</div></div>
-</div></div>
-</section>
-
-<section id="records" class="page">
-<div class="top"><div><h1>Inspections</h1><p>Searchable field records</p></div><button class="btn">Export CSV</button></div>
-<div class="panel"><table><thead><tr><th>Inspection</th><th>Client</th><th>Date</th><th>Inspector</th><th>Evidence</th><th>Result</th></tr></thead>
-<tbody>
-<tr><td><b>HS-2026-0148</b></td><td>Van der Merwe</td><td>01 Sep 2026</td><td>Ryan</td><td>8 photos · 2 videos</td><td><span class="pill warn">Review</span></td></tr>
-<tr><td><b>HS-2026-0147</b></td><td>Smith</td><td>01 Sep 2026</td><td>André</td><td>11 photos · 1 video</td><td><span class="pill">Ready</span></td></tr>
-<tr><td><b>HS-2026-0146</b></td><td>Williams</td><td>31 Aug 2026</td><td>Ryan</td><td>6 photos · 3 videos</td><td><span class="pill red">Remedial</span></td></tr>
-</tbody></table></div>
-</section>
-
-<section id="media" class="page">
-<div class="top"><div><h1>Media</h1><p>Evidence attached to inspection records</p></div></div>
-<div class="panel"><div class="media">
-<div class="mediaBox"><div><b>📷 Photo</b>Installation / HS-0148</div></div>
-<div class="mediaBox video"><div><b>▶ Video</b>Gas test / HS-0148</div></div>
-<div class="mediaBox video"><div><b>▶ Video</b>Appliance operation / HS-0148</div></div>
-</div></div>
-</section>
-
-<section id="reports" class="page">
-<div class="top"><div><h1>Reports</h1><p>Generate consistent inspection documentation</p></div></div>
-<div class="grid">
-<div class="panel"><h2>HS-2026-0148</h2><div class="summary">
-<div class="mini"><b>Client</b><span>Van der Merwe</span></div><div class="mini"><b>Evidence</b><span>8 photos · 2 videos</span></div><div class="mini"><b>Status</b><span>Awaiting review</span></div>
-</div><div style="margin-top:16px"><button class="btn primary" onclick="alert('Prototype: PDF report generated')">Generate PDF Report</button> <button class="btn">Share</button></div></div>
-<div class="panel"><h2>Report workflow</h2><div class="timeline">
-<div class="event"><div class="ico">1</div><div><b>Field record completed</b><br><small>All required fields checked</small></div></div>
-<div class="event"><div class="ico">2</div><div><b>Office review</b><br><small>Findings and media reviewed</small></div></div>
-<div class="event"><div class="ico">3</div><div><b>Report generated</b><br><small>PDF + evidence references</small></div></div>
-</div></div>
-</div>
-</section>
-
-<section id="settings" class="page">
-<div class="top"><div><h1>Settings</h1><p>Prototype configuration</p></div></div>
-<div class="panel"><h2>Field app</h2><div class="form">
-<div class="field"><label>Company</label><input value="Hi-Service Gas"></div>
-<div class="field"><label>Offline mode</label><select><option>Enabled</option></select></div>
-<div class="field"><label>Media upload</label><select><option>Wi-Fi + mobile data</option><option>Wi-Fi only</option></select></div>
-<div class="field"><label>Required evidence</label><select><option>Photo + video where specified</option></select></div>
-</div></div>
-</section>
-</main>
-</div>
 <script>
-function show(id,btn){
- document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
- document.getElementById(id).classList.add('active');
- document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));
- if(btn) btn.classList.add('active');
- else document.querySelector('.nav button[onclick*="'+id+'"]')?.classList.add('active');
- window.scrollTo(0,0);
+const KEY='hiservice-stock-v1';
+let state={items:[],url:'',user:'Andre'};
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY)||'{}');state={...state,...s};}catch(e){};scriptUrl.value=state.url||'';user.value=state.user||'Andre';render();}
+function save(){state.url=scriptUrl.value.trim();state.user=user.value.trim()||'Andre';localStorage.setItem(KEY,JSON.stringify(state));}
+function setStatus(t){document.getElementById('status').textContent=t;}
+function esc(s){return String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function render(){
+ const q=(search.value||'').toLowerCase();const box=document.getElementById('list');
+ const rows=state.items.filter(x=>!q||((x.item||'')+' '+(x.category||'')).toLowerCase().includes(q));
+ countTag.textContent=state.items.length+' items';
+ box.innerHTML=rows.length?rows.map((x,i)=>'<div class="item" data-id="'+x.id+'"><div><div class="name">'+esc(x.item)+'</div><div class="sub">'+esc(x.category||'Other')+' · '+esc(x.unit||'each')+'</div></div><input type="number" min="0" step="1" inputmode="decimal" value="'+esc(x.count??'')+'" placeholder="Qty" data-count><input value="'+esc(x.note||'')+'" placeholder="Note" data-note><button class="btn danger delete">Delete</button></div>').join(''):'<div class="empty">No stock items yet.</div>';
+ box.querySelectorAll('.item').forEach(el=>{const id=el.dataset.id,x=state.items.find(a=>a.id===id);el.querySelector('[data-count]').oninput=e=>{x.count=e.target.value;save()};el.querySelector('[data-note]').oninput=e=>{x.note=e.target.value;save()};el.querySelector('.delete').onclick=()=>{if(confirm('Delete this stock item?')){state.items=state.items.filter(a=>a.id!==id);save();render();}}});
 }
+function addStock(item,category,unit){const name=(item||'').trim();if(!name)return;const exists=state.items.find(x=>x.item.toLowerCase()===name.toLowerCase());if(exists)return;state.items.push({id:'st-'+Date.now()+'-'+Math.random().toString(36).slice(2,7),item:name,category:(category||'Other').trim(),unit:(unit||'each').trim(),count:'',note:''});}
+saveSettings.onclick=()=>{save();setStatus('Settings saved on this device.');};
+addItem.onclick=()=>{const item=prompt('Item name:');if(!item)return;const category=prompt('Category:','Other')||'Other';const unit=prompt('Unit:','each')||'each';addStock(item,category,unit);save();render();};
+search.oninput=render;
+importCsv.onclick=()=>csvFile.click();
+csvFile.onchange=async()=>{const f=csvFile.files&&csvFile.files[0];if(!f)return;const text=await f.text();const lines=text.split(/\r?\n/).filter(Boolean);for(let i=0;i<lines.length;i++){const cols=lines[i].split(',').map(x=>x.trim().replace(/^"|"$/g,''));if(i===0&&/item|name/i.test(cols[0]))continue;addStock(cols[0],cols[1],cols[2]);}save();render();setStatus('CSV imported.');csvFile.value='';};
+async function api(action,payload){
+ save();if(!state.url)throw new Error('Add the Google Apps Script URL first.');
+ const body={action,app:'Hi Service',division:'Hi Service',user:state.user,...(payload||{})};
+ const r=await fetch(state.url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(body)});
+ const j=await r.json();if(j&&j.ok===false)throw new Error(j.error||'Request failed');return j;
+}
+syncList.onclick=async()=>{try{setStatus('Importing stock list…');const j=await api('stockList',{source:'Hi Service'});const arr=j.items||j.stock||[];arr.forEach(x=>addStock(x.item||x.name,x.category,x.unit));save();render();setStatus('Imported '+arr.length+' stock items from Google Sheet.');}catch(e){setStatus('Import failed: '+e.message);}};
+sendCount.onclick=async()=>{try{const rows=state.items.filter(x=>x.count!==''&&x.count!=null).map(x=>({item:x.item,category:x.category,unit:x.unit,count:Number(x.count),note:x.note||''}));if(!rows.length){alert('Enter at least one stock count.');return;}if(!confirm('Send '+rows.length+' stock counts as '+state.user+'?'))return;setStatus('Sending stock count…');const j=await api('stockCount',{rows,date:new Date().toISOString(),location:'Hi Service'});setStatus('Stock count sent successfully.');}catch(e){setStatus('Send failed: '+e.message);}};
+load();
 </script>
 </body>
 </html>
