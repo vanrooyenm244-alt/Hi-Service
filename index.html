@@ -8,7 +8,7 @@
 <div class="brand"><div><div class="roof">⌂</div></div><div><div class="word"><i>hi</i> <span>service</span></div><div class="small">Simplicity &amp; Efficiency Beyond Electricity</div></div></div>
 <div class="nav"><button class="on" data-page="stock">Stock</button><button data-page="overview">Stock Overview</button><button data-page="move">Transfer / Receive</button><button data-page="time">Timesheets</button><button id="usersNav" class="hidden" data-page="users">Users</button><button data-page="settings">Settings</button></div>
 
-<section id="stock" class="page on"><div class="card"><div class="head"><h2>Stock Count</h2><span class="small" id="stCount">0 items</span></div><p class="small">Choose the vehicle/store you are physically counting. Blank items are not changed.</p><div class="locations" id="locations"></div><div class="toolbar"><button class="btn" id="addItem">+ Add Item</button><button class="btn" id="importCsv">Import stock CSV</button><input id="csv" type="file" accept=".csv,text/csv" hidden><button class="btn primary" id="sendCount">Send Count</button></div><input id="q" class="search" placeholder="Search stock..."><div id="stockList"></div><div class="msg" id="stockMsg"></div></div></section>
+<section id="stock" class="page on"><div class="card"><div class="head"><h2>Stock Count</h2><span class="small" id="stCount">0 items</span></div><p class="small">Choose the vehicle/store you are physically counting. Blank items are not changed.</p><div class="locations" id="locations"></div><div class="toolbar"><button class="btn" id="addItem">+ Add Item</button><button class="btn" id="importCsv">Upload stock file</button><input id="csv" type="file" accept=".csv,text/csv,.xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" hidden><button class="btn primary" id="sendCount">Send Count</button></div><input id="q" class="search" placeholder="Search stock..."><div id="stockList"></div><div class="msg" id="stockMsg"></div></div></section>
 
 <section id="overview" class="page"><div class="card"><div class="head"><h2>Stock Overview</h2><button class="btn" id="refresh">Refresh</button></div><p class="small">Each vehicle keeps its own stock. Total Stock is the sum across all three locations.</p><div class="overview" id="overviewTable"></div></div></section>
 
@@ -58,7 +58,36 @@ async function refreshStock(){stockMsg.textContent='Loading…';try{let j=await 
 refresh.onclick=refreshStock;
 saveSettings.onclick=()=>{S.url=url.value.trim();S.username=username.value.trim();S.password=password.value;save();refreshStock()};
 addItem.onclick=async()=>{let item=prompt('Description');if(!item)return;let code=prompt('Stock code (leave blank for automatic)','')||'',category=prompt('Category','Other')||'Other',unit=prompt('Unit','each')||'each',supplier=prompt('Supplier','')||'',cost=Number(prompt('Cost','0'))||0;try{await api({action:'hiStockAdd',item:{code,item,category,unit,supplier,cost}});await refreshStock()}catch(e){alert(e.message)}};
-importCsv.onclick=()=>csv.click();csv.onchange=async()=>{let f=csv.files[0];if(!f)return;stockMsg.textContent='Reading '+f.name+'…';let rows;try{rows=parseCSV(await f.text())}catch(e){stockMsg.textContent='Could not read CSV: '+e.message;return}if(!rows.length){stockMsg.textContent='CSV has no data rows.';return}let added=0,failed=[];for(const r of rows){let item=r.description||r['stock description']||r.item||r.name;if(!item)continue;let cost=Number(String(r.cost||r.price||'0').replace(/[^0-9.-]/g,''))||0;try{await api({action:'hiStockAdd',item:{code:r.code||'',item,category:r.category||'Other',supplier:r.supplier||'',cost,unit:r.unit||'each'}});added++}catch(e){failed.push(item+': '+e.message)}}csv.value='';try{await refreshStock()}catch(e){}stockMsg.textContent=added+' items imported'+(failed.length?' · '+failed.length+' failed. First: '+failed[0]:'')+'.';};
+importCsv.onclick=()=>csv.click();
+csv.onchange=async()=>{
+  let f=csv.files[0]; if(!f)return;
+  stockMsg.textContent='Reading '+f.name+'…';
+  if(/\.xlsx$/i.test(f.name)){
+    stockMsg.textContent='Excel .xlsx selected. Please save/export it as CSV first, then upload the CSV. No stock was changed.';
+    csv.value=''; return;
+  }
+  let rows;
+  try{ rows=parseCSV(await f.text()) }catch(e){ stockMsg.textContent='Could not read CSV: '+e.message; csv.value=''; return; }
+  if(!rows.length){ stockMsg.textContent='CSV has no data rows.'; csv.value=''; return; }
+  let valid=rows.map(r=>{
+    let item=r.description||r['stock description']||r.item||r.name||'';
+    let code=r.code||r['stock code']||'';
+    let cost=Number(String(r.cost||r.price||'0').replace(/[^0-9.-]/g,''))||0;
+    return {code,item,category:r.category||'Other',supplier:r.supplier||'',cost,unit:r.unit||'each'};
+  }).filter(x=>x.item);
+  if(!valid.length){stockMsg.textContent='No stock rows recognised. Expected a Description, Stock Description, Item or Name column.';csv.value='';return}
+  if(!confirm('Upload '+valid.length+' stock items to Hi Service?')){csv.value='';stockMsg.textContent='Upload cancelled.';return}
+  let added=0,failed=[];
+  for(let i=0;i<valid.length;i++){
+    let x=valid[i]; stockMsg.textContent='Uploading '+(i+1)+' of '+valid.length+'…';
+    try{await api({action:'hiStockAdd',item:x});added++}catch(e){failed.push((x.code||x.item)+': '+String(e.message||e))}
+  }
+  csv.value='';
+  if(added){
+    try{let j=await apiGet('hiStock');S.items=j.stock||[];await cacheStock();save();renderAll()}catch(e){}
+  }
+  stockMsg.textContent=added+' of '+valid.length+' uploaded to Google Sheet'+(failed.length?'. '+failed.length+' failed — '+failed[0]:'.');
+};
 sendCount.onclick=async()=>{let n=Object.keys(S.counts).length;if(!n)return alert('Nothing counted yet.');if(!confirm('Send '+n+' counts for '+S.place+'?'))return;try{let j=await api({action:'hiStockCount',place:S.place,counts:S.counts});S.counts={};save();await refreshStock();stockMsg.textContent=j.changed+' items updated.'}catch(e){stockMsg.textContent=e.message}};
 function parseCSV(t){let rows=[],row=[],cell='',quoted=false;for(let i=0;i<t.length;i++){let ch=t[i];if(ch==='"'){if(quoted&&t[i+1]==='"'){cell+='"';i++}else quoted=!quoted}else if(ch===','&&!quoted){row.push(cell.trim());cell=''}else if((ch==='\n'||ch==='\r')&&!quoted){if(ch==='\r'&&t[i+1]==='\n')i++;row.push(cell.trim());cell='';if(row.some(x=>x!==''))rows.push(row);row=[]}else cell+=ch}if(cell||row.length){row.push(cell.trim());if(row.some(x=>x!==''))rows.push(row)}if(!rows.length)return[];let h=rows.shift().map(x=>x.replace(/^\uFEFF/,'').trim().toLowerCase());return rows.map(c=>{let o={};h.forEach((k,i)=>o[k]=c[i]??'');return o})}
 function addLine(box,qty=''){let opts=S.items.map(x=>'<option value="'+esc(x.code||x.item)+'">'+esc((x.code?x.code+' · ':'')+(x.item||x.description))+'</option>').join('');box.insertAdjacentHTML('beforeend','<div class="line"><select>'+opts+'</select><input type="number" step="1" value="'+qty+'" placeholder="Qty"><button class="btn danger">×</button></div>');box.lastElementChild.querySelector('button').onclick=()=>box.lastElementChild.remove()}
