@@ -62,31 +62,32 @@ importCsv.onclick=()=>csv.click();
 csv.onchange=async()=>{
   let f=csv.files[0]; if(!f)return;
   stockMsg.textContent='Reading '+f.name+'…';
-  if(/\.xlsx$/i.test(f.name)){
-    stockMsg.textContent='Excel .xlsx selected. Please save/export it as CSV first, then upload the CSV. No stock was changed.';
-    csv.value=''; return;
-  }
-  let rows;
-  try{ rows=parseCSV(await f.text()) }catch(e){ stockMsg.textContent='Could not read CSV: '+e.message; csv.value=''; return; }
-  if(!rows.length){ stockMsg.textContent='CSV has no data rows.'; csv.value=''; return; }
-  let valid=rows.map(r=>{
-    let item=r.description||r['stock description']||r.item||r.name||'';
-    let code=r.code||r['stock code']||'';
-    let cost=Number(String(r.cost||r.price||'0').replace(/[^0-9.-]/g,''))||0;
-    return {code,item,category:r.category||'Other',supplier:r.supplier||'',cost,unit:r.unit||'each'};
-  }).filter(x=>x.item);
-  if(!valid.length){stockMsg.textContent='No stock rows recognised. Expected a Description, Stock Description, Item or Name column.';csv.value='';return}
-  if(!confirm('Upload '+valid.length+' stock items to Hi Service?')){csv.value='';stockMsg.textContent='Upload cancelled.';return}
-  let added=0,failed=[];
-  for(let i=0;i<valid.length;i++){
-    let x=valid[i]; stockMsg.textContent='Uploading '+(i+1)+' of '+valid.length+'…';
-    try{await api({action:'hiStockAdd',item:x});added++}catch(e){failed.push((x.code||x.item)+': '+String(e.message||e))}
-  }
+  if(/\.xlsx$/i.test(f.name)){stockMsg.textContent='Excel .xlsx selected. Save/export it as CSV first, then upload the CSV. No stock was changed.';csv.value='';return}
+  let rows;try{rows=parseCSV(await f.text())}catch(e){stockMsg.textContent='Could not read CSV: '+e.message;csv.value='';return}
+  if(!rows.length){stockMsg.textContent='CSV has no data rows.';csv.value='';return}
+  let existing=new Map();
+  S.items.forEach(x=>{if(x.code)existing.set('c:'+String(x.code).trim().toLowerCase(),x);if(x.item||x.description)existing.set('n:'+String(x.item||x.description).trim().toLowerCase(),x)});
+  let incoming=[],newItems=[],updates=[];
+  rows.forEach(r=>{
+    let item=r.description||r['stock description']||r.item||r.name||'',code=r.code||r['stock code']||'';
+    if(!item)return;
+    let x={code,item,category:r.category||'Other',supplier:r.supplier||'',cost:Number(String(r.cost||r.price||'0').replace(/[^0-9.-]/g,''))||0,unit:r.unit||'each'};
+    let match=(code&&existing.get('c:'+String(code).trim().toLowerCase()))||existing.get('n:'+String(item).trim().toLowerCase());
+    let counts={};
+    PLACES.forEach(p=>{let aliases=[p.toLowerCase(),p==='Stoor'?'store':'',p==='CEY 59799'?'jacobus bakkie':'',p==='CEY 67212'?'andre bakkie':''].filter(Boolean);for(let a of aliases){if(r[a]!==undefined&&r[a]!==''){counts[p]=Math.max(0,Number(String(r[a]).replace(/[^0-9.-]/g,''))||0);break}}});
+    let rec={item:x,match,counts};
+    incoming.push(rec); if(match)updates.push(rec);else newItems.push(rec);
+  });
+  if(!incoming.length){stockMsg.textContent='No stock rows recognised.';csv.value='';return}
+  let qtyUpdates=updates.filter(x=>Object.keys(x.counts).length);
+  let msg='Stock upload preview\n\n'+newItems.length+' new items found\n'+updates.length+' existing items matched\n'+qtyUpdates.length+' existing items have quantities to update\n\nNothing has changed yet. Continue?';
+  if(!confirm(msg)){stockMsg.textContent='Upload cancelled — no stock changed.';csv.value='';return}
+  let added=0,changed=0,failed=[];
+  for(let i=0;i<newItems.length;i++){let x=newItems[i];stockMsg.textContent='Adding new item '+(i+1)+' of '+newItems.length+'…';try{await api({action:'hiStockAdd',item:x.item});added++}catch(e){failed.push((x.item.code||x.item.item)+': '+String(e.message||e))}}
+  for(let i=0;i<qtyUpdates.length;i++){let x=qtyUpdates[i],key=(x.match.code||x.match.item||x.item.code||x.item.item);for(let p of Object.keys(x.counts)){stockMsg.textContent='Updating quantities '+(i+1)+' of '+qtyUpdates.length+'…';try{let counts={};counts[key]=x.counts[p];await api({action:'hiStockCount',place:p,counts});changed++}catch(e){failed.push(key+' '+p+': '+String(e.message||e))}}}
   csv.value='';
-  if(added){
-    try{let j=await apiGet('hiStock');S.items=j.stock||[];await cacheStock();save();renderAll()}catch(e){}
-  }
-  stockMsg.textContent=added+' of '+valid.length+' uploaded to Google Sheet'+(failed.length?'. '+failed.length+' failed — '+failed[0]:'.');
+  try{let j=await apiGet('hiStock');S.items=j.stock||[];await cacheStock();save();renderAll()}catch(e){}
+  stockMsg.textContent=added+' new items added · '+changed+' quantity updates sent'+(failed.length?' · '+failed.length+' failed: '+failed[0]:'');
 };
 sendCount.onclick=async()=>{let n=Object.keys(S.counts).length;if(!n)return alert('Nothing counted yet.');if(!confirm('Send '+n+' counts for '+S.place+'?'))return;try{let j=await api({action:'hiStockCount',place:S.place,counts:S.counts});S.counts={};save();await refreshStock();stockMsg.textContent=j.changed+' items updated.'}catch(e){stockMsg.textContent=e.message}};
 function parseCSV(t){let rows=[],row=[],cell='',quoted=false;for(let i=0;i<t.length;i++){let ch=t[i];if(ch==='"'){if(quoted&&t[i+1]==='"'){cell+='"';i++}else quoted=!quoted}else if(ch===','&&!quoted){row.push(cell.trim());cell=''}else if((ch==='\n'||ch==='\r')&&!quoted){if(ch==='\r'&&t[i+1]==='\n')i++;row.push(cell.trim());cell='';if(row.some(x=>x!==''))rows.push(row);row=[]}else cell+=ch}if(cell||row.length){row.push(cell.trim());if(row.some(x=>x!==''))rows.push(row)}if(!rows.length)return[];let h=rows.shift().map(x=>x.replace(/^\uFEFF/,'').trim().toLowerCase());return rows.map(c=>{let o={};h.forEach((k,i)=>o[k]=c[i]??'');return o})}
