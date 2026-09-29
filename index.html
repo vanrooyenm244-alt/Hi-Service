@@ -1,82 +1,49 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Hi Service Stock Count</title>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Hi Service Operations</title>
 <style>
-:root{--green:#159447;--dark:#101714;--muted:#6d7772;--line:#dfe5e1;--bg:#f4f7f5;--white:#fff;--red:#c0392b}
-*{box-sizing:border-box}body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:#17201b}
-.wrap{max-width:980px;margin:0 auto;padding:18px}.head{display:flex;align-items:center;gap:14px;margin-bottom:16px}.logo{width:58px;height:58px;border-radius:14px;background:var(--green);color:#fff;display:grid;place-items:center;font-weight:900;font-size:20px}.head h1{margin:0;font-size:24px}.head p{margin:4px 0 0;color:var(--muted);font-size:13px}
-.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}.row{display:flex;gap:10px;flex-wrap:wrap}.field{flex:1;min-width:180px}.field label{display:block;font-size:11px;color:var(--muted);margin-bottom:5px}.field input,.field select{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px}
-.btn{border:1px solid var(--line);background:#fff;border-radius:8px;padding:10px 14px;font-weight:700;cursor:pointer}.btn.primary{background:var(--green);color:white;border-color:var(--green)}.btn.danger{color:var(--red)}
-.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.search{width:100%;padding:11px;border:1px solid var(--line);border-radius:9px}
-.item{display:grid;grid-template-columns:1.6fr .7fr .7fr auto;gap:8px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}.item:last-child{border-bottom:0}.item input{width:100%;padding:9px;border:1px solid var(--line);border-radius:7px}.name{font-weight:700}.sub{font-size:11px;color:var(--muted);margin-top:3px}.empty{color:var(--muted);padding:16px;text-align:center}.status{font-size:12px;color:var(--muted);margin-top:8px}.topline{display:flex;justify-content:space-between;gap:8px;align-items:center}.pill{font-size:11px;background:#edf7f1;color:#187443;padding:5px 8px;border-radius:999px;font-weight:700}
-@media(max-width:700px){.item{grid-template-columns:1fr 90px 70px}.item .delete{grid-column:1/-1;justify-self:end}.head{align-items:flex-start}.logo{width:48px;height:48px}}
-</style>
-</head>
-<body>
-<div class="wrap">
-  <div class="head">
-    <div class="logo">HS</div>
-    <div><h1>Hi Service Stock Count</h1><p>Main user: André · uses the same Google Apps Script backend</p></div>
-  </div>
+:root{--g:#159447;--gd:#0d6e36;--ink:#17201b;--muted:#68736d;--line:#dce4df;--bg:#f4f7f5;--white:#fff;--red:#b42318}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--ink)}button,input,select,textarea{font:inherit}.app{max-width:1050px;margin:auto;padding:16px}.brand{display:flex;align-items:center;gap:12px;margin-bottom:14px}.roof{font-size:28px;color:var(--g);line-height:.7}.word{font-size:27px;font-weight:800}.word i{font-style:normal;color:var(--g)}.word span{color:#747c78}.small{font-size:12px;color:var(--muted)}.nav{display:flex;gap:7px;overflow:auto;margin-bottom:14px}.nav button,.btn{border:1px solid var(--line);background:#fff;padding:10px 13px;border-radius:9px;font-weight:700;cursor:pointer;white-space:nowrap}.nav button.on,.btn.primary{background:var(--g);color:#fff;border-color:var(--g)}.page{display:none}.page.on{display:block}.card{background:#fff;border:1px solid var(--line);border-radius:13px;padding:15px;margin-bottom:12px}.head{display:flex;justify-content:space-between;align-items:center;gap:8px}.head h2{margin:0;font-size:18px}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.field label{display:block;font-size:11px;color:var(--muted);margin-bottom:4px}.field input,.field select,.field textarea,.search{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;background:#fff}.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.locations{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.loc{border:1px solid var(--line);background:#fff;border-radius:10px;padding:12px;text-align:left}.loc.on{outline:2px solid var(--g)}.stockrow{display:grid;grid-template-columns:1.7fr .55fr .65fr;gap:8px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}.stockrow input{width:100%;padding:8px;border:1px solid var(--line);border-radius:7px}.stockrow b{font-size:13px}.stockrow .small{display:block}.overview{overflow:auto}table{width:100%;border-collapse:collapse;font-size:12px}th,td{padding:9px;border-bottom:1px solid var(--line);text-align:left}th{color:var(--muted)}.total{font-weight:800}.msg{font-size:12px;color:var(--muted);margin-top:8px}.danger{color:var(--red)}.line{display:grid;grid-template-columns:1fr 100px auto;gap:7px;margin:7px 0}.line input,.line select{padding:8px;border:1px solid var(--line);border-radius:7px}.hidden{display:none!important}
+@media(max-width:700px){.grid{grid-template-columns:1fr}.locations{grid-template-columns:1fr}.stockrow{grid-template-columns:1fr 85px}.stockrow .small{grid-column:1/-1}.line{grid-template-columns:1fr 80px auto}}
+</style></head><body><div class="app">
+<div class="brand"><div><div class="roof">⌂</div></div><div><div class="word"><i>hi</i> <span>service</span></div><div class="small">Simplicity &amp; Efficiency Beyond Electricity</div></div></div>
+<div class="nav"><button class="on" data-page="stock">Stock</button><button data-page="overview">Stock Overview</button><button data-page="move">Transfer / Receive</button><button data-page="time">Timesheets</button><button data-page="settings">Settings</button></div>
 
-  <div class="card">
-    <div class="topline"><b>Connection</b><span class="pill">Hi Service</span></div>
-    <div class="row" style="margin-top:10px">
-      <div class="field"><label>Google Apps Script URL</label><input id="scriptUrl" placeholder="https://script.google.com/macros/s/.../exec"></div>
-      <div class="field"><label>User</label><input id="user" value="Andre"></div>
-    </div>
-    <div class="toolbar">
-      <button class="btn" id="saveSettings">Save settings</button>
-      <button class="btn" id="syncList">Import from Google Sheet</button>
-      <button class="btn primary" id="sendCount">Send stock count</button>
-    </div>
-    <div class="status" id="status">Not connected yet.</div>
-  </div>
+<section id="stock" class="page on"><div class="card"><div class="head"><h2>Stock Count</h2><span class="small" id="stCount">0 items</span></div><p class="small">Choose the vehicle/store you are physically counting. Blank items are not changed.</p><div class="locations" id="locations"></div><div class="toolbar"><button class="btn" id="addItem">+ Add Item</button><button class="btn" id="importCsv">Import stock CSV</button><input id="csv" type="file" accept=".csv,text/csv" hidden><button class="btn primary" id="sendCount">Send Count</button></div><input id="q" class="search" placeholder="Search stock..."><div id="stockList"></div><div class="msg" id="stockMsg"></div></div></section>
 
-  <div class="card">
-    <div class="topline"><b>Stock list</b><span class="pill" id="countTag">0 items</span></div>
-    <div class="toolbar">
-      <input class="search" id="search" placeholder="Search stock">
-      <button class="btn" id="importCsv">Import CSV</button>
-      <input id="csvFile" type="file" accept=".csv,text/csv" hidden>
-      <button class="btn" id="addItem">+ Add item</button>
-    </div>
-    <div id="list"></div>
-  </div>
-</div>
+<section id="overview" class="page"><div class="card"><div class="head"><h2>Stock Overview</h2><button class="btn" id="refresh">Refresh</button></div><p class="small">Each vehicle keeps its own stock. Total Stock is the sum across all three locations.</p><div class="overview" id="overviewTable"></div></div></section>
 
-<script>
-const KEY='hiservice-stock-v1';
-let state={items:[],url:'',user:'Andre'};
-function load(){try{const s=JSON.parse(localStorage.getItem(KEY)||'{}');state={...state,...s};}catch(e){};scriptUrl.value=state.url||'';user.value=state.user||'Andre';render();}
-function save(){state.url=scriptUrl.value.trim();state.user=user.value.trim()||'Andre';localStorage.setItem(KEY,JSON.stringify(state));}
-function setStatus(t){document.getElementById('status').textContent=t;}
-function esc(s){return String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
-function render(){
- const q=(search.value||'').toLowerCase();const box=document.getElementById('list');
- const rows=state.items.filter(x=>!q||((x.item||'')+' '+(x.category||'')).toLowerCase().includes(q));
- countTag.textContent=state.items.length+' items';
- box.innerHTML=rows.length?rows.map((x,i)=>'<div class="item" data-id="'+x.id+'"><div><div class="name">'+esc(x.item)+'</div><div class="sub">'+esc(x.category||'Other')+' · '+esc(x.unit||'each')+'</div></div><input type="number" min="0" step="1" inputmode="decimal" value="'+esc(x.count??'')+'" placeholder="Qty" data-count><input value="'+esc(x.note||'')+'" placeholder="Note" data-note><button class="btn danger delete">Delete</button></div>').join(''):'<div class="empty">No stock items yet.</div>';
- box.querySelectorAll('.item').forEach(el=>{const id=el.dataset.id,x=state.items.find(a=>a.id===id);el.querySelector('[data-count]').oninput=e=>{x.count=e.target.value;save()};el.querySelector('[data-note]').oninput=e=>{x.note=e.target.value;save()};el.querySelector('.delete').onclick=()=>{if(confirm('Delete this stock item?')){state.items=state.items.filter(a=>a.id!==id);save();render();}}});
-}
-function addStock(item,category,unit){const name=(item||'').trim();if(!name)return;const exists=state.items.find(x=>x.item.toLowerCase()===name.toLowerCase());if(exists)return;state.items.push({id:'st-'+Date.now()+'-'+Math.random().toString(36).slice(2,7),item:name,category:(category||'Other').trim(),unit:(unit||'each').trim(),count:'',note:''});}
-saveSettings.onclick=()=>{save();setStatus('Settings saved on this device.');};
-addItem.onclick=()=>{const item=prompt('Item name:');if(!item)return;const category=prompt('Category:','Other')||'Other';const unit=prompt('Unit:','each')||'each';addStock(item,category,unit);save();render();};
-search.oninput=render;
-importCsv.onclick=()=>csvFile.click();
-csvFile.onchange=async()=>{const f=csvFile.files&&csvFile.files[0];if(!f)return;const text=await f.text();const lines=text.split(/\r?\n/).filter(Boolean);for(let i=0;i<lines.length;i++){const cols=lines[i].split(',').map(x=>x.trim().replace(/^"|"$/g,''));if(i===0&&/item|name/i.test(cols[0]))continue;addStock(cols[0],cols[1],cols[2]);}save();render();setStatus('CSV imported.');csvFile.value='';};
-async function api(action,payload){
- save();if(!state.url)throw new Error('Add the Google Apps Script URL first.');
- const body={action,app:'Hi Service',division:'Hi Service',user:state.user,...(payload||{})};
- const r=await fetch(state.url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(body)});
- const j=await r.json();if(j&&j.ok===false)throw new Error(j.error||'Request failed');return j;
-}
-syncList.onclick=async()=>{try{setStatus('Importing stock list…');const j=await api('stockList',{source:'Hi Service'});const arr=j.items||j.stock||[];arr.forEach(x=>addStock(x.item||x.name,x.category,x.unit));save();render();setStatus('Imported '+arr.length+' stock items from Google Sheet.');}catch(e){setStatus('Import failed: '+e.message);}};
-sendCount.onclick=async()=>{try{const rows=state.items.filter(x=>x.count!==''&&x.count!=null).map(x=>({item:x.item,category:x.category,unit:x.unit,count:Number(x.count),note:x.note||''}));if(!rows.length){alert('Enter at least one stock count.');return;}if(!confirm('Send '+rows.length+' stock counts as '+state.user+'?'))return;setStatus('Sending stock count…');const j=await api('stockCount',{rows,date:new Date().toISOString(),location:'Hi Service'});setStatus('Stock count sent successfully.');}catch(e){setStatus('Send failed: '+e.message);}};
-load();
-</script>
-</body>
-</html>
+<section id="move" class="page"><div class="card"><div class="head"><h2>Transfer Stock</h2></div><div class="grid"><div class="field"><label>From</label><select id="from"></select></div><div class="field"><label>To</label><select id="to"></select></div></div><div id="transferLines"></div><div class="toolbar"><button class="btn" id="addTransfer">+ Item</button><button class="btn primary" id="sendTransfer">Transfer Stock</button></div><div class="msg" id="moveMsg"></div></div>
+<div class="card"><div class="head"><h2>Stock Received</h2></div><div class="grid"><div class="field"><label>Stock goes to</label><select id="receivePlace"></select></div><div class="field"><label>Invoice / reference</label><input id="invoiceRef"></div></div><div class="toolbar"><input id="invoiceFile" type="file" accept=".pdf,image/*,.csv,text/csv"><button class="btn" id="readInvoice">Load invoice</button></div><p class="small">CSV invoices can be read now. PDF/photo invoice auto-reading needs the document-reading service connected before it can safely change stock.</p><div id="receiveLines"></div><div class="toolbar"><button class="btn" id="addReceive">+ Item</button><button class="btn primary" id="sendReceive">Confirm Stock Received</button></div><div class="msg" id="receiveMsg"></div></div>
+<div class="card"><div class="head"><h2>Stock Adjustment</h2></div><div class="grid"><div class="field"><label>Location</label><select id="adjustPlace"></select></div><div class="field"><label>Reason</label><input id="adjustReason" placeholder="Correction / damaged / used"></div></div><div id="adjustLines"></div><div class="toolbar"><button class="btn" id="addAdjust">+ Item</button><button class="btn primary" id="sendAdjust">Save Adjustment</button></div></div></section>
+
+<section id="time" class="page"><div class="card"><div class="head"><h2>Timesheets</h2><span class="small">Hi Service</span></div><div class="grid"><div class="field"><label>Worker</label><input id="worker" value="Andre"></div><div class="field"><label>Date</label><input id="date" type="date"></div><div class="field"><label>Time in</label><input id="timeIn" type="time" value="07:00"></div><div class="field"><label>Time out</label><input id="timeOut" type="time" value="17:00"></div><div class="field"><label>Lunch minutes</label><input id="lunch" type="number" value="60"></div><div class="field"><label>Job / reference</label><input id="job"></div><div class="field" style="grid-column:1/-1"><label>Note</label><textarea id="note"></textarea></div></div><div class="toolbar"><button class="btn primary" id="sendTime">Send Timesheet</button></div><div class="msg" id="timeMsg"></div></div></section>
+
+<section id="settings" class="page"><div class="card"><div class="head"><h2>Connection</h2></div><div class="grid"><div class="field" style="grid-column:1/-1"><label>Google Apps Script URL</label><input id="url" placeholder="https://script.google.com/macros/s/.../exec"></div><div class="field"><label>Username</label><input id="username" value="andre"></div><div class="field"><label>Password</label><input id="password" type="password"></div></div><div class="toolbar"><button class="btn primary" id="saveSettings">Save</button></div><div class="msg">Uses the same Apps Script deployment as Flagship, but Hi Service writes to its own sheets.</div></div></section>
+</div><script>
+const KEY='hiservice-ops-v2',PLACES=['Stoor','CEY 59799','CEY 67212'];let S={url:'',username:'andre',password:'',items:[],place:'Stoor',counts:{}};
+const $=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function save(){localStorage.setItem(KEY,JSON.stringify(S))}function load(){try{S={...S,...JSON.parse(localStorage.getItem(KEY)||'{}')}}catch(e){};$('url').value=S.url||'';$('username').value=S.username||'andre';$('password').value=S.password||'';$('date').value=new Date().toISOString().slice(0,10);renderAll()}
+document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('on'));document.querySelectorAll('.page').forEach(x=>x.classList.remove('on'));b.classList.add('on');$(b.dataset.page).classList.add('on');if(b.dataset.page==='overview')renderOverview()});
+function apiGet(action){if(!S.url)return Promise.reject(Error('Add the Apps Script URL in Settings.'));let u=S.url+'?action='+encodeURIComponent(action)+'&user='+encodeURIComponent(S.username)+'&pass='+encodeURIComponent(S.password);return fetch(u).then(r=>r.json()).then(j=>{if(!j.ok)throw Error(j.error||'Rejected');return j})}
+function api(body){if(!S.url)return Promise.reject(Error('Add the Apps Script URL in Settings.'));body={...body,user:S.username,pass:S.password,company:'Hi Service'};return fetch(S.url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(body)}).then(r=>r.json()).then(j=>{if(!j.ok)throw Error(j.error||'Rejected');return j})}
+function renderAll(){renderLocations();renderStock();renderOverview();[from,to,receivePlace,adjustPlace].forEach((el,i)=>{el.innerHTML=PLACES.map(p=>'<option>'+p+'</option>').join('')});to.value='CEY 59799';}
+function renderLocations(){locations.innerHTML=PLACES.map(p=>'<button class="loc '+(S.place===p?'on':'')+'" data-p="'+p+'"><b>'+p+'</b><div class="small">'+S.items.filter(x=>Number(x[p])>0).length+' items on hand</div></button>').join('');locations.querySelectorAll('button').forEach(b=>b.onclick=()=>{S.place=b.dataset.p;S.counts={};save();renderLocations();renderStock()})}
+function renderStock(){let qv=(q.value||'').toLowerCase(),a=S.items.filter(x=>!qv||((x.code||'')+' '+(x.item||x.description||'')+' '+(x.category||'')).toLowerCase().includes(qv));stCount.textContent=S.items.length+' items';stockList.innerHTML=a.length?a.map(x=>{let k=x.code||x.item,v=S.counts[k];return '<div class="stockrow" data-k="'+esc(k)+'"><div><b>'+esc(x.item||x.description)+'</b><span class="small">'+esc(x.code||'')+' · '+esc(x.category||'Other')+' · last '+Number(x[S.place]||0)+'</span></div><input type="number" min="0" step="1" placeholder="'+Number(x[S.place]||0)+'" value="'+(v??'')+'"><span class="small">'+esc(x.unit||'each')+'</span></div>'}).join(''):'<p class="small">No stock items.</p>';stockList.querySelectorAll('.stockrow').forEach(r=>r.querySelector('input').oninput=e=>{if(e.target.value==='')delete S.counts[r.dataset.k];else S.counts[r.dataset.k]=Math.max(0,Number(e.target.value)||0);save()})}
+function renderOverview(){overviewTable.innerHTML='<table><thead><tr><th>Item</th>'+PLACES.map(p=>'<th>'+p+'</th>').join('')+'<th>Total Stock</th></tr></thead><tbody>'+S.items.map(x=>{let t=PLACES.reduce((n,p)=>n+Number(x[p]||0),0);return '<tr><td><b>'+esc(x.item||x.description)+'</b><br><span class="small">'+esc(x.code||'')+'</span></td>'+PLACES.map(p=>'<td>'+Number(x[p]||0)+'</td>').join('')+'<td class="total">'+t+'</td></tr>'}).join('')+'</tbody></table>'}
+q.oninput=renderStock;
+async function refreshStock(){stockMsg.textContent='Loading…';try{let j=await apiGet('hiStock');S.items=j.stock||[];save();renderAll();stockMsg.textContent='Stock refreshed.'}catch(e){stockMsg.textContent=e.message}}
+refresh.onclick=refreshStock;
+saveSettings.onclick=()=>{S.url=url.value.trim();S.username=username.value.trim();S.password=password.value;save();refreshStock()};
+addItem.onclick=async()=>{let item=prompt('Description');if(!item)return;let code=prompt('Stock code (leave blank for automatic)','')||'',category=prompt('Category','Other')||'Other',unit=prompt('Unit','each')||'each',supplier=prompt('Supplier','')||'',cost=Number(prompt('Cost','0'))||0;try{await api({action:'hiStockAdd',item:{code,item,category,unit,supplier,cost}});await refreshStock()}catch(e){alert(e.message)}};
+importCsv.onclick=()=>csv.click();csv.onchange=async()=>{let f=csv.files[0];if(!f)return;let rows=parseCSV(await f.text());let added=0;for(const r of rows){let item=r.description||r.item||r.name;if(!item)continue;try{await api({action:'hiStockAdd',item:{code:r.code,item,category:r.category||'Other',supplier:r.supplier||'',cost:Number(r.cost)||0,unit:r.unit||'each'}});added++}catch(e){}}await refreshStock();stockMsg.textContent=added+' new items imported.'};
+sendCount.onclick=async()=>{let n=Object.keys(S.counts).length;if(!n)return alert('Nothing counted yet.');if(!confirm('Send '+n+' counts for '+S.place+'?'))return;try{let j=await api({action:'hiStockCount',place:S.place,counts:S.counts});S.counts={};save();await refreshStock();stockMsg.textContent=j.changed+' items updated.'}catch(e){stockMsg.textContent=e.message}};
+function parseCSV(t){let ls=t.split(/\r?\n/).filter(Boolean),h=ls.shift().split(',').map(x=>x.trim().toLowerCase().replace(/^"|"$/g,''));return ls.map(l=>{let c=l.split(',').map(x=>x.trim().replace(/^"|"$/g,'')),o={};h.forEach((k,i)=>o[k]=c[i]||'');return o})}
+function addLine(box,qty=''){let opts=S.items.map(x=>'<option value="'+esc(x.code||x.item)+'">'+esc((x.code?x.code+' · ':'')+(x.item||x.description))+'</option>').join('');box.insertAdjacentHTML('beforeend','<div class="line"><select>'+opts+'</select><input type="number" step="1" value="'+qty+'" placeholder="Qty"><button class="btn danger">×</button></div>');box.lastElementChild.querySelector('button').onclick=()=>box.lastElementChild.remove()}
+addTransfer.onclick=()=>addLine(transferLines);addReceive.onclick=()=>addLine(receiveLines);addAdjust.onclick=()=>addLine(adjustLines);
+function lines(box){return [...box.querySelectorAll('.line')].map(r=>({code:r.querySelector('select').value,qty:Number(r.querySelector('input').value)})).filter(x=>x.code&&x.qty)}
+sendTransfer.onclick=async()=>{if(from.value===to.value)return alert('Choose two different locations.');try{let l=lines(transferLines);if(!l.length)return alert('Add stock to transfer.');await api({action:'hiStockTransfer',from:from.value,to:to.value,lines:l});transferLines.innerHTML='';await refreshStock();moveMsg.textContent='Transfer completed.'}catch(e){moveMsg.textContent=e.message}};
+sendReceive.onclick=async()=>{try{let l=lines(receiveLines);if(!l.length)return alert('Add received stock.');await api({action:'hiStockReceive',place:receivePlace.value,reference:invoiceRef.value,lines:l});receiveLines.innerHTML='';await refreshStock();receiveMsg.textContent='Stock received and updated.'}catch(e){receiveMsg.textContent=e.message}};
+sendAdjust.onclick=async()=>{try{let l=lines(adjustLines);if(!l.length)return alert('Add an adjustment. Use negative qty to remove stock.');await api({action:'hiStockAdjust',place:adjustPlace.value,reason:adjustReason.value,lines:l});adjustLines.innerHTML='';await refreshStock()}catch(e){alert(e.message)}};
+readInvoice.onclick=async()=>{let f=invoiceFile.files[0];if(!f)return alert('Choose an invoice first.');if(!/csv/i.test(f.type)&&!/\.csv$/i.test(f.name)){receiveMsg.textContent='PDF/photo selected. Automatic document reading is not connected yet, so no stock was changed.';return}let rows=parseCSV(await f.text());rows.forEach(r=>{let key=r.code||r.item||r.description,qty=Number(r.quantity||r.qty)||0;if(!key||!qty)return;let match=S.items.find(x=>(x.code||'').toLowerCase()===key.toLowerCase()||(x.item||'').toLowerCase()===key.toLowerCase());if(match){addLine(receiveLines,qty);receiveLines.lastElementChild.querySelector('select').value=match.code||match.item}});receiveMsg.textContent='Invoice lines loaded. Review before confirming.'};
+sendTime.onclick=async()=>{let today=new Date().toISOString().slice(0,10);if(date.value>today)return alert('Future timesheets are not allowed.');try{await api({action:'hiTimesheet',row:{worker:worker.value,date:date.value,timeIn:timeIn.value,timeOut:timeOut.value,lunch:Number(lunch.value)||0,job:job.value,note:note.value}});timeMsg.textContent='Timesheet sent.'}catch(e){timeMsg.textContent=e.message}};
+load();if(S.url)refreshStock();
+</script></body></html>
