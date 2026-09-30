@@ -85,8 +85,22 @@ function hiTime_(u,row){
   sh.appendRow([new Date(d+'T12:00:00'),day,weekend?'Weekend':'Weekday',worker,row.job||'',row.timeIn||'',row.timeOut||'',lunch,normal/60,ot/60,worked/60,row.note||'',submitted,new Date()]);
   return {saved:true,normalHours:normal/60,overtimeHours:ot/60,totalHours:worked/60};
 }
+function hiDailyStockReport_(dateText){
+  var ss=SpreadsheetApp.getActiveSpreadsheet(),tz=ss.getSpreadsheetTimeZone()||Session.getScriptTimeZone();
+  var date=String(dateText||Utilities.formatDate(new Date(),tz,'yyyy-MM-dd')).trim();
+  function sameDay_(v){if(!v)return false;var d=v instanceof Date?v:new Date(v);return !isNaN(d)&&Utilities.formatDate(d,tz,'yyyy-MM-dd')===date;}
+  function stamp_(v){var d=v instanceof Date?v:new Date(v);return isNaN(d)?'':Utilities.formatDate(d,tz,'yyyy-MM-dd HH:mm:ss');}
+  var counts=[],moves=[],sh=ss.getSheetByName(HI_COUNT_SHEET);
+  if(sh&&sh.getLastRow()>1)sh.getRange(2,1,sh.getLastRow()-1,6).getValues().forEach(function(r){if(sameDay_(r[0]))counts.push({timestamp:stamp_(r[0]),user:String(r[1]||''),location:String(r[2]||''),code:String(r[3]||''),description:String(r[4]||''),count:Number(r[5])||0});});
+  sh=ss.getSheetByName(HI_MOVE_SHEET);
+  if(sh&&sh.getLastRow()>1)sh.getRange(2,1,sh.getLastRow()-1,10).getValues().forEach(function(r){if(sameDay_(r[0]))moves.push({timestamp:stamp_(r[0]),user:String(r[1]||''),type:String(r[2]||''),from:String(r[3]||''),to:String(r[4]||''),code:String(r[5]||''),description:String(r[6]||''),qty:Number(r[7])||0,reason:String(r[8]||''),reference:String(r[9]||'')});});
+  return {date:date,counts:counts,movements:moves};
+}
 function hiServiceGet_(p,body){
-  if(p.action!=='hiStock')return null;auth_(body);return out_({ok:true,stock:hiStockRows_(),places:HI_PLACES,categories:['Gas','Plumbing','Geyser','Consumable','Tools','Other']});
+  if(p.action!=='hiStock'&&p.action!=='hiStockReport')return null;
+  auth_(body);
+  if(p.action==='hiStockReport')return out_({ok:true,report:hiDailyStockReport_(p.date||body.date)});
+  return out_({ok:true,stock:hiStockRows_(),places:HI_PLACES,categories:['Gas','Plumbing','Geyser','Consumable','Tools','Other']});
 }
 function hiServicePost_(body){
   var a=body.action;if(['hiStockCount','hiStockAdd','hiStockTransfer','hiStockAdjust','hiStockReceive','hiTimesheet'].indexOf(a)<0)return null;
