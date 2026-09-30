@@ -104,7 +104,25 @@ csv.onchange=async()=>{
   uploadProgressBar.style.width='100%';uploadProgressPct.textContent='100%';uploadProgressTitle.textContent='Stock update complete';cancelUpload.disabled=true;uploadProgressText.textContent=doneOps+' of '+totalOps+' completed';uploadProgressSub.textContent=failed.length?failed.length+' update(s) failed — see message below.':'Latest stock has been downloaded back to this device.';stockMsg.textContent=added+' new items added · '+changed+' quantity updates sent'+(failed.length?' · '+failed.length+' failed: '+failed[0]:'');
 };
 cancelUpload.onclick=()=>{CANCEL_STOCK_UPLOAD=true;cancelUpload.disabled=true;cancelUpload.textContent='Stopping…';uploadProgressSub.textContent='Stopping after the current batch finishes…'};
-sendCount.onclick=async()=>{let n=Object.keys(S.counts).length;if(!n)return alert('Nothing counted yet.');if(!confirm('Send '+n+' counts for '+S.place+'?'))return;try{let j=await api({action:'hiStockCount',place:S.place,counts:S.counts});S.counts={};save();await refreshStock();stockMsg.textContent=j.changed+' items updated.'}catch(e){stockMsg.textContent=e.message}};
+sendCount.onclick=async()=>{let n=Object.keys(S.counts).length;if(!n)return alert('Nothing counted yet.');if(!confirm('Send '+n+' counts for '+S.place+'?'))return;
+  let payload={place:S.place,counts:Object.assign({},S.counts)};
+  stockMsg.textContent='Sending '+n+' counts…';sendCount.disabled=true;
+  try{
+    if(!navigator.onLine)throw new Error('offline');
+    let j=await api({action:'hiStockCount',place:payload.place,counts:payload.counts});
+    S.counts={};save();await stockDbDel('draft','count-'+payload.place).catch(()=>{});
+    await refreshStock();stockMsg.textContent=j.changed+' items updated and confirmed by server.';
+  }catch(e){
+    try{
+      await queueStock('hiStockCount',payload);
+      S.counts={};save();await stockDbDel('draft','count-'+payload.place).catch(()=>{});
+      stockMsg.textContent=n+' counts saved safely on this phone. They will sync automatically when the connection is available.';
+    }catch(qe){
+      S.counts=payload.counts;save();await saveStockDraft().catch(()=>{});
+      stockMsg.textContent='NOT SENT — counts are still saved as a draft on this phone. '+String(e.message||e);
+    }
+  }finally{sendCount.disabled=false}
+};
 function parseCSV(t){let rows=[],row=[],cell='',quoted=false;for(let i=0;i<t.length;i++){let ch=t[i];if(ch==='"'){if(quoted&&t[i+1]==='"'){cell+='"';i++}else quoted=!quoted}else if(ch===','&&!quoted){row.push(cell.trim());cell=''}else if((ch==='\n'||ch==='\r')&&!quoted){if(ch==='\r'&&t[i+1]==='\n')i++;row.push(cell.trim());cell='';if(row.some(x=>x!==''))rows.push(row);row=[]}else cell+=ch}if(cell||row.length){row.push(cell.trim());if(row.some(x=>x!==''))rows.push(row)}if(!rows.length)return[];let h=rows.shift().map(x=>x.replace(/^\uFEFF/,'').trim().toLowerCase());return rows.map(c=>{let o={};h.forEach((k,i)=>o[k]=c[i]??'');return o})}
 function addLine(box,qty=''){let opts=S.items.map(x=>'<option value="'+esc(x.code||x.item)+'">'+esc((x.code?x.code+' · ':'')+(x.item||x.description))+'</option>').join('');box.insertAdjacentHTML('beforeend','<div class="line"><select>'+opts+'</select><input type="number" step="1" value="'+qty+'" placeholder="Qty"><button class="btn danger">×</button></div>');box.lastElementChild.querySelector('button').onclick=()=>box.lastElementChild.remove()}
 addTransfer.onclick=()=>addLine(transferLines);addReceive.onclick=()=>addLine(receiveLines);addAdjust.onclick=()=>addLine(adjustLines);
