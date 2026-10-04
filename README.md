@@ -35,3 +35,15 @@ Then deploy a new Apps Script version. The Hi Service app can use the same /exec
 
 ## Invoice reading
 CSV invoice lines can be loaded and reviewed now. PDF/photo automatic invoice extraction is intentionally not allowed to update stock until a document-reading/OCR service is connected and the user confirms the extracted lines.
+
+## Durable stock counts (4 October 2026)
+
+Counted items appear above the list. Drafts are saved per user and location, including zero counts, and survive closing/reopening. Send to Sheet uploads batches of 20 and shows confirmed progress. Unknown, invalid or unconfirmed counts remain saved for correction/retry. Count history now records Old and Movement as extra columns; existing historical rows show an unavailable movement rather than inventing one. The existing Stock Report date selector and Print/Save PDF flow retrieves the central history.
+
+Deploy the updated `google-apps-script/HiService.gs` into the existing shared Apps Script project and deploy a new version. The frontend alone cannot add the backend count audit columns. New journal tests: 3/3 passed. Live deployment/mobile UI verification remains outstanding.
+
+## Stock category navigation
+
+Stock Count has All, Gas, Plumbing, Aircon, Electrical, Gas appliance parts, HDPE, Gas Cages and Consumables buttons, with item counts and grouped headings. Category filtering combines with search and never clears the count draft. Water is shown as Plumbing. The category map follows STOCK list v2 / Hi-Service sorted (source ID and source descriptions in stock-category-source.json), with explicit legacy-description aliases for the existing stock list. The mapping is a 4 October snapshot; subsequent source-sheet categorisation changes require refreshing this mapping. Unknown future items retain their supplied category.
+
+All 370 existing HiService_Stock rows were checked against the map. Category changes affect display only; quantities, codes, supplier costs and location totals stay in the existing stock backend. Eight tests pass including every source product, legacy aliases, category/search selection, no item mutation and draft recovery. Browser visual verification was unavailable because the execution environment has no installed browser binary.
