@@ -19,6 +19,7 @@ function setupHiService(){
 }
 function hiSheet_(ss,name,head){
   var sh=ss.getSheetByName(name)||ss.insertSheet(name);
+  if(sh.getMaxColumns()<head.length)sh.insertColumnsAfter(sh.getMaxColumns(),head.length-sh.getMaxColumns());
   if(sh.getLastRow()<1)sh.getRange(1,1,1,head.length).setValues([head]).setFontWeight('bold').setBackground('#159447').setFontColor('#ffffff');
   sh.setFrozenRows(1);return sh;
 }
@@ -34,7 +35,9 @@ function hiTotals_(){
   var n=sh.getLastRow()-1;if(n<1)return;var f=[];for(var i=0;i<n;i++)f.push(['=SUM(G'+(i+2)+':I'+(i+2)+')']);sh.getRange(2,10,n,1).setFormulas(f);
 }
 function hiFind_(codeOrName){
-  var q=String(codeOrName||'').toLowerCase();return hiStockRows_().filter(function(x){return x.code.toLowerCase()===q||x.item.toLowerCase()===q;})[0]||null;
+  var q=String(codeOrName||'').trim().toLowerCase(),matches=hiStockRows_().filter(function(x){return x.code.trim().toLowerCase()===q||x.item.trim().toLowerCase()===q;});
+  if(matches.length>1)throw new Error('Duplicate stock code/description: '+codeOrName+'; review the stock sheet');
+  return matches[0]||null;
 }
 function hiSetQty_(row,place,qty,user){
   var idx=HI_PLACES.indexOf(place);if(idx<0)throw new Error('Unknown Hi Service location');
@@ -54,44 +57,63 @@ function hiCount_(u,place,counts){
   var sh=hiSheet_(ss,HI_COUNT_SHEET,['Timestamp','User','Location','Code','Description','Count','Old','Movement']);
   sh.getRange(1,7,1,2).setValues([['Old','Movement']]);
   Object.keys(counts||{}).forEach(function(key){
-    var it=hiFind_(key),q=Number(counts[key]);if(!it){unknown.push(key);return;}
-    if(!isFinite(q)||q<0||Math.floor(q)!==q){rejected.push(key);return;}
+    var it;try{it=hiFind_(key);}catch(e){rejected.push(key);return;}var raw=counts[key],q=Number(raw);if(!it){unknown.push(key);return;}
+    if(raw===null||raw===undefined||typeof raw==='boolean'||String(raw).trim()===''||!isFinite(q)||q<0||Math.floor(q)!==q){rejected.push(key);return;}
     var old=it[place];if(old!==q){hiSetQty_(it.row,place,q,u);changed++;}
     sh.appendRow([new Date(),u.username||'',place,it.code,it.item,q,old,q-old]);
   });
   hiTotals_();return {changed:changed,unknown:unknown,rejected:rejected};
 }
-function hiMove_(u,from,to,lines,type,reason,ref){
-  if(from&&HI_PLACES.indexOf(from)<0)throw new Error('Unknown source');if(to&&HI_PLACES.indexOf(to)<0)throw new Error('Unknown destination');var done=0;
-  (lines||[]).forEach(function(l){var it=hiFind_(l.code||l.item),q=Number(l.qty);if(!it||!q||(type!=='adjust'&&q<0))return;
-    if(type==='transfer'){if(it[from]<q)throw new Error(it.item+' only has '+it[from]+' in '+from);hiSetQty_(it.row,from,it[from]-q,u);hiSetQty_(it.row,to,it[to]+q,u);}
-    else if(type==='receive'){hiSetQty_(it.row,to,it[to]+q,u);}
-    else if(type==='adjust'){var next=it[from]+q;if(next<0)throw new Error(it.item+' would become negative');hiSetQty_(it.row,from,next,u);}
-    SpreadsheetApp.getActiveSpreadsheet().getSheetByName(HI_MOVE_SHEET).appendRow([new Date(),u.username||'',type,from||'',to||'',it.code,it.item,q,reason||'',ref||'']);done++;
+function hiMove_(u,from,to,lines,type,reason,ref,requestId){
+  var ss=SpreadsheetApp.getActiveSpreadsheet(),existingLog=ss.getSheetByName(HI_MOVE_SHEET);
+  requestId=String(requestId||'').trim();
+  if(requestId&&existingLog&&existingLog.getLastRow()>1){var logged=existingLog.getRange(2,1,existingLog.getLastRow()-1,Math.min(11,existingLog.getMaxColumns())).getValues().filter(function(r){return String(r[10])===requestId&&String(r[1])===String(u.username)&&String(r[2])===type;});if(logged.length)return {changed:logged.length,unchanged:true};}
+  if(['transfer','receive','adjust'].indexOf(type)<0)throw new Error('Unknown movement type');
+  if(type==='transfer'&&(!from||!to||from===to))throw new Error('Choose two different locations');
+  if((type==='transfer'||type==='adjust')&&HI_PLACES.indexOf(from)<0)throw new Error('Unknown source');
+  if((type==='transfer'||type==='receive')&&HI_PLACES.indexOf(to)<0)throw new Error('Unknown destination');
+  if(!Array.isArray(lines)||!lines.length)throw new Error('Add stock lines first');
+  // Validate the entire request, including repeated lines, before changing quantities.
+  var plans=Object.create(null),order=[];
+  lines.forEach(function(l){
+    var it=hiFind_(l.code||l.item),raw=l.qty,q=Number(raw);
+    if(!it)throw new Error('Unknown stock item: '+(l.code||l.item));
+    if(raw===null||raw===undefined||typeof raw==='boolean'||String(raw).trim()===''||!isFinite(q)||Math.floor(q)!==q||q===0||(type!=='adjust'&&q<0))throw new Error('Invalid quantity: '+it.item);
+    if(!plans[it.row]){plans[it.row]={item:it,qty:0};order.push(it.row);}
+    plans[it.row].qty+=q;
+  });
+  order.forEach(function(key){var p=plans[key],it=p.item,q=p.qty;
+    if(type==='transfer'&&it[from]<q)throw new Error(it.item+' only has '+it[from]+' in '+from);
+    if(type==='adjust'&&it[from]+q<0)throw new Error(it.item+' would become negative');
+  });
+  var log=hiSheet_(SpreadsheetApp.getActiveSpreadsheet(),HI_MOVE_SHEET,['Timestamp','User','Type','From','To','Code','Description','Qty','Reason','Reference','Request ID']),done=0;
+  log.getRange(1,11).setValue('Request ID');
+  order.forEach(function(key){var p=plans[key],it=p.item,q=p.qty;if(!q)return;
+    if(type==='transfer'){hiSetQty_(it.row,from,it[from]-q,u);hiSetQty_(it.row,to,it[to]+q,u);}
+    else if(type==='receive')hiSetQty_(it.row,to,it[to]+q,u);
+    else hiSetQty_(it.row,from,it[from]+q,u);
+    log.appendRow([new Date(),u.username||'',type,from||'',to||'',it.code,it.item,q,reason||'',ref||'',requestId]);done++;
   });hiTotals_();return {changed:done};
 }
 function hiTime_(u,row){
-  var ss=SpreadsheetApp.getActiveSpreadsheet(),sh=ss.getSheetByName('Timesheets');
-  if(!sh)throw new Error('Timesheets sheet not found');
-  var tz=ss.getSpreadsheetTimeZone()||Session.getScriptTimeZone(), today=Utilities.formatDate(new Date(),tz,'yyyy-MM-dd');
-  var d=String(row.date||'').trim(); if(!d)throw new Error('Date required');
-  var role=String(u.role||'').toLowerCase();
-  if(d!==today && role!=='admin')throw new Error('Timesheets may only be submitted for today');
-  function mins_(v){var p=String(v||'').split(':');return Number(p[0])*60+Number(p[1]);}
-  var ti=mins_(row.timeIn),to=mins_(row.timeOut),lunch=Math.max(0,Number(row.lunch)||0);
-  if(!isFinite(ti)||!isFinite(to)||to<=ti)throw new Error('Check Time In and Time Out');
-  var dt=new Date(d+'T12:00:00'),day=Utilities.formatDate(dt,tz,'EEEE'),dow=dt.getDay(),weekend=(dow===0||dow===6);
-  var worked=Math.max(0,to-ti-lunch),normal=0,ot=0;
-  if(weekend){ot=worked;}else{
-    var normalStart=360,normalEnd=1020;
-    normal=Math.max(0,Math.min(to,normalEnd)-Math.max(ti,normalStart)-lunch);
-    normal=Math.min(normal,worked);ot=Math.max(0,worked-normal);
-  }
+  var ss=SpreadsheetApp.getActiveSpreadsheet(),tz=ss.getSpreadsheetTimeZone()||Session.getScriptTimeZone();
+  var d=String(row.date||'').trim(),today=Utilities.formatDate(new Date(),tz,'yyyy-MM-dd');
+  if(d>today)throw new Error('Future timesheets are not allowed');
+  if(d!==today&&u.role!=='Admin')throw new Error('Timesheets may only be submitted for today');
   var worker=String(row.worker||u.name||u.username||'').trim();
-  if(!worker)throw new Error('Worker required');
-  var submitted=u.username||u.name||worker;
-  sh.appendRow([new Date(d+'T12:00:00'),day,weekend?'Weekend':'Weekday',worker,row.job||'',row.timeIn||'',row.timeOut||'',lunch,normal/60,ot/60,worked/60,row.note||'',submitted,new Date()]);
-  return {saved:true,normalHours:normal/60,overtimeHours:ot/60,totalHours:worked/60};
+  if(worker.toLowerCase()!==String(u.name||u.username).trim().toLowerCase()&&u.role!=='Admin')throw new Error('You may only submit your own timesheet');
+  var c=calc_(d,row.timeIn,row.timeOut,row.lunch);
+  if(!c)throw new Error(shiftReviewReason_(d,row.timeIn,row.timeOut,row.lunch));
+  var at=findEntry_(worker,d);
+  if(at){
+    var old=sheet_('Timesheets').getRange(at,1,1,14).getValues()[0];
+    if(timeTxt_(old[5])===row.timeIn&&timeTxt_(old[6])===row.timeOut&&Number(old[7])===Number(row.lunch)&&String(old[4]||'')===String(row.job||'')&&String(old[11]||'')===String(row.note||''))return {saved:true,unchanged:true,normalHours:c.normal,overtimeHours:c.overtime,totalHours:c.total};
+    if(u.role!=='Admin')throw new Error('This day is already submitted and locked; ask an Admin to correct it');
+  }
+  var result=writeEntry_(u,Object.assign({},row,{worker:worker,date:d}));
+  if(result.skipped)throw new Error(result.reason||'Invalid timesheet');
+  if(result.added||result.updated)rebuildWorkerTabs([worker]);
+  return {saved:true,unchanged:!!result.unchanged,normalHours:c.normal,overtimeHours:c.overtime,totalHours:c.total};
 }
 function hiDailyStockReport_(dateText){
   var ss=SpreadsheetApp.getActiveSpreadsheet(),tz=ss.getSpreadsheetTimeZone()||Session.getScriptTimeZone();
@@ -99,7 +121,7 @@ function hiDailyStockReport_(dateText){
   function sameDay_(v){if(!v)return false;var d=v instanceof Date?v:new Date(v);return !isNaN(d)&&Utilities.formatDate(d,tz,'yyyy-MM-dd')===date;}
   function stamp_(v){var d=v instanceof Date?v:new Date(v);return isNaN(d)?'':Utilities.formatDate(d,tz,'yyyy-MM-dd HH:mm:ss');}
   var counts=[],moves=[],sh=ss.getSheetByName(HI_COUNT_SHEET);
-  if(sh&&sh.getLastRow()>1)sh.getRange(2,1,sh.getLastRow()-1,8).getValues().forEach(function(r){if(sameDay_(r[0]))counts.push({timestamp:stamp_(r[0]),user:String(r[1]||''),location:String(r[2]||''),code:String(r[3]||''),description:String(r[4]||''),count:Number(r[5])||0,old:r[6]===''?null:Number(r[6]),delta:r[7]===''?null:Number(r[7])});});
+  if(sh&&sh.getLastRow()>1)sh.getRange(2,1,sh.getLastRow()-1,Math.min(8,sh.getMaxColumns())).getValues().forEach(function(r){if(sameDay_(r[0]))counts.push({timestamp:stamp_(r[0]),user:String(r[1]||''),location:String(r[2]||''),code:String(r[3]||''),description:String(r[4]||''),count:Number(r[5])||0,old:r[6]==null||r[6]===''?null:Number(r[6]),delta:r[7]==null||r[7]===''?null:Number(r[7])});});
   sh=ss.getSheetByName(HI_MOVE_SHEET);
   if(sh&&sh.getLastRow()>1)sh.getRange(2,1,sh.getLastRow()-1,10).getValues().forEach(function(r){if(sameDay_(r[0]))moves.push({timestamp:stamp_(r[0]),user:String(r[1]||''),type:String(r[2]||''),from:String(r[3]||''),to:String(r[4]||''),code:String(r[5]||''),description:String(r[6]||''),qty:Number(r[7])||0,reason:String(r[8]||''),reference:String(r[9]||'')});});
   return {date:date,counts:counts,movements:moves};
@@ -115,8 +137,8 @@ function hiServicePost_(body){
   var u=auth_(body);
   if(a==='hiStockCount'){var r=hiCount_(u,String(body.place||''),body.counts||{});return out_({ok:true,changed:r.changed,unknown:r.unknown,rejected:r.rejected});}
   if(a==='hiStockAdd')return out_({ok:true,added:hiAdd_(u,body.item||{})});
-  if(a==='hiStockTransfer')return out_({ok:true,result:hiMove_(u,body.from,body.to,body.lines,'transfer',body.reason,'')});
-  if(a==='hiStockAdjust')return out_({ok:true,result:hiMove_(u,body.place,'',body.lines,'adjust',body.reason,'')});
-  if(a==='hiStockReceive')return out_({ok:true,result:hiMove_(u,'',body.place,body.lines,'receive','Invoice',body.reference)});
+  if(a==='hiStockTransfer')return out_({ok:true,result:hiMove_(u,body.from,body.to,body.lines,'transfer',body.reason,'',body.requestId)});
+  if(a==='hiStockAdjust')return out_({ok:true,result:hiMove_(u,body.place,'',body.lines,'adjust',body.reason,'',body.requestId)});
+  if(a==='hiStockReceive')return out_({ok:true,result:hiMove_(u,'',body.place,body.lines,'receive','Invoice',body.reference,body.requestId)});
   if(a==='hiTimesheet')return out_({ok:true,result:hiTime_(u,body.row||{})});
 }

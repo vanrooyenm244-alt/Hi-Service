@@ -53,3 +53,7 @@ All 370 existing HiService_Stock rows were checked against the map. Category cha
 Active Admin users can open Users and see each username with checkbox privileges for stock viewing/counting, totals, reports, item imports, transfer/receive/adjust, timesheets and cost estimation. Save privileges stores separate Hi Service grants in the shared backend. Navigation and action buttons follow the grants; mapped backend requests enforce them. Permissions refresh when the app opens; offline sessions use the last retrieved selection.
 
 Deploy the complete updated Flagship-Solar/apps-script/Code.gs into the shared Apps Script project. It includes the permission catalog/storage/handlers and Hi Service GET/POST router calls. Keep HiService.gs in that project and deploy a new version of the current /exec URL. The checkbox screen cannot save until the shared Code.gs is deployed. No existing user rows or stock amounts were changed during development.
+
+## 4 October audit repairs
+
+See [AUDIT-2026-10-04.md](AUDIT-2026-10-04.md) for confirmed faults, exact functions, read-only live data findings and deployment requirements.
