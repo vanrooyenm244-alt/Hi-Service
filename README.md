@@ -35,3 +35,9 @@ Then deploy a new Apps Script version. The Hi Service app can use the same /exec
 
 ## Invoice reading
 CSV invoice lines can be loaded and reviewed now. PDF/photo automatic invoice extraction is intentionally not allowed to update stock until a document-reading/OCR service is connected and the user confirms the extracted lines.
+
+## Durable stock counts (4 October 2026)
+
+Counted items appear above the list. Drafts are saved per user and location, including zero counts, and survive closing/reopening. Send to Sheet uploads batches of 20 and shows confirmed progress. Unknown, invalid or unconfirmed counts remain saved for correction/retry. Count history now records Old and Movement as extra columns; existing historical rows show an unavailable movement rather than inventing one. The existing Stock Report date selector and Print/Save PDF flow retrieves the central history.
+
+Deploy the updated `google-apps-script/HiService.gs` into the existing shared Apps Script project and deploy a new version. The frontend alone cannot add the backend count audit columns. New journal tests: 3/3 passed. Live deployment/mobile UI verification remains outstanding.

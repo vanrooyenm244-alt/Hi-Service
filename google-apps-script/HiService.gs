@@ -49,9 +49,17 @@ function hiAdd_(u,it){
   hiTotals_();return {code:code,item:name};
 }
 function hiCount_(u,place,counts){
-  if(HI_PLACES.indexOf(place)<0)throw new Error('Unknown location');var changed=0,unknown=[];
-  Object.keys(counts||{}).forEach(function(key){var it=hiFind_(key),q=Number(counts[key]);if(!it){unknown.push(key);return;}if(isNaN(q)||q<0)return;hiSetQty_(it.row,place,q,u);SpreadsheetApp.getActiveSpreadsheet().getSheetByName(HI_COUNT_SHEET).appendRow([new Date(),u.username||'',place,it.code,it.item,q]);changed++;});
-  hiTotals_();return {changed:changed,unknown:unknown};
+  if(HI_PLACES.indexOf(place)<0)throw new Error('Unknown location');
+  var changed=0,unknown=[],rejected=[],ss=SpreadsheetApp.getActiveSpreadsheet();
+  var sh=hiSheet_(ss,HI_COUNT_SHEET,['Timestamp','User','Location','Code','Description','Count','Old','Movement']);
+  sh.getRange(1,7,1,2).setValues([['Old','Movement']]);
+  Object.keys(counts||{}).forEach(function(key){
+    var it=hiFind_(key),q=Number(counts[key]);if(!it){unknown.push(key);return;}
+    if(!isFinite(q)||q<0||Math.floor(q)!==q){rejected.push(key);return;}
+    var old=it[place];if(old!==q){hiSetQty_(it.row,place,q,u);changed++;}
+    sh.appendRow([new Date(),u.username||'',place,it.code,it.item,q,old,q-old]);
+  });
+  hiTotals_();return {changed:changed,unknown:unknown,rejected:rejected};
 }
 function hiMove_(u,from,to,lines,type,reason,ref){
   if(from&&HI_PLACES.indexOf(from)<0)throw new Error('Unknown source');if(to&&HI_PLACES.indexOf(to)<0)throw new Error('Unknown destination');var done=0;
@@ -91,7 +99,7 @@ function hiDailyStockReport_(dateText){
   function sameDay_(v){if(!v)return false;var d=v instanceof Date?v:new Date(v);return !isNaN(d)&&Utilities.formatDate(d,tz,'yyyy-MM-dd')===date;}
   function stamp_(v){var d=v instanceof Date?v:new Date(v);return isNaN(d)?'':Utilities.formatDate(d,tz,'yyyy-MM-dd HH:mm:ss');}
   var counts=[],moves=[],sh=ss.getSheetByName(HI_COUNT_SHEET);
-  if(sh&&sh.getLastRow()>1)sh.getRange(2,1,sh.getLastRow()-1,6).getValues().forEach(function(r){if(sameDay_(r[0]))counts.push({timestamp:stamp_(r[0]),user:String(r[1]||''),location:String(r[2]||''),code:String(r[3]||''),description:String(r[4]||''),count:Number(r[5])||0});});
+  if(sh&&sh.getLastRow()>1)sh.getRange(2,1,sh.getLastRow()-1,8).getValues().forEach(function(r){if(sameDay_(r[0]))counts.push({timestamp:stamp_(r[0]),user:String(r[1]||''),location:String(r[2]||''),code:String(r[3]||''),description:String(r[4]||''),count:Number(r[5])||0,old:r[6]===''?null:Number(r[6]),delta:r[7]===''?null:Number(r[7])});});
   sh=ss.getSheetByName(HI_MOVE_SHEET);
   if(sh&&sh.getLastRow()>1)sh.getRange(2,1,sh.getLastRow()-1,10).getValues().forEach(function(r){if(sameDay_(r[0]))moves.push({timestamp:stamp_(r[0]),user:String(r[1]||''),type:String(r[2]||''),from:String(r[3]||''),to:String(r[4]||''),code:String(r[5]||''),description:String(r[6]||''),qty:Number(r[7])||0,reason:String(r[8]||''),reference:String(r[9]||'')});});
   return {date:date,counts:counts,movements:moves};
@@ -105,7 +113,7 @@ function hiServiceGet_(p,body){
 function hiServicePost_(body){
   var a=body.action;if(['hiStockCount','hiStockAdd','hiStockTransfer','hiStockAdjust','hiStockReceive','hiTimesheet'].indexOf(a)<0)return null;
   var u=auth_(body);
-  if(a==='hiStockCount'){var r=hiCount_(u,String(body.place||''),body.counts||{});return out_({ok:true,changed:r.changed,unknown:r.unknown,rejected:[]});}
+  if(a==='hiStockCount'){var r=hiCount_(u,String(body.place||''),body.counts||{});return out_({ok:true,changed:r.changed,unknown:r.unknown,rejected:r.rejected});}
   if(a==='hiStockAdd')return out_({ok:true,added:hiAdd_(u,body.item||{})});
   if(a==='hiStockTransfer')return out_({ok:true,result:hiMove_(u,body.from,body.to,body.lines,'transfer',body.reason,'')});
   if(a==='hiStockAdjust')return out_({ok:true,result:hiMove_(u,body.place,'',body.lines,'adjust',body.reason,'')});
