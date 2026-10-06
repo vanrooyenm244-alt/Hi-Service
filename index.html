@@ -30,7 +30,7 @@
 <div class="estTop">
 <div class="field"><label>Customer</label><input id="estCustomer" placeholder="Customer name"></div>
 <div class="field"><label>WhatsApp number</label><input id="estPhone" placeholder="082 123 4567"></div>
-<div class="field"><label>Job type</label><select id="estType"><option value="stove">Gas stove / hob</option><option value="geyser">Gas geyser</option><option value="both">Stove + geyser</option><option value="custom">Custom gas work</option></select></div>
+<div class="field"><label>Job type</label><select id="estType"><option value="stove">Gas stove / hob</option><option value="geyser">Gas geyser</option><option value="cupboard">Cupboard installation</option><option value="both">Stove + geyser</option><option value="custom">Custom gas work</option></select></div>
 <div class="field"><label>Gas pipe</label><select id="estPipe"><option value="1216">PEX 1216 / 16 mm</option><option value="1620">PEX 1620 / 20 mm</option><option value="2025">PEX 2025 / 25 mm</option><option value="csst15">CSST 15 mm</option></select></div>
 <div class="field"><label>Pipe run (m)</label><input id="estPipeM" type="number" min="0" step=".1" value="5"></div>
 <div class="field"><label>Markup %</label><input id="estMarkup" type="number" min="0" step="1" value="20"></div>
@@ -170,7 +170,7 @@ sendTime.onclick=async()=>{let today=hiToday();if(date.value!==today)return aler
 
 const EST_KEY='hiservice-estimate-v1';
 let EST={lines:[]};
-function estLoad_(){try{EST=Object.assign({lines:[]},JSON.parse(localStorage.getItem(EST_KEY)||'{}'))}catch(e){EST={lines:[]}};if(!Array.isArray(EST.lines))EST.lines=[]}
+function estLoad_(){try{EST=Object.assign({lines:[]},JSON.parse(localStorage.getItem(EST_KEY)||'{}'))}catch(e){EST={lines:[]}};if(!Array.isArray(EST.lines))EST.lines=[];if(EST.jobType&&[...estType.options].some(x=>x.value===EST.jobType))estType.value=EST.jobType;}
 function estSave_(){localStorage.setItem(EST_KEY,JSON.stringify(EST))}
 function estNorm_(s){return String(s||'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim()}
 function estFind_(needles){
@@ -189,7 +189,12 @@ function estAddCustom_(name,qty,cost,note){
 }
 function estWarnMissing_(name,note){estAddCustom_(name,1,0,note||'Price/selection must be confirmed');}
 function estAuto_(){
-  EST.lines=[];let m=Math.max(0,Number(estPipeM.value)||0),type=estType.value,pipe=estPipe.value,apps=type==='both'?2:(type==='custom'?0:1);
+  EST.lines=[];EST.jobType=estType.value;
+  if(estType.value==='cupboard'){
+    EST.lines=[{key:'cupboard-installation',name:'Cupboard installation',qty:1,cost:0,fixedPrice:1500,source:'package',note:'Includes 1 m orange gas hose, 1 m PEX pipe, installation, gas warning labels, inspection service fitting, elbows, gas shut-off valve and labour.'}];
+    estSave_();estRender_();return;
+  }
+  let m=Math.max(0,Number(estPipeM.value)||0),type=estType.value,pipe=estPipe.value,apps=type==='both'?2:(type==='custom'?0:1);
   let pipeItem=null,support=null,testPoint=null,valve=null;
   if(pipe==='1216'){pipeItem=estFind_(['PEX Gas Composite Pipe 1216','PEX 1216']);support=estFind_(['Hose Clamp Bandwidth 15mm Rubber Side Clamp','15mm Rubber Side Clamp']);testPoint=estFind_(['PEX Pressure Test Point 1216']);valve=estFind_(['PEX Ball Valve 1216 To 8mm Hosetail','Ball Valve 1216']);}
   else if(pipe==='1620'){pipeItem=estFind_(['PEX Gas Composite Pipe 1620','PEX 1620']);support=estFind_(['Hose Clamp Bandwidth 22mm Rubber Side Clamp','22mm Rubber Side Clamp']);testPoint=estFind_(['PEX Pressure Test Point 1620']);valve=estFind_(['PEX Ball Valve with Butterfly Handle 1620','Ball Valve 1620']);}
@@ -215,14 +220,14 @@ function estAuto_(){
   estWarnMissing_('Gas Certificate of Conformity / commissioning', 'Set your labour/CoC charge');
   estSave_();estRender_();
 }
-function estSell_(line){return Number(line.cost||0)*(1+(Math.max(0,Number(estMarkup.value)||0)/100))}
+function estSell_(line){if(line.source==='package'&&Number.isFinite(Number(line.fixedPrice)))return Number(line.fixedPrice);return Number(line.cost||0)*(1+(Math.max(0,Number(estMarkup.value)||0)/100))}
 function estMoney_(n){return 'R'+(Math.round(Number(n||0)*100)/100).toLocaleString('en-ZA',{minimumFractionDigits:2,maximumFractionDigits:2})}
 function estRender_(){
   if(!$('estLines'))return;
   estPriceStatus.textContent=(S.items||[]).length+' price-list items loaded';
-  estLines.innerHTML=EST.lines.length?EST.lines.map((x,i)=>'<div class="estRow" data-i="'+i+'"><div><b>'+esc(x.name)+'</b><div class="small">'+(x.cost?('Cost '+estMoney_(x.cost)+' · customer unit '+estMoney_(estSell_(x))):'<span class="danger">Price required</span>')+(x.note?' · '+esc(x.note):'')+'</div></div><input class="eqty" type="number" min="0" step=".1" value="'+Number(x.qty||0)+'"><div class="amt">'+estMoney_(estSell_(x)*Number(x.qty||0))+'</div><button class="btn danger erem">×</button></div>').join(''):'<p class="small">No estimate lines yet. Build automatically or add items from the price list.</p>';
+  estLines.innerHTML=EST.lines.length?EST.lines.map((x,i)=>'<div class="estRow" data-i="'+i+'"><div><b>'+esc(x.name)+'</b><div class="small">'+(x.source==='package'?('Fixed package '+estMoney_(estSell_(x))+' excl. VAT'):(x.cost?('Cost '+estMoney_(x.cost)+' · customer unit '+estMoney_(estSell_(x))):'<span class="danger">Price required</span>'))+(x.note?' · '+esc(x.note):'')+'</div></div><input class="eqty" type="number" min="0" step=".1" value="'+Number(x.qty||0)+'"><div class="amt">'+estMoney_(estSell_(x)*Number(x.qty||0))+'</div><button class="btn danger erem">×</button></div>').join(''):'<p class="small">No estimate lines yet. Build automatically or add items from the price list.</p>';
   estLines.querySelectorAll('.estRow').forEach(r=>{let i=Number(r.dataset.i);r.querySelector('.eqty').oninput=e=>{EST.lines[i].qty=Math.max(0,Number(e.target.value)||0);estSave_();estRender_()};r.querySelector('.erem').onclick=()=>{EST.lines.splice(i,1);estSave_();estRender_()}});
-  let sub=EST.lines.reduce((n,x)=>n+estSell_(x)*Number(x.qty||0),0),vat=sub*(Number(estVat.value)||0)/100,total=sub+vat,missing=EST.lines.filter(x=>!Number(x.cost)).length;
+  let sub=EST.lines.reduce((n,x)=>n+estSell_(x)*Number(x.qty||0),0),vat=sub*(Number(estVat.value)||0)/100,total=sub+vat,missing=EST.lines.filter(x=>x.source!=='package'&&!Number(x.cost)).length;
   estTotals.innerHTML='<div>Subtotal '+estMoney_(sub)+'</div>'+(vat?'<div>VAT '+estMoney_(vat)+'</div>':'')+'<div class="grand">Estimated total '+estMoney_(total)+'</div>'+(missing?'<div class="danger small">'+missing+' line(s) still have no price — confirm before sending.</div>':'');
 }
 function estSearch_(){
@@ -233,7 +238,7 @@ function estSearch_(){
 }
 function estCustomerDoc_(){
   let sub=EST.lines.reduce((n,x)=>n+estSell_(x)*Number(x.qty||0),0),vat=sub*(Number(estVat.value)||0)/100,total=sub+vat,logo=(document.querySelector('.brandLogo')||{}).src||'';
-  let rows=EST.lines.filter(x=>Number(x.qty)>0).map(x=>'<tr><td>'+esc(x.name)+'</td><td>'+Number(x.qty)+'</td><td>'+estMoney_(estSell_(x))+'</td><td style="text-align:right">'+estMoney_(estSell_(x)*Number(x.qty))+'</td></tr>').join('');
+  let rows=EST.lines.filter(x=>Number(x.qty)>0).map(x=>'<tr><td>'+esc(x.name)+(x.note?'<div class="small">'+esc(x.note)+'</div>':'')+'</td><td>'+Number(x.qty)+'</td><td>'+estMoney_(estSell_(x))+'</td><td style="text-align:right">'+estMoney_(estSell_(x)*Number(x.qty))+'</td></tr>').join('');
   return '<div class="estimateDoc" id="estimateCustomerDoc">'+(logo?'<img class="docLogo" src="'+logo+'">':'')+'<h2 style="margin:14px 0 2px">COST ESTIMATION</h2><div class="small">Hi Service Solutions</div><div style="margin-top:14px"><b>Customer:</b> '+esc(estCustomer.value||'Customer')+'<br><b>Date:</b> '+new Date().toLocaleDateString('en-ZA')+'<br><b>Work:</b> '+esc(estType.options[estType.selectedIndex].text)+'</div><table><thead><tr><th>Description</th><th>Qty</th><th>Unit</th><th style="text-align:right">Amount</th></tr></thead><tbody>'+rows+'</tbody></table><div class="docTotal">Estimated total: '+estMoney_(total)+'</div>'+(vat?'<div style="text-align:right" class="small">Includes VAT '+estMoney_(vat)+'</div>':'')+'<div class="docNote">This is a cost estimation based on the information available before final site verification. Final quantities, appliance approval, pipe/regulator sizing, cylinder placement, flue/ventilation and compliance requirements are subject to site inspection. Gas installation and commissioning must be completed by an authorised registered gas practitioner, with the required Certificate of Conformity issued on completion.</div></div>';
 }
 function estPrint_(){if(!EST.lines.length)return alert('Build or add estimate lines first.');let w=window.open('','_blank');if(!w)return alert('Allow pop-ups to preview the estimate.');w.document.write('<!doctype html><html><head><title>Hi Service Cost Estimation</title><style>body{font-family:Arial,sans-serif;color:#17201b;padding:20px}.estimateDoc{max-width:760px;margin:auto}.docLogo{max-width:360px;max-height:95px;object-fit:contain}table{width:100%;border-collapse:collapse;margin-top:18px}th,td{padding:8px;border-bottom:1px solid #ddd;text-align:left;font-size:12px}.docTotal{font-size:22px;font-weight:900;text-align:right;margin-top:16px}.small,.docNote{font-size:10px;color:#68736d}.docNote{margin-top:22px;line-height:1.45}@page{size:A4;margin:12mm}</style></head><body>'+estCustomerDoc_()+'</body></html>');w.document.close();w.focus();setTimeout(()=>w.print(),300)}
@@ -257,7 +262,7 @@ async function estShare_(){
   window.open('https://wa.me/'+phone+'?text='+encodeURIComponent(text+'\n\n'+lines+'\n\nEstimated total: '+estMoney_(total)),'_blank','noopener');estMsg.textContent='WhatsApp opened with the estimate.';
 }
 estLoad_();
-if($('estSearch')){$('estSearch').oninput=estSearch_;$('estBuild').onclick=estAuto_;$('estClear').onclick=()=>{if(confirm('Clear this estimate?')){EST.lines=[];estSave_();estRender_()}};$('estCustom').onclick=()=>{let n=prompt('Custom item description');if(!n)return;let q=Number(prompt('Quantity','1'))||1,c=Number(prompt('Cost price','0'))||0;estAddCustom_(n,q,c,'Custom line');estSave_();estRender_()};$('estPrint').onclick=estPrint_;$('estShare').onclick=estShare_;['estMarkup','estVat'].forEach(id=>$(id).oninput=estRender_);estRender_()}
+if($('estSearch')){$('estSearch').oninput=estSearch_;$('estBuild').onclick=estAuto_;$('estType').onchange=()=>{if(estType.value==='cupboard'){estPipeM.value='1';estAuto_()}else{EST.jobType=estType.value;estSave_()}};$('estClear').onclick=()=>{if(confirm('Clear this estimate?')){EST.lines=[];estSave_();estRender_()}};$('estCustom').onclick=()=>{let n=prompt('Custom item description');if(!n)return;let q=Number(prompt('Quantity','1'))||1,c=Number(prompt('Cost price','0'))||0;estAddCustom_(n,q,c,'Custom line');estSave_();estRender_()};$('estPrint').onclick=estPrint_;$('estShare').onclick=estShare_;['estMarkup','estVat'].forEach(id=>$(id).oninput=estRender_);estRender_()}
 
 let STOCK_REPORT=null;
 function reportTime_(s){return String(s||'').split(' ')[1]||''}
