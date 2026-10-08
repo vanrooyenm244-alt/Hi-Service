@@ -57,3 +57,13 @@ Deploy the complete updated Flagship-Solar/apps-script/Code.gs into the shared A
 ## 4 October audit repairs
 
 See [AUDIT-2026-10-04.md](AUDIT-2026-10-04.md) for confirmed faults, exact functions, read-only live data findings and deployment requirements.
+
+## Stock reference update — 8 October 2026
+
+The supplied `STOCK list v2.xlsx` / `Hi-Service` worksheet now determines the category and product row order: Gas, Plumbing (Water), Aircon, Electrical, Gas appliance parts, HDPE and Gas Cages. Nozzle Cleaners is the final reference item in Gas. Stock Count, Stock Overview, movement selectors and estimate searches share this order and show the backend unit cost.
+
+All 371 reference products are linked to stock codes. Original codes, quantities, count drafts and history remain intact. Existing items outside the reference appear under Additional stock or Consumables after the reference products. Uncertain description matches were retained as separate existing products rather than assigned another fitting's price.
+
+The user confirmed use of the exact PRICE column, including large differences from previous costs. The live `HiService_Stock` sheet received 252 cost-cell changes and 32 missing reference products with zero starting quantities. Blank reference prices stay blank and display Price required. No Apps Script deployment is needed for these data changes. Future backend supplier cost updates remain authoritative.
+
+The source metadata and code bindings live in `stock-category-source.json`. After changing that metadata, run `node tools/build-stock-categories.cjs` and bump the service-worker cache version. The generated asset uses a content hash so phones cannot combine the new stock page with a stale helper.

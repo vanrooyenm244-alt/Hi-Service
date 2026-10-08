@@ -1,0 +1,2408 @@
+{
+  "spreadsheetId": "1OtZIGMbX-mdaANNI9R8Ly9yFWlsYnME76eUCPCfD55w",
+  "sheet": "HiService_Stock",
+  "sheetId": 56758981,
+  "updates": [
+    {
+      "row": 3,
+      "code": "HS-002",
+      "name": "Brass Fitting 1/4 Female to Hosetail (T9141DG031)",
+      "before": 13.04,
+      "after": 16.52,
+      "referenceRow": 5
+    },
+    {
+      "row": 16,
+      "code": "HS-015",
+      "name": "Reducing Nipple  1/2 M x 1/4 M (88GC)",
+      "before": 27.83,
+      "after": 37.39,
+      "referenceRow": 20
+    },
+    {
+      "row": 17,
+      "code": "HS-016",
+      "name": "Reducing Nipple  1/2 M x 3/8 M (88GE)",
+      "before": 33.04,
+      "after": 39.13,
+      "referenceRow": 21
+    },
+    {
+      "row": 28,
+      "code": "HS-027",
+      "name": "Reducing Bush 3/8 M x 1/4 F (81EC)",
+      "before": 7.83,
+      "after": 13.04,
+      "referenceRow": 32
+    },
+    {
+      "row": 42,
+      "code": "HS-041",
+      "name": "1/2 OD x 1/4 Male Connector (59GE)",
+      "before": 26.09,
+      "after": 30.43,
+      "referenceRow": 45
+    },
+    {
+      "row": 43,
+      "code": "HS-042",
+      "name": "3/8 Brass Olive",
+      "before": 1.39,
+      "after": 2.0,
+      "referenceRow": 46
+    },
+    {
+      "row": 44,
+      "code": "HS-043",
+      "name": "3/8 OD Compression Connector (57EE)",
+      "before": 26.09,
+      "after": 29.57,
+      "referenceRow": 47
+    },
+    {
+      "row": 49,
+      "code": "HS-048",
+      "name": "Cadac to Bullnose",
+      "before": 56.52,
+      "after": 52.17,
+      "referenceRow": 52
+    },
+    {
+      "row": 50,
+      "code": "HS-049",
+      "name": "Cadac to Swivel to 1/8 Male",
+      "before": 35.65,
+      "after": 5652.0,
+      "referenceRow": 53
+    },
+    {
+      "row": 55,
+      "code": "HS-054",
+      "name": "Adaptor - Cadac To Hosetail Straight 8mm (241-08)",
+      "before": 0,
+      "after": 56.52,
+      "referenceRow": 63
+    },
+    {
+      "row": 58,
+      "code": "HS-057",
+      "name": "Liquid Pigtail Non Return Valve",
+      "before": 297.5,
+      "after": 156.52,
+      "referenceRow": 67
+    },
+    {
+      "row": 59,
+      "code": "HS-058",
+      "name": "DV x 1/4 Male",
+      "before": 913.04,
+      "after": 297.5,
+      "referenceRow": 68
+    },
+    {
+      "row": 60,
+      "code": "HS-059",
+      "name": "Filling Valve",
+      "before": 778.26,
+      "after": 913.04,
+      "referenceRow": 69
+    },
+    {
+      "row": 61,
+      "code": "HS-060",
+      "name": "Ball Valve Brass Butterfly Handle 1/4 (DN8)",
+      "before": 82.61,
+      "after": 47.83,
+      "referenceRow": 70
+    },
+    {
+      "row": 62,
+      "code": "HS-061",
+      "name": "Ball Valve Brass Butterfly Handle 3/8 (DN10)",
+      "before": 56.52,
+      "after": 47.83,
+      "referenceRow": 71
+    },
+    {
+      "row": 63,
+      "code": "HS-062",
+      "name": "Ball Valve Brass Butterfly Handle 1/2 (DN15)",
+      "before": 117.39,
+      "after": 60.87,
+      "referenceRow": 72
+    },
+    {
+      "row": 65,
+      "code": "HS-064",
+      "name": "Ball Valve Gas 1/4 Long Handle (DN8)",
+      "before": 46.09,
+      "after": 39.13,
+      "referenceRow": 75
+    },
+    {
+      "row": 66,
+      "code": "HS-065",
+      "name": "Ball Valve Gas 3/8 Long Handle (DN10)",
+      "before": 67.83,
+      "after": 43.48,
+      "referenceRow": 77
+    },
+    {
+      "row": 67,
+      "code": "HS-066",
+      "name": "Ball Valve Gas 1/2 Long Handle (DN15)",
+      "before": 115.65,
+      "after": 56.52,
+      "referenceRow": 78
+    },
+    {
+      "row": 68,
+      "code": "HS-067",
+      "name": "BRASS VLAVE GAS 3/4 LONG HANDLE (DN20)",
+      "before": 226.09,
+      "after": 130.43,
+      "referenceRow": 79
+    },
+    {
+      "row": 69,
+      "code": "HS-068",
+      "name": "Hose Clamp - Bandwidth 15mm Rubber - Side Clamp",
+      "before": 3.48,
+      "after": 4.78,
+      "referenceRow": 144
+    },
+    {
+      "row": 76,
+      "code": "HS-075",
+      "name": "Sign - LP Gas Shut Off Valve 100 x 90mm",
+      "before": 7.13,
+      "after": 6.96,
+      "referenceRow": 86
+    },
+    {
+      "row": 77,
+      "code": "HS-076",
+      "name": "Sign - LP Gas Shut Off Valve 190 ABS",
+      "before": 35.8,
+      "after": 33.04,
+      "referenceRow": 87
+    },
+    {
+      "row": 78,
+      "code": "HS-077",
+      "name": "Sign - Emergency Shut Off Sticker A6 (Cupboard)",
+      "before": 0,
+      "after": 10.5,
+      "referenceRow": 85
+    },
+    {
+      "row": 79,
+      "code": "HS-078",
+      "name": "Sign - Combination Sign PV1,2,3 & 27 (300x210mm)",
+      "before": 38.26,
+      "after": 39.13,
+      "referenceRow": 88
+    },
+    {
+      "row": 80,
+      "code": "HS-079",
+      "name": "Sign - Emergency Action Plan Gas Leak 300x210mm",
+      "before": 40,
+      "after": 36.52,
+      "referenceRow": 89
+    },
+    {
+      "row": 81,
+      "code": "HS-080",
+      "name": "Sign - LPG Line Sticker",
+      "before": 1.57,
+      "after": 1.8,
+      "referenceRow": 90
+    },
+    {
+      "row": 86,
+      "code": "HS-085",
+      "name": "PEX - Equal Elbow 1216",
+      "before": 20.87,
+      "after": 21.74,
+      "referenceRow": 94
+    },
+    {
+      "row": 87,
+      "code": "HS-086",
+      "name": "PEX - Equal Elbow 1620",
+      "before": 34.78,
+      "after": 31.3,
+      "referenceRow": 95
+    },
+    {
+      "row": 88,
+      "code": "HS-087",
+      "name": "PEX - Equal Elbow 2025",
+      "before": 49.57,
+      "after": 54.78,
+      "referenceRow": 96
+    },
+    {
+      "row": 89,
+      "code": "HS-088",
+      "name": "PEX - Demountable Female Union 1216 x 1/2",
+      "before": 22.61,
+      "after": 24.35,
+      "referenceRow": 97
+    },
+    {
+      "row": 90,
+      "code": "HS-089",
+      "name": "PEX - Demountable Female Union 1620 x 1/2",
+      "before": 26.09,
+      "after": 30.43,
+      "referenceRow": 98
+    },
+    {
+      "row": 91,
+      "code": "HS-090",
+      "name": "PEX - Demountable Female Union 1620 x 3/4",
+      "before": 33.91,
+      "after": 36.52,
+      "referenceRow": 99
+    },
+    {
+      "row": 94,
+      "code": "HS-093",
+      "name": "PEX - Female Elbow 1620 x 1/2",
+      "before": 24.35,
+      "after": 25.22,
+      "referenceRow": 106
+    },
+    {
+      "row": 96,
+      "code": "HS-095",
+      "name": "PEX - Union 1216 x 3/8 OD Compression (PEX 2)",
+      "before": 27.83,
+      "after": 24.35,
+      "referenceRow": 111
+    },
+    {
+      "row": 98,
+      "code": "HS-097",
+      "name": "PEX - Male Union 1216 x 3/8",
+      "before": 19.13,
+      "after": 20.87,
+      "referenceRow": 116
+    },
+    {
+      "row": 100,
+      "code": "HS-099",
+      "name": "PEX - Male Union 1620 x 3/8",
+      "before": 21.74,
+      "after": 24.35,
+      "referenceRow": 118
+    },
+    {
+      "row": 101,
+      "code": "HS-100",
+      "name": "PEX - Male Union 1620 x 1/2",
+      "before": 20.87,
+      "after": 22.61,
+      "referenceRow": 119
+    },
+    {
+      "row": 104,
+      "code": "HS-103",
+      "name": "PEX - Male Elbow 1216 x 1/2",
+      "before": 29.57,
+      "after": 31.3,
+      "referenceRow": 107
+    },
+    {
+      "row": 106,
+      "code": "HS-105",
+      "name": "PEX - Male Union 2025 x 3/4M",
+      "before": 36.52,
+      "after": 38.26,
+      "referenceRow": 122
+    },
+    {
+      "row": 108,
+      "code": "HS-107",
+      "name": "PEX - Male Elbow 2025 x 1/2M",
+      "before": 36.52,
+      "after": 33.91,
+      "referenceRow": 109
+    },
+    {
+      "row": 109,
+      "code": "HS-108",
+      "name": "PEX - Equal Tee 1216",
+      "before": 27.83,
+      "after": 38.26,
+      "referenceRow": 123
+    },
+    {
+      "row": 110,
+      "code": "HS-109",
+      "name": "PEX - Equal Tee 1620",
+      "before": 39.13,
+      "after": 41.74,
+      "referenceRow": 124
+    },
+    {
+      "row": 114,
+      "code": "HS-113",
+      "name": "PEX - Unequal Tee 2025 - 1216 - 2025",
+      "before": 60.87,
+      "after": 54.78,
+      "referenceRow": 128
+    },
+    {
+      "row": 115,
+      "code": "HS-114",
+      "name": "PEX - Unequal Tee 2025 - 1620 - 2025",
+      "before": 62.61,
+      "after": 60.87,
+      "referenceRow": 129
+    },
+    {
+      "row": 116,
+      "code": "HS-115",
+      "name": "PEX - Equal Straight Union 1216",
+      "before": 14.78,
+      "after": 15.65,
+      "referenceRow": 130
+    },
+    {
+      "row": 119,
+      "code": "HS-118",
+      "name": "PEX - Unequal Straight Union 2025 - 1216",
+      "before": 28.7,
+      "after": 26.09,
+      "referenceRow": 134
+    },
+    {
+      "row": 120,
+      "code": "HS-119",
+      "name": "PEX - End Cap 1216",
+      "before": 10.43,
+      "after": 11.3,
+      "referenceRow": 135
+    },
+    {
+      "row": 121,
+      "code": "HS-120",
+      "name": "PEX - End Cap 1620",
+      "before": 13.91,
+      "after": 14.78,
+      "referenceRow": 136
+    },
+    {
+      "row": 127,
+      "code": "HS-126",
+      "name": "PEX - Ball Valve 1216 To 8mm Hosetail",
+      "before": 53.91,
+      "after": 54.78,
+      "referenceRow": 137
+    },
+    {
+      "row": 128,
+      "code": "HS-127",
+      "name": "PEX - Ball Valve Butterfly Handle 1216",
+      "before": 52.17,
+      "after": 54.78,
+      "referenceRow": 138
+    },
+    {
+      "row": 131,
+      "code": "HS-130",
+      "name": "PEX - Closed Socket 1216",
+      "before": 7.83,
+      "after": 8.7,
+      "referenceRow": 141
+    },
+    {
+      "row": 132,
+      "code": "HS-131",
+      "name": "PEX - Closed Socket 1620",
+      "before": 10.43,
+      "after": 9.57,
+      "referenceRow": 142
+    },
+    {
+      "row": 134,
+      "code": "HS-133",
+      "name": "Nozzle Cleaners",
+      "before": 37.4,
+      "after": 4.78,
+      "referenceRow": 176
+    },
+    {
+      "row": 135,
+      "code": "HS-134",
+      "name": "Regulator - SWIVEL LPG  (SA3)",
+      "before": 65.22,
+      "after": 5.22,
+      "referenceRow": 151
+    },
+    {
+      "row": 136,
+      "code": "HS-135",
+      "name": "Regulator - Trojan/Cavagna BULLNOSE LPG",
+      "before": 56.52,
+      "after": 37.4,
+      "referenceRow": 152
+    },
+    {
+      "row": 138,
+      "code": "HS-137",
+      "name": "Regulator - CREM Single Stage 2.8kPa 12kg/hr BLUE",
+      "before": 434.78,
+      "after": 57.39,
+      "referenceRow": 153
+    },
+    {
+      "row": 139,
+      "code": "HS-138",
+      "name": "Regulator - GCE401 H/P Reg 21kg (Bracket Mount)",
+      "before": 939.13,
+      "after": 465.22,
+      "referenceRow": 154
+    },
+    {
+      "row": 140,
+      "code": "HS-139",
+      "name": "Regulator - CAVAGNA Type 932 5-12KG/hr RED DEVIL",
+      "before": 0,
+      "after": 434.78,
+      "referenceRow": 155
+    },
+    {
+      "row": 141,
+      "code": "HS-140",
+      "name": "REGULATOR - CAVAGNA 10KG GREY",
+      "before": 230.43,
+      "after": 1026.09,
+      "referenceRow": 161
+    },
+    {
+      "row": 142,
+      "code": "HS-141",
+      "name": "5Kg Typhoon Regulator (type 734)",
+      "before": 139.13,
+      "after": 239.13,
+      "referenceRow": 159
+    },
+    {
+      "row": 143,
+      "code": "HS-142",
+      "name": "Gas Filter ½",
+      "before": 0,
+      "after": 230.43,
+      "referenceRow": 173
+    },
+    {
+      "row": 144,
+      "code": "HS-143",
+      "name": "Gas Filter ¾",
+      "before": 285,
+      "after": 139.13,
+      "referenceRow": 174
+    },
+    {
+      "row": 145,
+      "code": "HS-144",
+      "name": "Regulator - ASTRO 4kg (704-28)",
+      "before": 152.17,
+      "after": 169.57,
+      "referenceRow": 160
+    },
+    {
+      "row": 146,
+      "code": "HS-145",
+      "name": "Pigtail - 1/4\" NPT Vapour 1.0m long Pentane Free",
+      "before": 159.54,
+      "after": 285.0,
+      "referenceRow": 164
+    },
+    {
+      "row": 147,
+      "code": "HS-146",
+      "name": "Pigtail - 1/4\" NPT Vapour 500mm Pentane Free",
+      "before": 131.11,
+      "after": 152.17,
+      "referenceRow": 165
+    },
+    {
+      "row": 148,
+      "code": "HS-147",
+      "name": "Pigtail - Liquid 500mm",
+      "before": 147.83,
+      "after": 159.54,
+      "referenceRow": 166
+    },
+    {
+      "row": 149,
+      "code": "HS-148",
+      "name": "Regulator - Change Over Valve",
+      "before": 89.57,
+      "after": 381.74,
+      "referenceRow": 163
+    },
+    {
+      "row": 150,
+      "code": "HS-149",
+      "name": "Washer - \"O\" Ring For Pigtail 1/4\" NPT Vapour",
+      "before": 2.61,
+      "after": 162.61,
+      "referenceRow": 169
+    },
+    {
+      "row": 151,
+      "code": "HS-150",
+      "name": "Washer -  Full Nose Cone",
+      "before": 1.74,
+      "after": 93.91,
+      "referenceRow": 170
+    },
+    {
+      "row": 152,
+      "code": "HS-151",
+      "name": "10kg Mondial Red Regulator (LPZ10)",
+      "before": 334.78,
+      "after": 2.26,
+      "referenceRow": 156
+    },
+    {
+      "row": 153,
+      "code": "HS-152",
+      "name": "4kg Mondial Regulator (Type 250)",
+      "before": 152.17,
+      "after": 1.48,
+      "referenceRow": 157
+    },
+    {
+      "row": 154,
+      "code": "HS-153",
+      "name": "4kg CGas Regulator Green (Type SA4)",
+      "before": 104.35,
+      "after": 334.78,
+      "referenceRow": 158
+    },
+    {
+      "row": 155,
+      "code": "HS-154",
+      "name": "1m Pigtail Pantane Trojan",
+      "before": 143.48,
+      "after": 160.87,
+      "referenceRow": 167
+    },
+    {
+      "row": 156,
+      "code": "HS-155",
+      "name": "500mm Pigtail Trojan",
+      "before": 104.35,
+      "after": 117.39,
+      "referenceRow": 168
+    },
+    {
+      "row": 157,
+      "code": "HS-156",
+      "name": "Checkvalve 15mm Springloaded (non return valve)",
+      "before": 83,
+      "after": 143.48,
+      "referenceRow": 185
+    },
+    {
+      "row": 158,
+      "code": "HS-157",
+      "name": "Checkvalve 22mm Springloaded (non return valve)",
+      "before": 120,
+      "after": 104.35,
+      "referenceRow": 186
+    },
+    {
+      "row": 159,
+      "code": "HS-158",
+      "name": "Strainer in line Cobra 15mm",
+      "before": 150,
+      "after": 83.0,
+      "referenceRow": 189
+    },
+    {
+      "row": 160,
+      "code": "HS-159",
+      "name": "Strainer in line Cobra 20mm",
+      "before": 200,
+      "after": 120.0,
+      "referenceRow": 190
+    },
+    {
+      "row": 161,
+      "code": "HS-160",
+      "name": "BALL VALVE COBRA 15MM",
+      "before": 143.48,
+      "after": 150.0,
+      "referenceRow": 191
+    },
+    {
+      "row": 162,
+      "code": "HS-161",
+      "name": "Ball Valve Female 15mm",
+      "before": 143.48,
+      "after": 200.0,
+      "referenceRow": 192
+    },
+    {
+      "row": 163,
+      "code": "HS-162",
+      "name": "BALL VALVE COBRA 22MM",
+      "before": 186.96,
+      "after": 143.48,
+      "referenceRow": 193
+    },
+    {
+      "row": 164,
+      "code": "HS-163",
+      "name": "BALL VALVE FEMALE 22MM",
+      "before": 186.96,
+      "after": 143.48,
+      "referenceRow": 194
+    },
+    {
+      "row": 165,
+      "code": "HS-164",
+      "name": "Coupler CXC 15mm",
+      "before": 26.96,
+      "after": 186.96,
+      "referenceRow": 195
+    },
+    {
+      "row": 166,
+      "code": "HS-165",
+      "name": "Coupler CXC 22mm",
+      "before": 52.17,
+      "after": 186.96,
+      "referenceRow": 196
+    },
+    {
+      "row": 167,
+      "code": "HS-166",
+      "name": "Reducing 22 x 15 x 22 T",
+      "before": 65.22,
+      "after": 26.96,
+      "referenceRow": 215
+    },
+    {
+      "row": 168,
+      "code": "HS-167",
+      "name": "Reducing 22 x 15 Coupler",
+      "before": 41.74,
+      "after": 52.17,
+      "referenceRow": 197
+    },
+    {
+      "row": 169,
+      "code": "HS-168",
+      "name": "FEMALE 90 DEGREE 1/2 TO 15MM COMPRESSION",
+      "before": 30.43,
+      "after": 65.22,
+      "referenceRow": 207
+    },
+    {
+      "row": 170,
+      "code": "HS-169",
+      "name": "NON RETURN VALVE 22MM FEMALE",
+      "before": 0,
+      "after": 41.74,
+      "referenceRow": 188
+    },
+    {
+      "row": 171,
+      "code": "HS-170",
+      "name": "Female Coupler CXF 22mm",
+      "before": 34.78,
+      "after": 30.43,
+      "referenceRow": 199
+    },
+    {
+      "row": 172,
+      "code": "HS-171",
+      "name": "FEMALE 3/4 90 DEGREE TO 15MM COMPRESSION",
+      "before": 33.04,
+      "after": 127.0,
+      "referenceRow": 208
+    },
+    {
+      "row": 173,
+      "code": "HS-172",
+      "name": "Female Coupler CXF 15mm",
+      "before": 21.74,
+      "after": 34.78,
+      "referenceRow": 198
+    },
+    {
+      "row": 174,
+      "code": "HS-173",
+      "name": "Male Coupler 15mm",
+      "before": 23.48,
+      "after": 33.04,
+      "referenceRow": 202
+    },
+    {
+      "row": 175,
+      "code": "HS-174",
+      "name": "Male Coupler 22mm",
+      "before": 39.13,
+      "after": 21.74,
+      "referenceRow": 203
+    },
+    {
+      "row": 178,
+      "code": "HS-177",
+      "name": "Red Tee Compression 15x15x22",
+      "before": 0,
+      "after": 30.43,
+      "referenceRow": 214
+    },
+    {
+      "row": 179,
+      "code": "HS-178",
+      "name": "Red Elbow Compression 22x15",
+      "before": 45.22,
+      "after": 43.48,
+      "referenceRow": 206
+    },
+    {
+      "row": 180,
+      "code": "HS-179",
+      "name": "Stop end Compression 15mm",
+      "before": 21.74,
+      "after": 53.91,
+      "referenceRow": 209
+    },
+    {
+      "row": 181,
+      "code": "HS-180",
+      "name": "Stop End Compression 22mm",
+      "before": 34.78,
+      "after": 45.22,
+      "referenceRow": 210
+    },
+    {
+      "row": 182,
+      "code": "HS-181",
+      "name": "Tee CXCXC 15mm",
+      "before": 54.74,
+      "after": 21.74,
+      "referenceRow": 211
+    },
+    {
+      "row": 183,
+      "code": "HS-182",
+      "name": "Tee CXCXC 22mm",
+      "before": 97.12,
+      "after": 34.78,
+      "referenceRow": 212
+    },
+    {
+      "row": 184,
+      "code": "HS-183",
+      "name": "Insert 15mm",
+      "before": 4.4,
+      "after": 45.22,
+      "referenceRow": 217
+    },
+    {
+      "row": 185,
+      "code": "HS-184",
+      "name": "Insert 22mm",
+      "before": 4.9,
+      "after": 72.0,
+      "referenceRow": 218
+    },
+    {
+      "row": 186,
+      "code": "HS-185",
+      "name": "Elbow 45 15mm Capill",
+      "before": 5.21,
+      "after": 4.4,
+      "referenceRow": 219
+    },
+    {
+      "row": 187,
+      "code": "HS-186",
+      "name": "Elbow 45 22mm Capill",
+      "before": 10.75,
+      "after": 4.9,
+      "referenceRow": 220
+    },
+    {
+      "row": 188,
+      "code": "HS-187",
+      "name": "15MM END CAPS SOLDER",
+      "before": 4.9,
+      "after": 13.48,
+      "referenceRow": 228
+    },
+    {
+      "row": 189,
+      "code": "HS-188",
+      "name": "Elbow 15mm Capill 90'",
+      "before": 5.21,
+      "after": 20.2,
+      "referenceRow": 221
+    },
+    {
+      "row": 190,
+      "code": "HS-189",
+      "name": "Elbow 22mm Capill 90'",
+      "before": 10.5,
+      "after": 6.09,
+      "referenceRow": 222
+    },
+    {
+      "row": 191,
+      "code": "HS-190",
+      "name": "Equal Tee CXC 15mm Capill",
+      "before": 10.86,
+      "after": 13.91,
+      "referenceRow": 223
+    },
+    {
+      "row": 192,
+      "code": "HS-191",
+      "name": "Equal Tee CXC 22mm Capill",
+      "before": 27.81,
+      "after": 26.96,
+      "referenceRow": 224
+    },
+    {
+      "row": 193,
+      "code": "HS-192",
+      "name": "Red STR Coupler 22x15 Capill",
+      "before": 11.5,
+      "after": 22.61,
+      "referenceRow": 227
+    },
+    {
+      "row": 194,
+      "code": "HS-193",
+      "name": "STR Coupler 15mm Capillary",
+      "before": 3.82,
+      "after": 15.5,
+      "referenceRow": 225
+    },
+    {
+      "row": 195,
+      "code": "HS-194",
+      "name": "STR Coupler 22mm Capillary",
+      "before": 7.6,
+      "after": 7.2,
+      "referenceRow": 226
+    },
+    {
+      "row": 201,
+      "code": "HS-200",
+      "name": "Trunking End Caps 100x40mm",
+      "before": 19.89,
+      "after": 18.0,
+      "referenceRow": 309
+    },
+    {
+      "row": 205,
+      "code": "HS-204",
+      "name": "15mm Flexi Hose 600mm",
+      "before": 0,
+      "after": 3.54,
+      "referenceRow": 229
+    },
+    {
+      "row": 206,
+      "code": "HS-205",
+      "name": "22mm Flexi Hose 350mm",
+      "before": 0,
+      "after": 65.0,
+      "referenceRow": 231
+    },
+    {
+      "row": 207,
+      "code": "HS-206",
+      "name": "Twin & Earth Cable 2.5mm",
+      "before": 18.61,
+      "after": 40.0,
+      "referenceRow": 282
+    },
+    {
+      "row": 208,
+      "code": "HS-207",
+      "name": "15mm Flexi Hose 350mm",
+      "before": 0,
+      "after": 18.61,
+      "referenceRow": 230
+    },
+    {
+      "row": 209,
+      "code": "HS-208",
+      "name": "PVC Conduit LENGTHS 20MM",
+      "before": 13.92,
+      "after": 59.0,
+      "referenceRow": 274
+    },
+    {
+      "row": 210,
+      "code": "HS-209",
+      "name": "PVC Conduit LENGTHS 25MM",
+      "before": 20.56,
+      "after": 13.92,
+      "referenceRow": 275
+    },
+    {
+      "row": 211,
+      "code": "HS-210",
+      "name": "PVC Conduit Long  90 - 20mm",
+      "before": 12.9,
+      "after": 20.56,
+      "referenceRow": 297
+    },
+    {
+      "row": 212,
+      "code": "HS-211",
+      "name": "PVC Conduit Long 90 - 25mm",
+      "before": 13,
+      "after": 12.9,
+      "referenceRow": 298
+    },
+    {
+      "row": 213,
+      "code": "HS-212",
+      "name": "PVC Conduit Short 90 - 20mm",
+      "before": 12.9,
+      "after": 8.7,
+      "referenceRow": 293
+    },
+    {
+      "row": 215,
+      "code": "HS-214",
+      "name": "HOSPITAL SADDLES - 20mm",
+      "before": 5.25,
+      "after": 13.0,
+      "referenceRow": 307
+    },
+    {
+      "row": 216,
+      "code": "HS-215",
+      "name": "SPRAG - 20mm",
+      "before": 0,
+      "after": 5.25,
+      "referenceRow": 277
+    },
+    {
+      "row": 217,
+      "code": "HS-216",
+      "name": "SPRAG - 25mm",
+      "before": 21.26,
+      "after": 10.43,
+      "referenceRow": 278
+    },
+    {
+      "row": 220,
+      "code": "HS-219",
+      "name": "2x4 SLIDE WEATHER COVER",
+      "before": 76,
+      "after": 7.73,
+      "referenceRow": 284
+    },
+    {
+      "row": 221,
+      "code": "HS-220",
+      "name": "2x4 PLUG INSERT ONLY PLUG",
+      "before": 90,
+      "after": 76.0,
+      "referenceRow": 285
+    },
+    {
+      "row": 222,
+      "code": "HS-221",
+      "name": "4x4 BLANK",
+      "before": 59.8,
+      "after": 90.0,
+      "referenceRow": 287
+    },
+    {
+      "row": 227,
+      "code": "HS-226",
+      "name": "MALE STOPPER 1/4 - BRASS HEX PLUG",
+      "before": 6.96,
+      "after": 26.09,
+      "referenceRow": 58
+    },
+    {
+      "row": 229,
+      "code": "HS-228",
+      "name": "MIXING VALVE",
+      "before": 0,
+      "after": 63.0,
+      "referenceRow": 182
+    },
+    {
+      "row": 230,
+      "code": "HS-229",
+      "name": "PRESSURE CONTROL VALVE - 200kpa",
+      "before": 0,
+      "after": null,
+      "referenceRow": 183
+    },
+    {
+      "row": 234,
+      "code": "HS-233",
+      "name": "PEX Female 1620 1/2",
+      "before": 21.74,
+      "after": 20.87,
+      "referenceRow": 102
+    },
+    {
+      "row": 235,
+      "code": "HS-234",
+      "name": "PEX FEMALE 2025 3/4",
+      "before": 37.39,
+      "after": 20.0,
+      "referenceRow": 104
+    },
+    {
+      "row": 236,
+      "code": "HS-235",
+      "name": "GAS GAUGE 250kpa",
+      "before": 347.83,
+      "after": 36.52,
+      "referenceRow": 171
+    },
+    {
+      "row": 237,
+      "code": "HS-236",
+      "name": "GAS GAUGE 25kpa",
+      "before": 305.48,
+      "after": 347.83,
+      "referenceRow": 172
+    },
+    {
+      "row": 245,
+      "code": "HS-244",
+      "name": "WATER PIPES - 22mm Copper",
+      "before": 0,
+      "after": 160.0,
+      "referenceRow": 181
+    },
+    {
+      "row": 246,
+      "code": "HS-245",
+      "name": "WATER PIPES - 15mm  Copper",
+      "before": 0,
+      "after": 1073.91,
+      "referenceRow": 180
+    },
+    {
+      "row": 247,
+      "code": "HS-246",
+      "name": "PEX FEMALE 1216 1/2",
+      "before": 20.87,
+      "after": 704.35,
+      "referenceRow": 101
+    },
+    {
+      "row": 248,
+      "code": "HS-247",
+      "name": "PEX FEMALE 1620 3/4",
+      "before": 34.78,
+      "after": 21.74,
+      "referenceRow": 103
+    },
+    {
+      "row": 250,
+      "code": "HS-249",
+      "name": "Plug Tops",
+      "before": 45,
+      "after": 21.25,
+      "referenceRow": 288
+    },
+    {
+      "row": 251,
+      "code": "HS-250",
+      "name": "Connecter Blocks String",
+      "before": 13.85,
+      "after": 45.0,
+      "referenceRow": 289
+    },
+    {
+      "row": 252,
+      "code": "HS-251",
+      "name": "AIRCON SOLDER FITTINGS - 1/4 TEE",
+      "before": 0,
+      "after": 13.85,
+      "referenceRow": 251
+    },
+    {
+      "row": 253,
+      "code": "HS-252",
+      "name": "AIRCON SOLDER FITTINGS - 1/4 90's",
+      "before": 0,
+      "after": null,
+      "referenceRow": 252
+    },
+    {
+      "row": 254,
+      "code": "HS-253",
+      "name": "AIRCON SOLDER FITTINGS - 1/4 Straight",
+      "before": 0,
+      "after": null,
+      "referenceRow": 253
+    },
+    {
+      "row": 255,
+      "code": "HS-254",
+      "name": "AIRCON SOLDER FITTINGS - 1/2 Tee",
+      "before": 0,
+      "after": null,
+      "referenceRow": 254
+    },
+    {
+      "row": 256,
+      "code": "HS-255",
+      "name": "AIRCON SOLDER FITTINGS - 1/2 90's",
+      "before": 0,
+      "after": null,
+      "referenceRow": 255
+    },
+    {
+      "row": 257,
+      "code": "HS-256",
+      "name": "AIRCON SOLDER FITTINGS - 1/2 Straights",
+      "before": 0,
+      "after": null,
+      "referenceRow": 256
+    },
+    {
+      "row": 258,
+      "code": "HS-257",
+      "name": "AIRCON SOLDER FITTINGS - 3/8 Tee",
+      "before": 0,
+      "after": null,
+      "referenceRow": 257
+    },
+    {
+      "row": 259,
+      "code": "HS-258",
+      "name": "AIRCON SOLDER FITTINGS - 3/8 Straight",
+      "before": 0,
+      "after": null,
+      "referenceRow": 258
+    },
+    {
+      "row": 260,
+      "code": "HS-259",
+      "name": "AIRCON SOLDER FITTINGS - 3/8 90's",
+      "before": 0,
+      "after": null,
+      "referenceRow": 259
+    },
+    {
+      "row": 261,
+      "code": "HS-260",
+      "name": "AIRCON SOLDER FITTINGS - 1/2 x 3/8 Reducer",
+      "before": 0,
+      "after": null,
+      "referenceRow": 260
+    },
+    {
+      "row": 262,
+      "code": "HS-261",
+      "name": "AIRCON STRAIGHT COUPLER - '1/4",
+      "before": 0,
+      "after": null,
+      "referenceRow": 261
+    },
+    {
+      "row": 263,
+      "code": "HS-262",
+      "name": "AIRCON STRAIGHT COUPLER - '3/8",
+      "before": 0,
+      "after": null,
+      "referenceRow": 262
+    },
+    {
+      "row": 264,
+      "code": "HS-263",
+      "name": "AIRCON STRAIGHT COUPLER - '1/2",
+      "before": 0,
+      "after": null,
+      "referenceRow": 263
+    },
+    {
+      "row": 265,
+      "code": "HS-264",
+      "name": "AIRCON STRAIGHT COUPLER - '5/8",
+      "before": 0,
+      "after": null,
+      "referenceRow": 264
+    },
+    {
+      "row": 267,
+      "code": "HS-266",
+      "name": "AUTO CHANGE OVER REGULATOR CAVAGNA",
+      "before": 865.22,
+      "after": 31.3,
+      "referenceRow": 162
+    },
+    {
+      "row": 268,
+      "code": "HS-267",
+      "name": "HOSPITAL SADDLES 32MM",
+      "before": 2.22,
+      "after": 865.22,
+      "referenceRow": 308
+    },
+    {
+      "row": 269,
+      "code": "HS-268",
+      "name": "WATER PROOF SWITCHES",
+      "before": 130.43,
+      "after": 2.22,
+      "referenceRow": 283
+    },
+    {
+      "row": 270,
+      "code": "HS-269",
+      "name": "1/4\" COPPER PIPE",
+      "before": 39,
+      "after": 130.43,
+      "referenceRow": 265
+    },
+    {
+      "row": 271,
+      "code": "HS-270",
+      "name": "1/2\" COPPER PIPE",
+      "before": 113.04,
+      "after": 39.0,
+      "referenceRow": 268
+    },
+    {
+      "row": 272,
+      "code": "HS-271",
+      "name": "3/4\" COPPER PIPE",
+      "before": 55.22,
+      "after": 113.04,
+      "referenceRow": 270
+    },
+    {
+      "row": 273,
+      "code": "HS-272",
+      "name": "5/8 Copper Pipe",
+      "before": 0,
+      "after": 55.22,
+      "referenceRow": 269
+    },
+    {
+      "row": 274,
+      "code": "HS-273",
+      "name": "100X40 TRUNKING",
+      "before": 168.96,
+      "after": null,
+      "referenceRow": 281
+    },
+    {
+      "row": 275,
+      "code": "HS-274",
+      "name": "1/4 ALUM PIPE",
+      "before": 7.96,
+      "after": 168.96,
+      "referenceRow": 271
+    },
+    {
+      "row": 276,
+      "code": "HS-275",
+      "name": "3/8 ALUM PIPE",
+      "before": 11,
+      "after": 7.96,
+      "referenceRow": 272
+    },
+    {
+      "row": 277,
+      "code": "HS-276",
+      "name": "Gas Cage Single 9",
+      "before": 1744,
+      "after": 1920.0,
+      "referenceRow": 368
+    },
+    {
+      "row": 278,
+      "code": "HS-277",
+      "name": "Gas Cage Double 9",
+      "before": 0,
+      "after": null,
+      "referenceRow": 374
+    },
+    {
+      "row": 279,
+      "code": "HS-278",
+      "name": "Gas Cage single 19",
+      "before": 1968,
+      "after": 2400.0,
+      "referenceRow": 370
+    },
+    {
+      "row": 280,
+      "code": "HS-279",
+      "name": "Gas Cage double 19",
+      "before": 0,
+      "after": null,
+      "referenceRow": 376
+    },
+    {
+      "row": 281,
+      "code": "HS-280",
+      "name": "Gas Cage single 48kg",
+      "before": 0,
+      "after": 3026.0,
+      "referenceRow": 372
+    },
+    {
+      "row": 282,
+      "code": "HS-281",
+      "name": "Gas Cage double 48",
+      "before": 0,
+      "after": 2950.0,
+      "referenceRow": 378
+    },
+    {
+      "row": 283,
+      "code": "HS-282",
+      "name": "Gas Cage Custom 6x48kg",
+      "before": 11200,
+      "after": 4500.0,
+      "referenceRow": 380
+    },
+    {
+      "row": 284,
+      "code": "HS-283",
+      "name": "3/8 Copper Pipe",
+      "before": 89.57,
+      "after": null,
+      "referenceRow": 267
+    },
+    {
+      "row": 285,
+      "code": "HS-284",
+      "name": "5/16 Copper Pipe",
+      "before": 52.17,
+      "after": 11200.0,
+      "referenceRow": 266
+    },
+    {
+      "row": 286,
+      "code": "HS-285",
+      "name": "20mm Addaptor Elec",
+      "before": 2,
+      "after": 89.57,
+      "referenceRow": 299
+    },
+    {
+      "row": 287,
+      "code": "HS-286",
+      "name": "Round Box Cover",
+      "before": 1.26,
+      "after": 52.17,
+      "referenceRow": 302
+    },
+    {
+      "row": 288,
+      "code": "HS-287",
+      "name": "Round Box 1way 20mm",
+      "before": 10,
+      "after": 2.0,
+      "referenceRow": 303
+    },
+    {
+      "row": 289,
+      "code": "HS-288",
+      "name": "Round Box 1way 25mm",
+      "before": 10,
+      "after": 1.26,
+      "referenceRow": 304
+    },
+    {
+      "row": 292,
+      "code": "HS-291",
+      "name": "Paloma Gas Valve / Section",
+      "before": 1086.96,
+      "after": 10.0,
+      "referenceRow": 311
+    },
+    {
+      "row": 294,
+      "code": "HS-293",
+      "name": "20mm Gland",
+      "before": 10,
+      "after": 1086.96,
+      "referenceRow": 301
+    },
+    {
+      "row": 295,
+      "code": "HS-294",
+      "name": "40mm Waste Pipe",
+      "before": 64.99,
+      "after": 150.0,
+      "referenceRow": 238
+    },
+    {
+      "row": 296,
+      "code": "HS-295",
+      "name": "40mm Elbow 90",
+      "before": 7.18,
+      "after": 10.0,
+      "referenceRow": 240
+    },
+    {
+      "row": 297,
+      "code": "HS-296",
+      "name": "40mm Elbow 45",
+      "before": 8.76,
+      "after": 64.99,
+      "referenceRow": 241
+    },
+    {
+      "row": 298,
+      "code": "HS-297",
+      "name": "40mm Coupler",
+      "before": 8.25,
+      "after": 7.18,
+      "referenceRow": 242
+    },
+    {
+      "row": 299,
+      "code": "HS-298",
+      "name": "50mm x 40mm Reducer",
+      "before": 10.1,
+      "after": 8.76,
+      "referenceRow": 246
+    },
+    {
+      "row": 300,
+      "code": "HS-299",
+      "name": "40mm Y",
+      "before": 15.15,
+      "after": 8.25,
+      "referenceRow": 243
+    },
+    {
+      "row": 301,
+      "code": "HS-300",
+      "name": "50mm Elbow 90",
+      "before": 26.95,
+      "after": 10.1,
+      "referenceRow": 247
+    },
+    {
+      "row": 302,
+      "code": "HS-301",
+      "name": "50mm Elbow 45",
+      "before": 26.95,
+      "after": 15.15,
+      "referenceRow": 248
+    },
+    {
+      "row": 303,
+      "code": "HS-302",
+      "name": "50mm Coupler",
+      "before": 6.3,
+      "after": 26.95,
+      "referenceRow": 249
+    },
+    {
+      "row": 304,
+      "code": "HS-303",
+      "name": "40mm Brackets",
+      "before": 17.54,
+      "after": 26.95,
+      "referenceRow": 244
+    },
+    {
+      "row": 305,
+      "code": "HS-304",
+      "name": "40mm P-Trap",
+      "before": 74.18,
+      "after": 6.3,
+      "referenceRow": 245
+    },
+    {
+      "row": 306,
+      "code": "HS-305",
+      "name": "UniTwist Elbow 22mm",
+      "before": 0,
+      "after": 17.54,
+      "referenceRow": 233
+    },
+    {
+      "row": 307,
+      "code": "HS-306",
+      "name": "UniTwist Tee 22mm x 15mm x 22mm",
+      "before": 0,
+      "after": 74.18,
+      "referenceRow": 234
+    },
+    {
+      "row": 308,
+      "code": "HS-307",
+      "name": "UniTwist Coupler 15mm",
+      "before": 0,
+      "after": null,
+      "referenceRow": 235
+    },
+    {
+      "row": 309,
+      "code": "HS-308",
+      "name": "UniTwist Elbow 15mm",
+      "before": 0,
+      "after": null,
+      "referenceRow": 236
+    },
+    {
+      "row": 310,
+      "code": "HS-309",
+      "name": "UniTwist 22mm x 3/4 Male",
+      "before": 0,
+      "after": null,
+      "referenceRow": 237
+    },
+    {
+      "row": 311,
+      "code": "HS-310",
+      "name": "25mm Addaptor Elec",
+      "before": 2.5,
+      "after": null,
+      "referenceRow": 300
+    },
+    {
+      "row": 312,
+      "code": "HS-311",
+      "name": "Universal Thermocouple Threaded 600mm",
+      "before": 91.3,
+      "after": 2.5,
+      "referenceRow": 326
+    },
+    {
+      "row": 313,
+      "code": "HS-312",
+      "name": "Universal Thermocouple Threaded 1.2m",
+      "before": 104.35,
+      "after": 91.3,
+      "referenceRow": 327
+    },
+    {
+      "row": 314,
+      "code": "HS-313",
+      "name": "Universal Thermocouple Threaded 900mm",
+      "before": 95.65,
+      "after": 104.35,
+      "referenceRow": 328
+    },
+    {
+      "row": 315,
+      "code": "HS-314",
+      "name": "Universal Thermocouple 1.2m",
+      "before": 104.35,
+      "after": 95.65,
+      "referenceRow": 329
+    },
+    {
+      "row": 316,
+      "code": "HS-315",
+      "name": "5/8 Ballvalve Handle For Shower Tap",
+      "before": 0,
+      "after": 104.35,
+      "referenceRow": 232
+    },
+    {
+      "row": 317,
+      "code": "HS-316",
+      "name": "CSST Pipe 15mm",
+      "before": 165.22,
+      "after": 90.0,
+      "referenceRow": 82
+    },
+    {
+      "row": 318,
+      "code": "HS-317",
+      "name": "HDPE End Cap 90mm",
+      "before": 134.78,
+      "after": null,
+      "referenceRow": 335
+    },
+    {
+      "row": 319,
+      "code": "HS-318",
+      "name": "HDPE End Cap 63mm",
+      "before": 77.39,
+      "after": 134.78,
+      "referenceRow": 336
+    },
+    {
+      "row": 320,
+      "code": "HS-319",
+      "name": "HDPE End Cap 50mm",
+      "before": 52.17,
+      "after": 77.39,
+      "referenceRow": 337
+    },
+    {
+      "row": 321,
+      "code": "HS-320",
+      "name": "HDPE End Cap 32mm",
+      "before": 40.87,
+      "after": 52.17,
+      "referenceRow": 338
+    },
+    {
+      "row": 322,
+      "code": "HS-321",
+      "name": "HDPE Reducing Coupler 90mm x 63mm",
+      "before": 164.35,
+      "after": 40.87,
+      "referenceRow": 339
+    },
+    {
+      "row": 323,
+      "code": "HS-322",
+      "name": "HDPE Reducing Coupler 90mm x 50mm",
+      "before": 136.52,
+      "after": null,
+      "referenceRow": 340
+    },
+    {
+      "row": 324,
+      "code": "HS-323",
+      "name": "HDPE Reducing Coupler 63mm x 50mm",
+      "before": 120.87,
+      "after": 164.35,
+      "referenceRow": 341
+    },
+    {
+      "row": 325,
+      "code": "HS-324",
+      "name": "HDPE Reducing Coupler 63mm x 32mm",
+      "before": 80,
+      "after": 120.87,
+      "referenceRow": 342
+    },
+    {
+      "row": 326,
+      "code": "HS-325",
+      "name": "HDPE Reducing Coupler 50mm x 32mm",
+      "before": 72.17,
+      "after": 166.96,
+      "referenceRow": 343
+    },
+    {
+      "row": 327,
+      "code": "HS-326",
+      "name": "HDPE Ballvalve 90mm",
+      "before": 2391.3,
+      "after": 80.0,
+      "referenceRow": 344
+    },
+    {
+      "row": 328,
+      "code": "HS-327",
+      "name": "HDPE Ballvalve 63mm",
+      "before": 2173.91,
+      "after": 2391.3,
+      "referenceRow": 345
+    },
+    {
+      "row": 329,
+      "code": "HS-328",
+      "name": "HDPE Ballvalve 50mm",
+      "before": 1739.13,
+      "after": null,
+      "referenceRow": 346
+    },
+    {
+      "row": 330,
+      "code": "HS-329",
+      "name": "HDPE Ballvalve 32mm",
+      "before": 1956.52,
+      "after": null,
+      "referenceRow": 347
+    },
+    {
+      "row": 331,
+      "code": "HS-330",
+      "name": "HDPE Coupler 90mm",
+      "before": 113.04,
+      "after": 2173.91,
+      "referenceRow": 348
+    },
+    {
+      "row": 332,
+      "code": "HS-331",
+      "name": "HDPE Coupler 63mm",
+      "before": 78.26,
+      "after": 11.04,
+      "referenceRow": 349
+    },
+    {
+      "row": 333,
+      "code": "HS-332",
+      "name": "HDPE Coupler 50mm",
+      "before": 60,
+      "after": 95.65,
+      "referenceRow": 350
+    },
+    {
+      "row": 334,
+      "code": "HS-333",
+      "name": "HDPE Coupler 32mm",
+      "before": 50.43,
+      "after": 43.48,
+      "referenceRow": 351
+    },
+    {
+      "row": 335,
+      "code": "HS-334",
+      "name": "HDPE 90 Deg Elbow 50mm",
+      "before": 94.78,
+      "after": 60.0,
+      "referenceRow": 352
+    },
+    {
+      "row": 336,
+      "code": "HS-335",
+      "name": "HDPE 90 Deg Elbow 32mm",
+      "before": 66.96,
+      "after": 50.43,
+      "referenceRow": 353
+    },
+    {
+      "row": 337,
+      "code": "HS-336",
+      "name": "HDPE Reducing T 90/63/90",
+      "before": 230.43,
+      "after": null,
+      "referenceRow": 354
+    },
+    {
+      "row": 338,
+      "code": "HS-337",
+      "name": "HDPE Reducing T 90/50/90",
+      "before": 221.74,
+      "after": null,
+      "referenceRow": 355
+    },
+    {
+      "row": 339,
+      "code": "HS-338",
+      "name": "HDPE Reducing T 90/32/90",
+      "before": 195.65,
+      "after": null,
+      "referenceRow": 356
+    },
+    {
+      "row": 340,
+      "code": "HS-339",
+      "name": "HDPE Reducing T 63/50/63",
+      "before": 191.3,
+      "after": null,
+      "referenceRow": 357
+    },
+    {
+      "row": 341,
+      "code": "HS-340",
+      "name": "HDPE Reducing T 63/32/63",
+      "before": 178.26,
+      "after": null,
+      "referenceRow": 358
+    },
+    {
+      "row": 342,
+      "code": "HS-341",
+      "name": "HDPE Reducing T 50/32/50",
+      "before": 166.96,
+      "after": 113.91,
+      "referenceRow": 359
+    },
+    {
+      "row": 343,
+      "code": "HS-342",
+      "name": "HDPE T 90mm",
+      "before": 230.43,
+      "after": 78.26,
+      "referenceRow": 360
+    },
+    {
+      "row": 344,
+      "code": "HS-343",
+      "name": "HDPE T 63mm",
+      "before": 166.09,
+      "after": 230.43,
+      "referenceRow": 361
+    },
+    {
+      "row": 345,
+      "code": "HS-344",
+      "name": "HDPE T 50mm",
+      "before": 113.91,
+      "after": 94.78,
+      "referenceRow": 362
+    },
+    {
+      "row": 346,
+      "code": "HS-345",
+      "name": "HDPE T 32mm",
+      "before": 95.65,
+      "after": 66.96,
+      "referenceRow": 363
+    },
+    {
+      "row": 347,
+      "code": "HS-346",
+      "name": "HDPE - 1 inch Male to 50mm",
+      "before": 217.39,
+      "after": 72.17,
+      "referenceRow": 364
+    },
+    {
+      "row": 348,
+      "code": "HS-347",
+      "name": "HDPE - 1 inch Male to 32mm",
+      "before": 182.61,
+      "after": 43.0,
+      "referenceRow": 365
+    },
+    {
+      "row": 352,
+      "code": "HS-351",
+      "name": "40mm x 110mm Strap fitting",
+      "before": 0,
+      "after": 165.22,
+      "referenceRow": 239
+    },
+    {
+      "row": 353,
+      "code": "HS-352",
+      "name": "Geyser Part - Plunger Pin Big",
+      "before": 27.83,
+      "after": 40.0,
+      "referenceRow": 313
+    },
+    {
+      "row": 354,
+      "code": "HS-353",
+      "name": "Geyser Part - Plunger Pin Small",
+      "before": 26.09,
+      "after": 27.83,
+      "referenceRow": 314
+    },
+    {
+      "row": 355,
+      "code": "HS-354",
+      "name": "Geyser Part - Battery Pack",
+      "before": 69.57,
+      "after": 26.09,
+      "referenceRow": 315
+    },
+    {
+      "row": 356,
+      "code": "HS-355",
+      "name": "Magnetic Heads",
+      "before": 40,
+      "after": 69.57,
+      "referenceRow": 325
+    },
+    {
+      "row": 357,
+      "code": "HS-356",
+      "name": "Geyser Part - Soliniod Valve",
+      "before": 417.39,
+      "after": 40.0,
+      "referenceRow": 316
+    },
+    {
+      "row": 358,
+      "code": "HS-357",
+      "name": "Geyser Part - Micro Switch",
+      "before": 26.09,
+      "after": 417.39,
+      "referenceRow": 317
+    },
+    {
+      "row": 359,
+      "code": "HS-358",
+      "name": "Geyser Part - Heat Sensor",
+      "before": 39.13,
+      "after": 26.09,
+      "referenceRow": 318
+    },
+    {
+      "row": 360,
+      "code": "HS-359",
+      "name": "Geyser Part - 90 Bend Water Valve",
+      "before": 178.26,
+      "after": 39.13,
+      "referenceRow": 319
+    },
+    {
+      "row": 361,
+      "code": "HS-360",
+      "name": "Geyser Part - Straight Water Valve",
+      "before": 200,
+      "after": 178.26,
+      "referenceRow": 320
+    },
+    {
+      "row": 362,
+      "code": "HS-361",
+      "name": "Geyser Part - Small Diaphraim",
+      "before": 8.7,
+      "after": 200.0,
+      "referenceRow": 321
+    },
+    {
+      "row": 364,
+      "code": "HS-363",
+      "name": "Geyser Part - Large Diaphraim",
+      "before": 21.74,
+      "after": 8.7,
+      "referenceRow": 323
+    },
+    {
+      "row": 365,
+      "code": "HS-364",
+      "name": "Geyser Part - Bosch Water Section",
+      "before": 199.5,
+      "after": 21.74,
+      "referenceRow": 324
+    },
+    {
+      "row": 366,
+      "code": "HS-365",
+      "name": "Gas Valve Cover",
+      "before": 796.31,
+      "after": 199.5,
+      "referenceRow": 366
+    },
+    {
+      "row": 367,
+      "code": "HS-366",
+      "name": "HDPE Pipe 90mm",
+      "before": 0,
+      "after": 796.31,
+      "referenceRow": 331
+    },
+    {
+      "row": 368,
+      "code": "HS-367",
+      "name": "HDPE Pipe 63mm",
+      "before": 0,
+      "after": null,
+      "referenceRow": 332
+    },
+    {
+      "row": 369,
+      "code": "HS-368",
+      "name": "HDPE Pipe 50mm",
+      "before": 0,
+      "after": null,
+      "referenceRow": 333
+    },
+    {
+      "row": 370,
+      "code": "HS-369",
+      "name": "HDPE Pipe 32mm",
+      "before": 0,
+      "after": null,
+      "referenceRow": 334
+    }
+  ],
+  "additions": [
+    {
+      "row": 372,
+      "code": "HS-REF-20261008-011",
+      "name": "Nipple 3/4 Male",
+      "category": "Gas",
+      "cost": 27.83,
+      "order": 10
+    },
+    {
+      "row": 373,
+      "code": "HS-REF-20261008-037",
+      "name": "Reducing socket 3/4 F x 1/2 F",
+      "category": "Gas",
+      "cost": 34.78,
+      "order": 36
+    },
+    {
+      "row": 374,
+      "code": "HS-REF-20261008-056",
+      "name": "Manifold - Bullnose Female TO 1/2 MALE",
+      "category": "Gas",
+      "cost": 6.96,
+      "order": 55
+    },
+    {
+      "row": 375,
+      "code": "HS-REF-20261008-059",
+      "name": "Bulkhead Pex 1216",
+      "category": "Gas",
+      "cost": 31.3,
+      "order": 58
+    },
+    {
+      "row": 376,
+      "code": "HS-REF-20261008-070",
+      "name": "Ball Valve Brass Butterfly Handle 3/4",
+      "category": "Gas",
+      "cost": 191.3,
+      "order": 69
+    },
+    {
+      "row": 377,
+      "code": "HS-REF-20261008-129",
+      "name": "PEX - Equal Straight Union 2025",
+      "category": "Gas",
+      "cost": 37.39,
+      "order": 128
+    },
+    {
+      "row": 378,
+      "code": "HS-REF-20261008-172",
+      "name": "Danger Tape",
+      "category": "Gas",
+      "cost": 166.09,
+      "order": 171
+    },
+    {
+      "row": 379,
+      "code": "HS-REF-20261008-174",
+      "name": "Water Pipes - 15mm Pex Pipe",
+      "category": "Plumbing",
+      "cost": 45.0,
+      "order": 173
+    },
+    {
+      "row": 380,
+      "code": "HS-REF-20261008-175",
+      "name": "Water Pipes - 22mm Pex Pipe",
+      "category": "Plumbing",
+      "cost": 33.04,
+      "order": 174
+    },
+    {
+      "row": 381,
+      "code": "HS-REF-20261008-196",
+      "name": "Female Coupler 15mm CXF 3/4'",
+      "category": "Plumbing",
+      "cost": 39.13,
+      "order": 195
+    },
+    {
+      "row": 382,
+      "code": "HS-REF-20261008-197",
+      "name": "Female Coupler 22mm CXF 1/2'",
+      "category": "Plumbing",
+      "cost": 35.65,
+      "order": 196
+    },
+    {
+      "row": 383,
+      "code": "HS-REF-20261008-200",
+      "name": "Elbow CXC 15mm",
+      "category": "Plumbing",
+      "cost": 23.48,
+      "order": 199
+    },
+    {
+      "row": 384,
+      "code": "HS-REF-20261008-201",
+      "name": "Elbow CXC 22mm",
+      "category": "Plumbing",
+      "cost": 39.13,
+      "order": 200
+    },
+    {
+      "row": 385,
+      "code": "HS-REF-20261008-209",
+      "name": "Tee Reducing 15 x 22 x 15",
+      "category": "Plumbing",
+      "cost": null,
+      "order": 208
+    },
+    {
+      "row": 386,
+      "code": "HS-REF-20261008-212",
+      "name": "Tee Reducing 22 x 22 x 15",
+      "category": "Plumbing",
+      "cost": null,
+      "order": 211
+    },
+    {
+      "row": 387,
+      "code": "HS-REF-20261008-270",
+      "name": "PVC Conduit Pipe 32MM",
+      "category": "Electrical",
+      "cost": 11.0,
+      "order": 269
+    },
+    {
+      "row": 388,
+      "code": "HS-REF-20261008-273",
+      "name": "Trunking 16 X 16",
+      "category": "Electrical",
+      "cost": null,
+      "order": 272
+    },
+    {
+      "row": 389,
+      "code": "HS-REF-20261008-274",
+      "name": "Trunking 40 X 40",
+      "category": "Electrical",
+      "cost": null,
+      "order": 273
+    },
+    {
+      "row": 390,
+      "code": "HS-REF-20261008-280",
+      "name": "4x2 Electrical Isolator",
+      "category": "Electrical",
+      "cost": 10.0,
+      "order": 279
+    },
+    {
+      "row": 391,
+      "code": "HS-REF-20261008-284",
+      "name": "PVC Coupler 20mm",
+      "category": "Electrical",
+      "cost": 19.89,
+      "order": 283
+    },
+    {
+      "row": 392,
+      "code": "HS-REF-20261008-285",
+      "name": "PVC Coupler 25mm",
+      "category": "Electrical",
+      "cost": 0.8,
+      "order": 284
+    },
+    {
+      "row": 393,
+      "code": "HS-REF-20261008-286",
+      "name": "PVC Coupler 32mm",
+      "category": "Electrical",
+      "cost": 1.0,
+      "order": 285
+    },
+    {
+      "row": 394,
+      "code": "HS-REF-20261008-288",
+      "name": "PVC Elbow Medium 20mm",
+      "category": "Electrical",
+      "cost": 13.0,
+      "order": 287
+    },
+    {
+      "row": 395,
+      "code": "HS-REF-20261008-289",
+      "name": "PVC Elbow Medium 25mm",
+      "category": "Electrical",
+      "cost": 12.9,
+      "order": 288
+    },
+    {
+      "row": 396,
+      "code": "HS-REF-20261008-290",
+      "name": "PVC Elbow Medium 32mm",
+      "category": "Electrical",
+      "cost": 34.78,
+      "order": 289
+    },
+    {
+      "row": 397,
+      "code": "HS-REF-20261008-305",
+      "name": "Paloma Gas Valve / Section Refurbished",
+      "category": "Gas appliance parts",
+      "cost": 217.93,
+      "order": 304
+    },
+    {
+      "row": 398,
+      "code": "HS-REF-20261008-360",
+      "name": "Gas Cage Single 9kg Nutec",
+      "category": "Gas Cages",
+      "cost": 2208.0,
+      "order": 359
+    },
+    {
+      "row": 399,
+      "code": "HS-REF-20261008-362",
+      "name": "Gas Cage Single 19kg Nutec",
+      "category": "Gas Cages",
+      "cost": 2640.0,
+      "order": 361
+    },
+    {
+      "row": 400,
+      "code": "HS-REF-20261008-364",
+      "name": "Gas Cage single 48kg Nutec",
+      "category": "Gas Cages",
+      "cost": null,
+      "order": 363
+    },
+    {
+      "row": 401,
+      "code": "HS-REF-20261008-366",
+      "name": "Gas Cage Double 9kg Nutec",
+      "category": "Gas Cages",
+      "cost": 2640.0,
+      "order": 365
+    },
+    {
+      "row": 402,
+      "code": "HS-REF-20261008-368",
+      "name": "Gas Cage Double 19kg Nutec",
+      "category": "Gas Cages",
+      "cost": null,
+      "order": 367
+    },
+    {
+      "row": 403,
+      "code": "HS-REF-20261008-370",
+      "name": "Gas Cage Double 48kg Nutec",
+      "category": "Gas Cages",
+      "cost": null,
+      "order": 369
+    }
+  ],
+  "extras": [
+    {
+      "code": "HS-081",
+      "name": "Barrier Tape Red/White"
+    },
+    {
+      "code": "HS-136",
+      "name": "Regulator - Trojan/Cavagna 5Kg C/O Complete"
+    },
+    {
+      "code": "HS-175",
+      "name": "Elbow CXMI 15mm"
+    },
+    {
+      "code": "HS-176",
+      "name": "Elbow CXMI 22mm"
+    },
+    {
+      "code": "HS-195",
+      "name": "Wall Plug 8mm x40"
+    },
+    {
+      "code": "HS-196",
+      "name": "Wall Plug 6mm Blue"
+    },
+    {
+      "code": "HS-197",
+      "name": "Roll Bolts M8"
+    },
+    {
+      "code": "HS-198",
+      "name": "Roll Bolts M10"
+    },
+    {
+      "code": "HS-199",
+      "name": "Washers"
+    },
+    {
+      "code": "HS-201",
+      "name": "PVC Conduit Conenctor 20mm"
+    },
+    {
+      "code": "HS-202",
+      "name": "PVC Conduit Connector25mm"
+    },
+    {
+      "code": "HS-203",
+      "name": "PVC Conduit Connector32mm"
+    },
+    {
+      "code": "HS-213",
+      "name": "PVC Conduit Short 90 - 25MM"
+    },
+    {
+      "code": "HS-217",
+      "name": "PVC CONDUIT SHORT 90 DEGREE 20MM"
+    },
+    {
+      "code": "HS-218",
+      "name": "PVC LENGHTS 32MM"
+    },
+    {
+      "code": "HS-222",
+      "name": "FLARE NUTS - '1/4"
+    },
+    {
+      "code": "HS-223",
+      "name": "FLARE NUTS - '3/8"
+    },
+    {
+      "code": "HS-224",
+      "name": "FLARE NUTS - '1/2"
+    },
+    {
+      "code": "HS-227",
+      "name": "1/2 FEMALE TO 1/2 MALE (Manifold)"
+    },
+    {
+      "code": "HS-231",
+      "name": "QUICK COUPLER SPACE HEATER"
+    },
+    {
+      "code": "HS-238",
+      "name": "15mm FEMALE TO 22mm COMP"
+    },
+    {
+      "code": "HS-239",
+      "name": "FEMALE 22mm TO 15mm Compression"
+    },
+    {
+      "code": "HS-242",
+      "name": "22MM COMP PIPE Water"
+    },
+    {
+      "code": "HS-243",
+      "name": "15 MM COMP PIPE Water"
+    },
+    {
+      "code": "HS-248",
+      "name": "PVC Conduit Short 32mm"
+    },
+    {
+      "code": "HS-265",
+      "name": "PEX 1216 - BULKHEAD"
+    },
+    {
+      "code": "HS-292",
+      "name": "Electrical Isolator Lever Aircon"
+    },
+    {
+      "code": "HS-348",
+      "name": "Man Hole Covers"
+    },
+    {
+      "code": "HS-349",
+      "name": "HDPE Danger Tape"
+    },
+    {
+      "code": "HS-350",
+      "name": "Cello Tape"
+    },
+    {
+      "code": "HS-05AF4708",
+      "name": "Gas Filter �"
+    }
+  ],
+  "verified": "Read back all updated costs and new rows; all pre-existing cells outside Cost were unchanged."
+}
