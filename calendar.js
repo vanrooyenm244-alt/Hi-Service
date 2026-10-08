@@ -1,12 +1,15 @@
 (function(){
   'use strict';
-  var month=new Date(),events=[],generation=0,mode='agenda',cache=null,inflight=null;
+  var month=new Date(),events=[],generation=0,mode='agenda',day=null,cache=null,inflight=null;
   function owner(){return JSON.stringify([S.url,S.username,S.password]);}
   function cacheKey(){return 'hi-calendar:'+JSON.stringify([S.url,S.username]);}
   function render(){
     $('hiCalTitle').textContent=month.toLocaleString(undefined,{month:'long',year:'numeric'});
-    var view=TimeTreeCalendar.layout(events,month,mode,'data-hi-event');
+    var visible=events.filter(e=>TimeTreeCalendar.visible(e,'Hi Service',S));
+    var view=TimeTreeCalendar.layout(visible,month,mode,'data-hi-event',day);
+    if(mode==='day')$('hiCalTitle').textContent=new Date(day+'T12:00:00').toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long'});
     $('hiCalGrid').innerHTML=view.html;
+    $('hiCalGrid').querySelectorAll('[data-cal-day]').forEach(b=>b.onclick=()=>{day=b.dataset.calDay;mode='day';render();});
     $('hiCalAgenda').setAttribute('aria-pressed',String(mode==='agenda'));$('hiCalMonth').setAttribute('aria-pressed',String(mode==='month'));
     if(view.errors.length)$('hiCalMsg').textContent='Some repeating bookings need review: '+view.errors.join('; ');
     $('hiCalGrid').querySelectorAll('[data-hi-event]').forEach(b=>b.onclick=()=>{var e=events.find(e=>e.id===b.dataset.hiEvent);if(!e)return;$('hiCalDetails').textContent=TimeTreeCalendar.details(e);$('hiCalSource').href=e.sourceUrl;$('hiCalDetailCard').classList.remove('hidden');$('hiCalDetailCard').scrollIntoView({behavior:'smooth',block:'nearest'});});
@@ -30,9 +33,9 @@
     }finally{if(inflight&&inflight.promise===request)inflight=null;}})();
     inflight={owner:who,promise:request};return request;
   };
-  $('hiCalPrev').onclick=()=>{month.setDate(1);month.setMonth(month.getMonth()-1);render();};
-  $('hiCalNext').onclick=()=>{month.setDate(1);month.setMonth(month.getMonth()+1);render();};
-  $('hiCalToday').onclick=()=>{month=new Date();render();};$('hiCalRefresh').onclick=()=>loadHiCalendar(true);
+  $('hiCalPrev').onclick=()=>{month.setDate(1);month.setMonth(month.getMonth()-1);if(mode==='day')mode='agenda';render();};
+  $('hiCalNext').onclick=()=>{month.setDate(1);month.setMonth(month.getMonth()+1);if(mode==='day')mode='agenda';render();};
+  $('hiCalToday').onclick=()=>{month=new Date();day=month.toISOString().slice(0,10);if(mode==='day')mode='agenda';render();};$('hiCalRefresh').onclick=()=>loadHiCalendar(true);
   $('hiCalAgenda').onclick=()=>{mode='agenda';render();};$('hiCalMonth').onclick=()=>{mode='month';render();};
   $('hiCalClose').onclick=()=>$('hiCalDetailCard').classList.add('hidden');
 })();
