@@ -1,6 +1,7 @@
+/* Calendar release filenames contain content hashes; keep them in sync with source files. */
 /* Cache only this app's public offline shell. API/auth responses stay on the network. */
-const CACHE='hi-service-v26-calendar-tags';
-const CORE=['./','./index.html', './calendar-ui.css','./calendar.js','./vendor/rrule.min.js','./timetree-calendar.js','./stock-count.js','./user-privileges.js','./stock-categories.js','./stock-import.js','./manifest.webmanifest'];
+const CACHE='hi-service-v27-calendar-cache-fix';
+const CORE=['./','./index.html', './calendar-ui.364cf824c602.css','./calendar.519a95c1628b.js','./vendor/rrule.min.js','./timetree-calendar.071000ecf91b.js','./stock-count.js','./user-privileges.js','./stock-categories.js','./stock-import.js','./manifest.webmanifest'];
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE&&/^hi-service-/.test(k)).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
 self.addEventListener('fetch',e=>{
