@@ -68,10 +68,11 @@ function hiMove_(u,from,to,lines,type,reason,ref,requestId){
   var ss=SpreadsheetApp.getActiveSpreadsheet(),existingLog=ss.getSheetByName(HI_MOVE_SHEET);
   requestId=String(requestId||'').trim();
   if(requestId&&existingLog&&existingLog.getLastRow()>1){var logged=existingLog.getRange(2,1,existingLog.getLastRow()-1,Math.min(11,existingLog.getMaxColumns())).getValues().filter(function(r){return String(r[10])===requestId&&String(r[1])===String(u.username)&&String(r[2])===type;});if(logged.length)return {changed:logged.length,unchanged:true};}
-  if(['transfer','receive','adjust'].indexOf(type)<0)throw new Error('Unknown movement type');
-  if(type==='transfer'&&(!from||!to||from===to))throw new Error('Choose two different locations');
-  if((type==='transfer'||type==='adjust')&&HI_PLACES.indexOf(from)<0)throw new Error('Unknown source');
+  if(['transfer','receive','adjust','issue'].indexOf(type)<0)throw new Error('Unknown movement type');
+  if((type==='transfer'||type==='issue')&&(!from||!to||from===to))throw new Error('Choose two different locations');
+  if((type==='transfer'||type==='adjust'||type==='issue')&&HI_PLACES.indexOf(from)<0)throw new Error('Unknown source');
   if((type==='transfer'||type==='receive')&&HI_PLACES.indexOf(to)<0)throw new Error('Unknown destination');
+  if(type==='issue'&&(to!=='Kleinmond'||!String(ref||'').trim()))throw new Error('Kleinmond destination and job/reference required');
   if(!Array.isArray(lines)||!lines.length)throw new Error('Add stock lines first');
   // Validate the entire request, including repeated lines, before changing quantities.
   var plans=Object.create(null),order=[];
@@ -83,13 +84,14 @@ function hiMove_(u,from,to,lines,type,reason,ref,requestId){
     plans[it.row].qty+=q;
   });
   order.forEach(function(key){var p=plans[key],it=p.item,q=p.qty;
-    if(type==='transfer'&&it[from]<q)throw new Error(it.item+' only has '+it[from]+' in '+from);
+    if((type==='transfer'||type==='issue')&&it[from]<q)throw new Error(it.item+' only has '+it[from]+' in '+from);
     if(type==='adjust'&&it[from]+q<0)throw new Error(it.item+' would become negative');
   });
   var log=hiSheet_(SpreadsheetApp.getActiveSpreadsheet(),HI_MOVE_SHEET,['Timestamp','User','Type','From','To','Code','Description','Qty','Reason','Reference','Request ID']),done=0;
   log.getRange(1,11).setValue('Request ID');
   order.forEach(function(key){var p=plans[key],it=p.item,q=p.qty;if(!q)return;
     if(type==='transfer'){hiSetQty_(it.row,from,it[from]-q,u);hiSetQty_(it.row,to,it[to]+q,u);}
+    else if(type==='issue')hiSetQty_(it.row,from,it[from]-q,u);
     else if(type==='receive')hiSetQty_(it.row,to,it[to]+q,u);
     else hiSetQty_(it.row,from,it[from]+q,u);
     log.appendRow([new Date(),u.username||'',type,from||'',to||'',it.code,it.item,q,reason||'',ref||'',requestId]);done++;
@@ -133,10 +135,11 @@ function hiServiceGet_(p,body){
   return out_({ok:true,stock:hiStockRows_(),places:HI_PLACES,categories:['Gas','Plumbing','Geyser','Consumable','Tools','Other']});
 }
 function hiServicePost_(body){
-  var a=body.action;if(['hiStockCount','hiStockAdd','hiStockTransfer','hiStockAdjust','hiStockReceive','hiTimesheet'].indexOf(a)<0)return null;
+  var a=body.action;if(['hiStockCount','hiStockAdd','hiStockTransfer','hiStockIssue','hiStockAdjust','hiStockReceive','hiTimesheet'].indexOf(a)<0)return null;
   var u=auth_(body);
   if(a==='hiStockCount'){var r=hiCount_(u,String(body.place||''),body.counts||{});return out_({ok:true,changed:r.changed,unknown:r.unknown,rejected:r.rejected});}
   if(a==='hiStockAdd')return out_({ok:true,added:hiAdd_(u,body.item||{})});
+  if(a==='hiStockIssue'){if(typeof permissionCheck_==='function')permissionCheck_(u,{action:'hiStockTransfer'});return out_({ok:true,result:hiMove_(u,body.from,'Kleinmond',body.lines,'issue','Stock issued to Kleinmond',body.reference,body.requestId)});}
   if(a==='hiStockTransfer')return out_({ok:true,result:hiMove_(u,body.from,body.to,body.lines,'transfer',body.reason,'',body.requestId)});
   if(a==='hiStockAdjust')return out_({ok:true,result:hiMove_(u,body.place,'',body.lines,'adjust',body.reason,'',body.requestId)});
   if(a==='hiStockReceive')return out_({ok:true,result:hiMove_(u,'',body.place,body.lines,'receive','Invoice',body.reference,body.requestId)});
