@@ -44,6 +44,7 @@
 <div class="card"><div class="head"><h2>Add from price list</h2><span class="small" id="estPriceStatus"></span></div><input id="estSearch" class="search" placeholder="Search item, fitting, valve, pipe, regulator..."><div id="estSearchResults" class="estSearchResults hidden"></div><div class="toolbar"><button class="btn" id="estCustom">+ Custom item</button></div></div>
 <div class="card"><div class="head"><h2>Estimate lines</h2><span class="small">Edit quantities and customer prices before reviewing</span></div><div id="estLines" class="estItems"></div><div id="estTotals" class="estTotals"></div>
 <div class="toolbar"><button class="btn primary" id="estReview">Review Proposal</button><button class="btn" id="estPrint">Print / Save PDF</button><button class="btn primary" id="estShare">Share to Customer</button></div><div class="msg" id="estMsg"></div></div>
+<div class="card" id="estXeroCard"><div class="head"><h2>Xero Quote</h2><span class="small">Hi Service R&D demo</span></div><p class="small">Search a Xero contact and create a draft quote from this estimate. No quote is sent automatically.</p><div class="toolbar"><input class="search" id="estXeroSearch" placeholder="Search Xero customer by name or email" aria-label="Search Xero customer"><button class="btn" id="estXeroFind" type="button">Find Customer</button></div><div id="estXeroResults" class="estSearchResults hidden"></div><p class="msg" id="estXeroSelected">No Xero contact selected</p><button class="btn primary" id="estXeroSend" type="button">Send Quote to Xero</button><p class="msg" id="estXeroStatus" role="status"></p></div>
 <div class="card hidden" id="estProposalCard"><div class="head"><h2>Customer Proposal Preview</h2><span class="small">Items and final total only</span></div><div id="estProposalPreview"></div></div>
 <div class="card"><div class="head"><h2>Gas compliance checklist</h2></div><div class="small" style="line-height:1.7">
 • Appliance must be permitted/approved for LPG and installed to its instructions.<br>
@@ -285,4 +286,56 @@ loadReport.onclick=loadDailyStockReport;
 printReport.onclick=()=>{if(!STOCK_REPORT)return;let w=window.open('','_blank');if(!w)return alert('Allow pop-ups to generate the PDF.');w.document.write('<!doctype html><html><head><title>Hi Service Daily Stock Report '+esc(STOCK_REPORT.date)+'</title><style>body{font-family:Arial,sans-serif;color:#1d2924;padding:24px}h2{margin:0}h3{margin-top:24px;border-bottom:2px solid #159447;padding-bottom:5px}table{width:100%;border-collapse:collapse;font-size:10px}th,td{padding:6px;border-bottom:1px solid #ddd;text-align:left;vertical-align:top}th{background:#f2f6f3}.small{font-size:10px;color:#66736d}.total{font-weight:bold}@page{size:A4 landscape;margin:10mm}</style></head><body>'+reportPreview.innerHTML+'</body></html>');w.document.close();w.focus();setTimeout(()=>w.print(),300)};
 if(reportDate)reportDate.value=hiToday();
 load();stockDbOpen().then(()=>loadCachedStock()).then(()=>flushStockQueue()).catch(()=>{});
+
+// Xero estimate bridge. Uses the shared Apps Script backend; ContactID avoids name collisions.
+(function(){
+ const el=id=>document.getElementById(id);
+ const search=el('estXeroFind'), send=el('estXeroSend'), results=el('estXeroResults'), status=el('estXeroStatus');
+ let picked=null, busy=false;
+ const selected=el('estXeroSelected');
+ search.addEventListener('click',async()=>{
+   const q=el('estXeroSearch').value.trim();if(!q){status.textContent='Enter a customer name or email.';return;}
+   search.disabled=true;status.textContent='Searching Xero…';results.replaceChildren();results.classList.add('hidden');
+   try{
+     const j=await apiGet('xeroContacts',{q});const contacts=j.contacts||[];
+     if(!contacts.length){status.textContent='No contacts found in the connected Xero organisation.';return;}
+     for(const c of contacts){
+       const btn=document.createElement('button');btn.type='button';
+       btn.textContent=c.name+(c.email?' — '+c.email:'');
+       btn.addEventListener('click',()=>{picked=c;el('estCustomer').value=c.name;selected.textContent='Xero customer: '+c.name;results.classList.add('hidden');status.textContent='Contact selected.';});
+       results.appendChild(btn);
+     }
+     results.classList.remove('hidden');status.textContent='Select the correct customer.';
+   }catch(e){status.textContent='Xero lookup failed: '+e.message;}finally{search.disabled=false;}
+ });
+ el('estCustomer').addEventListener('input',()=>{if(picked&&el('estCustomer').value!==picked.name){picked=null;selected.textContent='Customer changed — select Xero contact again.';}});
+ send.addEventListener('click',async()=>{
+   if(busy)return;
+   if(!picked||!picked.contactID){status.textContent='Find and select a Xero contact first.';return;}
+   const lines=(EST.lines||[]).map(line=>({description:line.name||'',quantity:Number(line.qty),unitAmount:Number(estSell_(line))}));
+   if(!lines.length||lines.some(l=>!l.description.trim()||!Number.isFinite(l.quantity)||l.quantity<=0||!Number.isFinite(l.unitAmount)||l.unitAmount<0)){
+     status.textContent='Check quantities, descriptions and prices before sending.';return;
+   }
+   if(EST.lines.some(estNeedsPrice_)){status.textContent='Some cost-estimation lines have missing prices. Resolve them first.';return;}
+   const signature=JSON.stringify({contactID:picked.contactID,lines,jobType:estType.value,vat:estVat.value});
+   const saved=EST.xeroSync;
+   if(saved&&saved.quoteID){status.textContent='Quote already created: '+(saved.quoteNumber||saved.quoteID)+'. Start a fresh estimate to create another.';return;}
+   if(EST.xeroPending===signature){status.textContent='This quote was submitted earlier without a confirmed response. Check Xero before retrying.';return;}
+   if(!confirm('Create a DRAFT quote in the connected Xero R&D organisation?'))return;
+   busy=true;send.disabled=true;EST.xeroPending=signature;estSave_();status.textContent='Creating Xero quote…';
+   const d=new Date();const expiry=new Date(d);expiry.setDate(expiry.getDate()+14);
+   try{
+     const j=await api({action:'xeroCreateQuote',company:'Hi Service',quote:{
+       contactID:picked.contactID,clientName:picked.name,date:d.toISOString().slice(0,10),
+       expiryDate:expiry.toISOString().slice(0,10),reference:'HI-'+Date.now(),
+       title:'Hi Service '+(estType.selectedOptions[0]?.textContent||'Cost Estimation'),
+       summary:'Created from Hi Service Cost Estimation',items:lines}});
+     if(!j.quoteID)throw Error('No QuoteID received. Check Xero before retry.');
+     EST.xeroSync={quoteID:j.quoteID,quoteNumber:j.quoteNumber,contactID:picked.contactID};delete EST.xeroPending;estSave_();
+     status.textContent='Xero draft quote created: '+(j.quoteNumber||j.quoteID);
+   }catch(e){status.textContent='Xero result unconfirmed: '+e.message+'. Check Xero before resending.';}
+   finally{busy=false;send.disabled=false;}
+ });
+ const oldAuto=estAuto_;estAuto_=function(){oldAuto();delete EST.xeroSync;delete EST.xeroPending;estSave_();};
+})();
 </script><script src="vendor/rrule.min.js"></script><script src="timetree-calendar.071000ecf91b.js"></script><script src="calendar.519a95c1628b.js"></script></body></html>
