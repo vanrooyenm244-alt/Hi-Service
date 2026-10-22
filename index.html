@@ -307,7 +307,7 @@ estLoad_();
 
 // Hi Service has its own Xero actions; the backend currently routes them through
 // the shared Xero organisation. No invoice/approved quote is created here.
-let hiXeroLastFingerprint_='', hiXeroBusy_=false;\n
+let hiXeroLastFingerprint_='', hiXeroBusy_=false;
 function hiXeroDraft_(){
   let customer=estCustomer.value.trim();
   if(!customer)throw Error('Enter the customer name.');
