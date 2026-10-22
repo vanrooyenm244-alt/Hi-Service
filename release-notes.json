@@ -1,0 +1,21 @@
+{
+  "version": "hi-service-v31-app-updates",
+  "date": "2026-10-22",
+  "changes": [
+    "Hi Service: Settings bevat nou App Updates en 'n afmerkbare toetslys",
+    "Login maak oop ná suksesvolle gebruikersverifikasie; stock-data laai daarna",
+    "Clock In en Clock Out is aparte aksies wat bedienertyd gebruik",
+    "Cost Estimation bevat 'n Xero Draft Quote-aksie (vereis ontplooide backend en geldige Xero-koppeling)"
+  ],
+  "tests": [
+    "Meld aan en kyk dat die app oopmaak sonder om vir stock te wag",
+    "Open Settings → App Updates en kontroleer geïnstalleerde weergawe",
+    "Check for updates gee 'n duidelike resultaat",
+    "Merk 'n toets af; maak die app weer oop en bevestig dit bly gemerk",
+    "Clock In en Clock Out wys bedienerbevestiging, sonder dubbele inskrywing",
+    "Kontroleer dat ingediende ure vir admin-goedkeuring wag",
+    "Cost Estimation kan 'n proposal wys en PDF maak",
+    "Toets Xero Draft Quote slegs nadat die backend gekoppel en ontplooi is"
+  ],
+  "notes": "Moenie die app se data uitvee of deïnstalleer om 'n update te forseer nie."
+}
