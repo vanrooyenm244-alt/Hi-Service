@@ -43,7 +43,7 @@
 </div>
 <div class="card"><div class="head"><h2>Add from price list</h2><span class="small" id="estPriceStatus"></span></div><input id="estSearch" class="search" placeholder="Search item, fitting, valve, pipe, regulator..."><div id="estSearchResults" class="estSearchResults hidden"></div><div class="toolbar"><button class="btn" id="estCustom">+ Custom item</button></div></div>
 <div class="card"><div class="head"><h2>Estimate lines</h2><span class="small">Edit quantities and customer prices before reviewing</span></div><div id="estLines" class="estItems"></div><div id="estTotals" class="estTotals"></div>
-<div class="toolbar"><button class="btn primary" id="estReview">Review Proposal</button><button class="btn" id="estPrint">Print / Save PDF</button><button class="btn primary" id="estShare">Share to Customer</button></div><div class="msg" id="estMsg"></div></div>
+<div class="toolbar"><button class="btn primary" id="estReview">Review Proposal</button><button class="btn" id="estPrint">Print / Save PDF</button><button class="btn primary" id="estShare">Share to Customer</button><button class="btn primary" id="estXeroSend" type="button">Create Xero Draft Quote</button></div><div class="small" id="estXeroStatus">Xero: checking connection…</div><div class="msg" id="estMsg"></div></div>
 <div class="card hidden" id="estProposalCard"><div class="head"><h2>Customer Proposal Preview</h2><span class="small">Items and final total only</span></div><div id="estProposalPreview"></div></div>
 <div class="card"><div class="head"><h2>Gas compliance checklist</h2></div><div class="small" style="line-height:1.7">
 • Appliance must be permitted/approved for LPG and installed to its instructions.<br>
@@ -268,7 +268,48 @@ async function estShare_(){
   window.open('https://wa.me/'+phone+'?text='+encodeURIComponent(text+'\n\n'+lines+'\n\nEstimated total: '+estMoney_(total)),'_blank','noopener');estMsg.textContent='WhatsApp opened with the estimate.';
 }
 estLoad_();
-if($('estSearch')){$('estSearch').oninput=estSearch_;$('estBuild').onclick=estAuto_;$('estType').onchange=()=>{if(estType.value==='cupboard'){estPipeM.value='1';estAuto_()}else{EST.jobType=estType.value;estSave_()}};$('estClear').onclick=()=>{if(confirm('Clear this estimate?')){EST.lines=[];estSave_();estRender_()}};$('estCustom').onclick=()=>{let n=prompt('Custom item description');if(!n)return;let q=Number(prompt('Quantity','1'))||1,c=Number(prompt('Customer unit price excluding VAT','0'))||0;estAddCustom_(n,q,0,'');EST.lines[EST.lines.length-1].sellOverride=Math.max(0,c);estSave_();estRender_()};$('estReview').onclick=estReview_;$('estPrint').onclick=estPrint_;['estCustomer','estType'].forEach(id=>$(id).addEventListener('change',estRender_));$('estShare').onclick=estShare_;['estMarkup','estVat'].forEach(id=>$(id).oninput=estRender_);estRender_()}
+
+// Hi Service has its own Xero actions; the backend currently routes them through
+// the shared Xero organisation. No invoice/approved quote is created here.
+let hiXeroLastFingerprint_='', hiXeroBusy_=false;
+function hiXeroDraft_(){
+  let customer=estCustomer.value.trim();
+  if(!customer)throw Error('Enter the customer name.');
+  if(!EST.lines.length)throw Error('Add estimate lines first.');
+  let lines=EST.lines.filter(x=>Number(x.qty)>0);
+  if(!lines.length)throw Error('Add at least one positive-quantity item.');
+  let items=lines.map(x=>({description:String(x.name||'').trim()+(x.note?' — '+x.note:''),quantity:Number(x.qty),unitAmount:Number(estSell_(x))}));
+  if(items.some(x=>!x.description||!Number.isFinite(x.quantity)||x.quantity<=0||!Number.isFinite(x.unitAmount)||x.unitAmount<0))throw Error('Review quantities and prices first.');
+  let vat=Number(estVat.value);
+  if(!Number.isFinite(vat)||vat<0||vat>100)throw Error('Invalid VAT percentage.');
+  // Tax treatment is configured in Xero: verify that its sales tax rate matches this estimate.
+  let quote={title:'Hi Service — '+estType.options[estType.selectedIndex].text,reference:'HI SERVICE',summary:'Hi Service cost estimation. VAT shown in app: '+vat+'%. Subject to site verification.',clientName:customer,items};
+  return {contact:{name:customer,number:estPhone.value.trim()},quote,vat};
+}
+async function hiXeroStatus_(){
+  try{let j=await apiGet('hiXeroStatus');estXeroStatus.textContent=j.connected?'Xero: Shared organisation — '+(j.tenantName||'connected')+' (Hi Service account can be linked separately later)':'Xero: Not connected. Configure Xero in the shared backend.';}
+  catch(e){estXeroStatus.textContent='Xero status unavailable: '+e.message;}
+}
+async function hiXeroSend_(){
+  if(hiXeroBusy_)return;
+  let draft;
+  try{draft=hiXeroDraft_();}catch(e){estMsg.textContent=e.message;return;}
+  const fingerprint=JSON.stringify(draft);
+  if(hiXeroLastFingerprint_===fingerprint){estMsg.textContent='This exact draft was created in this session. Check Xero before resending.';return;}
+  if(!confirm('Create a DRAFT quote for '+draft.contact.name+' in the CURRENT SHARED Xero organisation? Check customer pricing and VAT in Xero before issuing.'))return;
+  hiXeroBusy_=true;estXeroSend.disabled=true;estMsg.textContent='Creating customer and draft quote in Xero…';
+  try{
+    const contact=await api({action:'hiXeroCreateContact',contact:draft.contact});
+    if(!contact.contactID)throw Error('Xero customer ID was not confirmed.');
+    const result=await api({action:'hiXeroCreateQuote',quote:{...draft.quote,contactID:contact.contactID}});
+    if(!result.quoteID)throw Error('Xero did not confirm the draft. Check Xero before retrying.');
+    hiXeroLastFingerprint_=fingerprint;
+    estMsg.textContent='Xero DRAFT created: '+(result.quoteNumber||result.quoteID)+'. Verify VAT and amounts in Xero before sending to customer.';
+  }catch(e){estMsg.textContent='Xero draft not confirmed: '+e.message+'. Check Xero for an existing draft before retrying.';}
+  finally{hiXeroBusy_=false;estXeroSend.disabled=false;}
+}
+
+if($('estSearch')){$('estSearch').oninput=estSearch_;$('estBuild').onclick=estAuto_;$('estType').onchange=()=>{if(estType.value==='cupboard'){estPipeM.value='1';estAuto_()}else{EST.jobType=estType.value;estSave_()}};$('estClear').onclick=()=>{if(confirm('Clear this estimate?')){EST.lines=[];estSave_();estRender_()}};$('estCustom').onclick=()=>{let n=prompt('Custom item description');if(!n)return;let q=Number(prompt('Quantity','1'))||1,c=Number(prompt('Customer unit price excluding VAT','0'))||0;estAddCustom_(n,q,0,'');EST.lines[EST.lines.length-1].sellOverride=Math.max(0,c);estSave_();estRender_()};$('estReview').onclick=estReview_;$('estPrint').onclick=estPrint_;['estCustomer','estType'].forEach(id=>$(id).addEventListener('change',estRender_));$('estShare').onclick=estShare_;$('estXeroSend').onclick=hiXeroSend_;hiXeroStatus_();['estMarkup','estVat'].forEach(id=>$(id).oninput=estRender_);estRender_()}
 
 let STOCK_REPORT=null;
 function reportTime_(s){return String(s||'').split(' ')[1]||''}
