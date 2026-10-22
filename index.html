@@ -36,6 +36,7 @@
 <div class="card"><div class="head"><h2>Cost Estimation</h2><span class="small">Gas · Plumbing · Hi Service price list</span></div>
 <div class="estTop">
 <div class="field"><label>Customer</label><input id="estCustomer" placeholder="Customer name"></div>
+<div class="field" style="grid-column:1/-1"><label>Search existing Xero Contacts (name, email or phone)</label><div class="toolbar"><input id="estContactQuery" placeholder="Search Xero Contacts" style="flex:1;min-width:130px;padding:10px;border:1px solid #dce4df;border-radius:8px"><button type="button" class="btn" id="estContactFind">Find contact</button></div><div id="estContactResults" class="small" role="status"></div><div id="estContactSelected" class="small">No Xero contact selected</div></div>
 <div class="field"><label>WhatsApp number</label><input id="estPhone" placeholder="082 123 4567"></div>
 <div class="field"><label>Job type</label><select id="estType"><option value="stove">Gas stove / hob</option><option value="geyser">Gas geyser</option><option value="cupboard">Cupboard installation</option><option value="both">Stove + geyser</option><option value="custom">Custom gas work</option></select></div>
 <div class="field"><label>Gas pipe</label><select id="estPipe"><option value="1216">PEX 1216 / 16 mm</option><option value="1620">PEX 1620 / 20 mm</option><option value="2025">PEX 2025 / 25 mm</option><option value="csst15">CSST 15 mm</option></select></div>
@@ -308,6 +309,18 @@ estLoad_();
 // Hi Service has its own Xero actions; the backend currently routes them through
 // the shared Xero organisation. No invoice/approved quote is created here.
 let hiXeroLastFingerprint_='', hiXeroBusy_=false;
+let hiXeroSelectedContact_=null;
+async function hiFindXeroContacts_(){
+ const box=$('estContactResults'),q=$('estContactQuery').value.trim();
+ box.textContent=q?'Searching Xero Contacts…':'Enter a name, email or phone number.';if(!q)return;
+ try{const j=await apiGet('hiXeroContacts',{q:q});box.replaceChildren();
+  if(!j.contacts||!j.contacts.length){box.textContent='No matching Xero Contacts. Choose another search or create a new contact.';return;}
+  j.contacts.forEach(c=>{const b=document.createElement('button');b.type='button';b.className='btn';b.style.cssText='display:block;margin:5px 0;width:100%;text-align:left;white-space:normal';b.textContent=c.name+(c.email?' · '+c.email:'')+(c.number?' · '+c.number:'');b.onclick=()=>{hiXeroSelectedContact_=c;estCustomer.value=c.name;if(c.number)estPhone.value=c.number;$('estContactSelected').textContent='Selected Xero Contact: '+c.name;box.replaceChildren();};box.appendChild(b);});
+ }catch(e){box.textContent='Xero Contacts search failed: '+e.message;}
+}
+$('estContactFind').onclick=hiFindXeroContacts_;
+$('estCustomer').addEventListener('input',function(){hiXeroSelectedContact_=null;$('estContactSelected').textContent='No Xero contact selected';});
+
 function hiXeroDraft_(){
   let customer=estCustomer.value.trim();
   if(!customer)throw Error('Enter the customer name.');
@@ -336,8 +349,8 @@ async function hiXeroSend_(){
   if(!confirm('Create a DRAFT quote for '+draft.contact.name+' in the CURRENT SHARED Xero organisation? Check customer pricing and VAT in Xero before issuing.'))return;
   hiXeroBusy_=true;estXeroSend.disabled=true;estMsg.textContent='Creating customer and draft quote in Xero…';
   try{
-    const contact=await api({action:'hiXeroCreateContact',contact:draft.contact});
-    if(!contact.contactID)throw Error('Xero customer ID was not confirmed.');
+    const contact=hiXeroSelectedContact_&&hiXeroSelectedContact_.name===draft.contact.name?hiXeroSelectedContact_:await api({action:'hiXeroCreateContact',contact:draft.contact});
+    if(!contact.contactID)throw Error('Xero Contact ID was not confirmed.');
     const result=await api({action:'hiXeroCreateQuote',quote:{...draft.quote,contactID:contact.contactID}});
     if(!result.quoteID)throw Error('Xero did not confirm the draft. Check Xero before retrying.');
     hiXeroLastFingerprint_=fingerprint;
