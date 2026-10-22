@@ -271,7 +271,7 @@ estLoad_();
 
 // Hi Service has its own Xero actions; the backend currently routes them through
 // the shared Xero organisation. No invoice/approved quote is created here.
-let hiXeroLastFingerprint_='', hiXeroBusy_=false;
+let hiXeroLastFingerprint_='', hiXeroBusy_=false;\n
 function hiXeroDraft_(){
   let customer=estCustomer.value.trim();
   if(!customer)throw Error('Enter the customer name.');
@@ -287,8 +287,8 @@ function hiXeroDraft_(){
   return {contact:{name:customer,number:estPhone.value.trim()},quote,vat};
 }
 async function hiXeroStatus_(){
-  try{let j=await apiGet('hiXeroStatus');estXeroStatus.textContent=j.connected?'Xero: Shared organisation — '+(j.tenantName||'connected')+' (Hi Service account can be linked separately later)':'Xero: Not connected. Configure Xero in the shared backend.';}
-  catch(e){estXeroStatus.textContent='Xero status unavailable: '+e.message;}
+  try{let j=await apiGet('hiXeroStatus');estXeroSend.disabled=!j.connected;estXeroStatus.textContent=j.connected?'Xero: Shared organisation — '+(j.tenantName||'connected')+' (Hi Service account can be linked separately later)':'Xero: Not connected. Configure Xero in the shared backend.';}
+  catch(e){estXeroSend.disabled=true;estXeroStatus.textContent='Xero not ready in deployed backend: '+e.message;}
 }
 async function hiXeroSend_(){
   if(hiXeroBusy_)return;
