@@ -21,7 +21,14 @@
 <div class="card"><div class="head"><h2>Stock Received</h2></div><div class="grid"><div class="field"><label>Stock goes to</label><select id="receivePlace"></select></div><div class="field"><label>Invoice / reference</label><input id="invoiceRef"></div></div><div class="toolbar"><input id="invoiceFile" type="file" accept=".pdf,image/*,.csv,text/csv"><button class="btn" id="readInvoice">Load invoice</button></div><p class="small">CSV invoices can be read now. PDF/photo invoice auto-reading needs the document-reading service connected before it can safely change stock.</p><div id="receiveLines"></div><div class="toolbar"><button class="btn" id="addReceive">+ Item</button><button class="btn primary" id="sendReceive">Confirm Stock Received</button></div><div class="msg" id="receiveMsg"></div></div>
 <div class="card"><div class="head"><h2>Stock Adjustment</h2></div><div class="grid"><div class="field"><label>Location</label><select id="adjustPlace"></select></div><div class="field"><label>Reason</label><input id="adjustReason" placeholder="Correction / damaged / used"></div></div><div id="adjustLines"></div><div class="toolbar"><button class="btn" id="addAdjust">+ Item</button><button class="btn primary" id="sendAdjust">Save Adjustment</button></div></div></section>
 
-<section id="time" class="page"><button class="btn backHome" data-go="home">← Home</button><div class="card"><div class="head"><h2>Timesheets</h2><span class="small">Hi Service</span></div><div class="grid"><div class="field"><label>Worker</label><input id="worker" value="Andre"></div><div class="field"><label>Date</label><input id="date" type="date"></div><div class="field"><label>Time in</label><input id="timeIn" type="time" value="07:00"></div><div class="field"><label>Time out</label><input id="timeOut" type="time" value="17:00"></div><div class="field"><label>Lunch minutes</label><input id="lunch" type="number" value="60"></div><div class="field"><label>Job / reference</label><input id="job"></div><div class="field" style="grid-column:1/-1"><label>Note</label><textarea id="note"></textarea></div></div><div class="toolbar"><button class="btn primary" id="sendTime">Send Timesheet</button></div><div class="msg" id="timeMsg"></div></div></section>
+<section id="time" class="page"><button class="btn backHome" data-go="home">← Home</button>
+<div class="card"><div class="head"><h2>Clock In / Clock Out</h2><span class="small">Hi Service · server time</span></div>
+<p class="small">Clock In wanneer jy by die werk aankom. Clock Out wanneer jy vertrek. Jy hoef nie albei tye saam in te vul nie.</p>
+<div class="grid"><div><b id="hiClockDate">Today</b><div class="small" id="hiClockWorker"></div></div><div><b id="hiClockState">Loading…</b><div class="small" id="hiClockTimes"></div></div></div>
+<div class="field"><label>Job / reference (optional when clocking out)</label><input id="hiClockJob"></div>
+<div class="field"><label>Note</label><textarea id="hiClockNote"></textarea></div>
+<div class="toolbar"><button class="btn primary" id="hiClockIn" type="button" disabled>Clock In</button><button class="btn primary" id="hiClockOut" type="button" disabled>Clock Out</button><button class="btn" id="hiClockRefresh" type="button">Refresh</button></div>
+<div class="msg" id="timeMsg"></div><p class="small">Ure gaan eers na admin approval wanneer jy uitklok. Saterdag het geen lunch deduction nie.</p></div></section>
 
 <section id="users" class="page"><button class="btn backHome" data-go="home">← Home</button><div class="card"><div class="head"><h2>Hi Service Users</h2><button class="btn" id="refreshUsers">Refresh</button></div><p class="small">Approve Hi Service users and choose what they may use. Flagship access stays separate.</p><div id="usersList"></div><div class="msg" id="usersMsg"></div></div></section>
 
@@ -169,7 +176,36 @@ sendTransfer.onclick=async()=>{if(from.value===to.value)return alert('Choose two
 sendReceive.onclick=async()=>{try{let l=lines(receiveLines);if(!l.length)return alert('Add received stock.');await submitMovement({action:'hiStockReceive',place:receivePlace.value,reference:invoiceRef.value,lines:l},sendReceive);receiveLines.innerHTML='';await refreshStock();receiveMsg.textContent='Stock received and updated.'}catch(e){receiveMsg.textContent=e.message}};
 sendAdjust.onclick=async()=>{try{let l=lines(adjustLines);if(!l.length)return alert('Add an adjustment. Use negative qty to remove stock.');await submitMovement({action:'hiStockAdjust',place:adjustPlace.value,reason:adjustReason.value,lines:l},sendAdjust);adjustLines.innerHTML='';await refreshStock()}catch(e){alert(e.message)}};
 readInvoice.onclick=async()=>{let f=invoiceFile.files[0];if(!f)return alert('Choose an invoice first.');if(!/csv/i.test(f.type)&&!/\.csv$/i.test(f.name)){receiveMsg.textContent='PDF/photo selected. Automatic document reading is not connected yet, so no stock was changed.';return}let rows=parseCSV(await f.text());rows.forEach(r=>{let key=r.code||r.item||r.description,qty=Number(r.quantity||r.qty)||0;if(!key||!qty)return;let match=S.items.find(x=>(x.code||'').toLowerCase()===key.toLowerCase()||(x.item||'').toLowerCase()===key.toLowerCase());if(match){addLine(receiveLines,qty);receiveLines.lastElementChild.querySelector('select').value=match.code||match.item}});receiveMsg.textContent='Invoice lines loaded. Review before confirming.'};
-sendTime.onclick=async()=>{let today=hiToday();if(date.value!==today)return alert('Timesheets may only be submitted for today.');sendTime.disabled=true;let row={worker:worker.value,date:date.value,timeIn:timeIn.value,timeOut:timeOut.value,lunch:Number(lunch.value)||0,job:job.value,note:note.value};try{let queued=await queueStock('hiTimesheet',{row:row});timeMsg.textContent='Saved on this phone · sending to Google…';await flushStockQueue();let still=await stockDbGet('queue',queued.id);timeMsg.textContent=still?'Saved on this phone. Waiting for connection — it will retry automatically.':'Timesheet confirmed in Google Sheet.'}catch(e){timeMsg.textContent='Saved on this phone. Sync not confirmed: '+e.message}finally{sendTime.disabled=false}};
+let hiClockBusy=false;
+async function hiClockRefresh_(){
+  hiClockIn.disabled=true;hiClockOut.disabled=true;
+  try{
+    const j=await apiGet('hiClockStatus');
+    hiClockDate.textContent=j.date||'Today';
+    hiClockWorker.textContent=j.worker||S.username;
+    hiClockState.textContent=j.status==='NOT_STARTED'?'Not clocked in':j.status==='CLOCKED_IN'?'At work':'Clocked out';
+    hiClockTimes.textContent=(j.timeIn?'In '+j.timeIn:'')+(j.timeOut?' · Out '+j.timeOut:'')+(j.approval?' · '+j.approval:'');
+    hiClockIn.disabled=hiClockBusy||j.status!=='NOT_STARTED';
+    hiClockOut.disabled=hiClockBusy||j.status!=='CLOCKED_IN';
+    timeMsg.textContent='';
+  }catch(e){timeMsg.textContent='Unable to retrieve live clock status: '+e.message;}
+}
+async function hiClockSubmit_(action){
+  if(hiClockBusy)return;
+  if(!confirm(action==='in'?'Clock in at the current server time?':'Clock out now and submit your shift for admin approval?'))return;
+  hiClockBusy=true;hiClockIn.disabled=true;hiClockOut.disabled=true;
+  timeMsg.textContent='Saving to server…';
+  try{
+    const j=await api({action:'hiClockAction',clockAction:action,job:hiClockJob.value,note:hiClockNote.value});
+    timeMsg.textContent=(action==='in'?'Clock in':'Clock out')+' confirmed at '+(action==='in'?j.timeIn:j.timeOut)+(j.approval?' · '+j.approval:'');
+  }catch(e){timeMsg.textContent='Not confirmed: '+e.message+'. Refresh status before retrying.';}
+  finally{hiClockBusy=false;await hiClockRefresh_();}
+}
+hiClockIn.onclick=()=>hiClockSubmit_('in');
+hiClockOut.onclick=()=>hiClockSubmit_('out');
+hiClockRefresh.onclick=hiClockRefresh_;
+document.querySelectorAll('[data-go="time"]').forEach(el=>el.addEventListener('click',hiClockRefresh_));
+
 
 const EST_KEY='hiservice-estimate-v1';
 let EST={lines:[]};
