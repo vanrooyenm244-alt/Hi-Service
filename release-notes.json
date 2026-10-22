@@ -1,13 +1,15 @@
 {
-  "version": "hi-service-v31-app-updates",
+  "version": "hi-service-v35-xero-contacts",
   "date": "2026-10-22",
   "changes": [
+    "Cost Estimation soek bestaande kliënte in Xero Contacts en gebruik die gekose ContactID",
     "Hi Service: Settings bevat nou App Updates en 'n afmerkbare toetslys",
     "Login maak oop ná suksesvolle gebruikersverifikasie; stock-data laai daarna",
     "Clock In en Clock Out is aparte aksies wat bedienertyd gebruik",
     "Cost Estimation bevat 'n Xero Draft Quote-aksie (vereis ontplooide backend en geldige Xero-koppeling)"
   ],
   "tests": [
+    "Soek 'n bestaande Xero Contact, kies dit en skep 'n Draft Quote sonder 'n dubbele kontak",
     "Meld aan en kyk dat die app oopmaak sonder om vir stock te wag",
     "Open Settings → App Updates en kontroleer geïnstalleerde weergawe",
     "Check for updates gee 'n duidelike resultaat",
