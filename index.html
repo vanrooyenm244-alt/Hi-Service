@@ -91,7 +91,25 @@ $('showRegister').onclick=()=>{$('registerBox').classList.toggle('hidden')};
 async function registerUser(){let name=$('regName').value.trim(),u=$('regUser').value.trim(),p=$('regPass').value;if(!name||u.length<3||p.length<4){$('loginMsg').textContent='Enter your name, a username (3+ characters) and password (4+ characters).';return}$('loginMsg').textContent='Creating account…';try{let j=await rawPost({action:'register',name:name,user:u,pass:p});$('loginMsg').textContent=j.message||'Account created.';if(j.ok&&String(j.status||'').toLowerCase()==='active'){$('loginUser').value=u;$('loginPass').value=p;await signIn()}else{$('registerBox').classList.add('hidden')}}catch(e){$('loginMsg').textContent=e.message}}
 $('registerBtn').onclick=registerUser;$('signOutBtn').onclick=()=>{if(confirm('Sign out of Hi Service on this phone?'))signOut()};
 let deferredInstall=null;window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstall=e;$('installBtn').classList.remove('hidden')});$('installBtn').onclick=async()=>{if(!deferredInstall)return;deferredInstall.prompt();await deferredInstall.userChoice;deferredInstall=null;$('installBtn').classList.add('hidden')};window.addEventListener('appinstalled',()=>{$('installBtn').classList.add('hidden')});if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
-function goPage(id){try{localStorage.setItem(PAGE_KEY,id)}catch(e){}let keys={calendar:'calendar.view',stock:'stock.view',overview:'stock.overview',report:'stock.report',time:'timesheets.view_own',estimate:'estimates.view',users:'users.manage'};if(keys[id]&&!hiCan(keys[id])){alert('You do not have permission for this module.');return;}if(id==='move'&&!['stock.transfer','stock.receive','stock.adjust'].some(hiCan)){alert('You do not have stock movement access.');return;}if(id==='users')loadUsers();if(id==='calendar')loadHiCalendar();document.querySelectorAll('.page').forEach(p=>p.classList.toggle('on',p.id===id));if(id==='overview')renderOverview();if(id==='stock'){renderLocations();renderStock();}}document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>goPage(b.dataset.go));document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>goPage(b.dataset.page));
+function goPage(id){try{localStorage.setItem(PAGE_KEY,id)}catch(e){}let keys={calendar:'calendar.view',stock:'stock.view',overview:'stock.overview',report:'stock.report',time:'timesheets.view_own',estimate:'estimates.view',users:'users.manage'};if(keys[id]&&!hiCan(keys[id])){alert('You do not have permission for this module.');return;}if(id==='move'&&!['stock.transfer','stock.receive','stock.adjust'].some(hiCan)){alert('You do not have stock movement access.');return;}if(id==='users')loadUsers();if(id==='calendar')loadHiCalendar();document.querySelectorAll('.page').forEach(p=>p.classList.toggle('on',p.id===id));if(id==='overview')renderOverview();if(id==='stock'){renderLocations();renderStock();}}/* Keep a safe in-app history entry so Android Back navigates instead of closing the PWA. */
+var hiNavHistory_=['home'],hiNavigationFromPop_=false;
+var hiGoPageOriginal_=goPage;
+goPage=function(id){
+ var current=document.querySelector('.page.on'),from=current&&current.id;
+ hiGoPageOriginal_(id);
+ var active=document.querySelector('.page.on');
+ if(!active||active.id!==id||from===id||hiNavigationFromPop_)return;
+ hiNavHistory_.push(id);
+ try{history.pushState({hiAppPage:id},'','#app-'+encodeURIComponent(id))}catch(e){}
+};
+window.addEventListener('popstate',function(){
+ var target=hiNavHistory_.length>1?hiNavHistory_[hiNavHistory_.length-2]:'home';
+ if(hiNavHistory_.length>1)hiNavHistory_.pop();
+ hiNavigationFromPop_=true;try{goPage(target)}finally{hiNavigationFromPop_=false}
+ if(target==='home')try{history.pushState({hiAppPage:'home'},'','#app-home')}catch(e){}
+});
+try{history.replaceState({hiAppPage:'home'},'','#app-home');history.pushState({hiAppPage:'home'},'','#app-home')}catch(e){}
+document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>goPage(b.dataset.go));document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>goPage(b.dataset.page));
 function hiToday(){return new Intl.DateTimeFormat('en-CA',{timeZone:'Africa/Johannesburg',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());}
 function hiNeedsStock(){return ['stock.view','stock.overview','stock.transfer','stock.receive','stock.adjust','stock.manage','estimates.view'].some(hiCan);}
 function hiCan(key){if(Array.isArray(S.permissions))return S.permissions.includes(key);return key==='users.manage'?S.role==='Admin':true;}
