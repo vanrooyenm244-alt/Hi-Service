@@ -93,11 +93,18 @@ $('registerBtn').onclick=registerUser;$('signOutBtn').onclick=()=>{if(confirm('S
 let deferredInstall=null;window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstall=e;$('installBtn').classList.remove('hidden')});$('installBtn').onclick=async()=>{if(!deferredInstall)return;deferredInstall.prompt();await deferredInstall.userChoice;deferredInstall=null;$('installBtn').classList.add('hidden')};window.addEventListener('appinstalled',()=>{$('installBtn').classList.add('hidden')});if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
 function goPage(id){try{localStorage.setItem(PAGE_KEY,id)}catch(e){}let keys={calendar:'calendar.view',stock:'stock.view',overview:'stock.overview',report:'stock.report',time:'timesheets.view_own',estimate:'estimates.view',users:'users.manage'};if(keys[id]&&!hiCan(keys[id])){alert('You do not have permission for this module.');return;}if(id==='move'&&!['stock.transfer','stock.receive','stock.adjust'].some(hiCan)){alert('You do not have stock movement access.');return;}if(id==='users')loadUsers();if(id==='calendar')loadHiCalendar();document.querySelectorAll('.page').forEach(p=>p.classList.toggle('on',p.id===id));if(id==='overview')renderOverview();if(id==='stock'){renderLocations();renderStock();}}/* Keep a safe in-app history entry so Android Back navigates instead of closing the PWA. */
 var hiNavHistory_=['home'],hiNavigationFromPop_=false;
+var hiNavigationBackBtn_=document.createElement('button');
+hiNavigationBackBtn_.type='button';hiNavigationBackBtn_.className='btn';
+hiNavigationBackBtn_.textContent='← Back';hiNavigationBackBtn_.style.cssText='position:sticky;top:6px;z-index:20;margin:0 0 12px;display:none';
+var hiNavRoot_=document.querySelector('#mainApp .nav');if(hiNavRoot_)hiNavRoot_.insertAdjacentElement('afterend',hiNavigationBackBtn_);
+function hiBackHome_(){var active=document.querySelector('.page.on');if(active&&active.id!=='home'){goPage('home');return}goPage('home')}
+hiNavigationBackBtn_.onclick=hiBackHome_;
 var hiGoPageOriginal_=goPage;
 goPage=function(id){
  var current=document.querySelector('.page.on'),from=current&&current.id;
  hiGoPageOriginal_(id);
  var active=document.querySelector('.page.on');
+ if(hiNavigationBackBtn_)hiNavigationBackBtn_.style.display=id==='home'?'none':'inline-block';
  if(!active||active.id!==id||from===id||hiNavigationFromPop_)return;
  hiNavHistory_.push(id);
  try{history.pushState({hiAppPage:id},'','#app-'+encodeURIComponent(id))}catch(e){}
@@ -397,7 +404,7 @@ load();stockDbOpen().then(()=>loadCachedStock()).then(()=>flushStockQueue()).cat
 </script><script src="hi-app-updates-v31.js"></script><script src="vendor/rrule.min.js"></script><script src="timetree-calendar.071000ecf91b.js"></script><script src="calendar.519a95c1628b.js"></script><script src="purchase-orders.js"></script><script>
 (function(){
  function by(id){return document.getElementById(id)}
- function check(){var label=by('hiSettingsXeroStatus');if(!label)return;label.textContent='Checking Xero…';apiGet('hiXeroStatus').then(function(r){label.textContent=r.connected?'Connected to Xero: '+(r.tenantName||'Shared organisation'):'Not connected to Xero';}).catch(function(e){label.textContent='Connection could not be verified: '+(e.message||e)})}
+ function check(){var label=by('hiSettingsXeroStatus');if(!label)return;label.textContent='Checking Xero…';apiGet('hiXeroStatus').then(function(r){label.textContent=r.connected?'Connected to Xero: '+(r.tenantName||'Shared organisation'):'Not connected to Xero';}).catch(function(e){label.textContent=/unknown action/i.test(String(e.message||e))?'Google Apps Script backend is outdated. Deploy the latest Code.gs to the existing Web App.':('Connection could not be verified: '+(e.message||e))})}
  function connect(){var label=by('hiSettingsXeroStatus');label.textContent='Opening Xero authorisation…';api({action:'xeroStart',returnUrl:location.origin+location.pathname}).then(function(r){if(!r.authUrl||!/^https:\/\//.test(r.authUrl))throw Error('Missing secure Xero authorisation URL');location.assign(r.authUrl)}).catch(function(e){label.textContent='Xero connection failed: '+(e.message||e)})}
  by('hiSettingsXeroConnect').addEventListener('click',connect);
  by('hiSettingsXeroCheck').addEventListener('click',check);
