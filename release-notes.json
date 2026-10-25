@@ -1,5 +1,5 @@
 {
-  "version": "hi-service-v39-attendance-po",
+  "version": "hi-service-v40-attendance-po",
   "date": "2026-10-25",
   "changes": [
     "Attendance review: correct/cancel pending and approved shifts with mandatory reason and retained original.",
