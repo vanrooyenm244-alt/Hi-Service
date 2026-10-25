@@ -1,22 +1,22 @@
 /* Atomic app shell. Versioned assets keep open pages consistent during updates. */
-const CACHE = 'hi-service-v39-attendance-po';
+const CACHE = 'hi-service-v40-attendance-po';
 const SHELL = [
   "./",
   "./index.html",
   "./release-notes.json",
   "./manifest.webmanifest",
   "./icon.svg",
-  "./user-privileges.js?release=hi-service-v39-attendance-po",
+  "./user-privileges.js?release=hi-service-v40-attendance-po",
   "./stock-categories.11473024c506.js",
-  "./stock-import.js?release=hi-service-v39-attendance-po",
+  "./stock-import.js?release=hi-service-v40-attendance-po",
   "./stock-count.js",
-  "./attendance-review.js?release=hi-service-v39-attendance-po",
-  "./hi-app-updates-v31.js?release=hi-service-v39-attendance-po",
+  "./attendance-review.js?release=hi-service-v40-attendance-po",
+  "./hi-app-updates-v31.js?release=hi-service-v40-attendance-po",
   "./vendor/rrule.min.js",
   "./timetree-calendar.071000ecf91b.js",
   "./calendar.519a95c1628b.js",
-  "./po-inventory.js?release=hi-service-v39-attendance-po",
-  "./purchase-orders.js?release=hi-service-v39-attendance-po",
+  "./po-inventory.js?release=hi-service-v40-attendance-po",
+  "./purchase-orders.js?release=hi-service-v40-attendance-po",
   "./calendar-ui.364cf824c602.css"
 ];
 const REQUIRED = SHELL.filter(p=>/\.(?:js|css)(?:\?|$)/.test(p)||p==='./index.html'||p==='./');
