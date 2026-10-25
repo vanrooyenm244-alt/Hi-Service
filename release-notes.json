@@ -1,23 +1,19 @@
 {
-  "version": "hi-service-v35-xero-contacts",
-  "date": "2026-10-22",
+  "version": "hi-service-v39-attendance-po",
+  "date": "2026-10-25",
   "changes": [
-    "Cost Estimation soek bestaande kliënte in Xero Contacts en gebruik die gekose ContactID",
-    "Hi Service: Settings bevat nou App Updates en 'n afmerkbare toetslys",
-    "Login maak oop ná suksesvolle gebruikersverifikasie; stock-data laai daarna",
-    "Clock In en Clock Out is aparte aksies wat bedienertyd gebruik",
-    "Cost Estimation bevat 'n Xero Draft Quote-aksie (vereis ontplooide backend en geldige Xero-koppeling)"
+    "Attendance review: correct/cancel pending and approved shifts with mandatory reason and retained original.",
+    "Submitted by and Approved by with timestamps; yellow overtime rows.",
+    "Printable approved overtime report with two blank rows between worker/pay-cycle groups.",
+    "Xero item selection, purchase accounts, supplier search, existing PO recovery and PDF/WhatsApp sharing.",
+    "Reliable atomic app updates and explicit Apply update / Reload."
   ],
   "tests": [
-    "Soek 'n bestaande Xero Contact, kies dit en skep 'n Draft Quote sonder 'n dubbele kontak",
-    "Meld aan en kyk dat die app oopmaak sonder om vir stock te wag",
-    "Open Settings → App Updates en kontroleer geïnstalleerde weergawe",
-    "Check for updates gee 'n duidelike resultaat",
-    "Merk 'n toets af; maak die app weer oop en bevestig dit bly gemerk",
-    "Clock In en Clock Out wys bedienerbevestiging, sonder dubbele inskrywing",
-    "Kontroleer dat ingediende ure vir admin-goedkeuring wag",
-    "Cost Estimation kan 'n proposal wys en PDF maak",
-    "Toets Xero Draft Quote slegs nadat die backend gekoppel en ontplooi is"
-  ],
-  "notes": "Moenie die app se data uitvee of deïnstalleer om 'n update te forseer nie."
+    "Clock in/out; verify shift belongs to the submitting employee.",
+    "Admin: correct a Sunday/Saturday entry, approve/reject or cancel with a reason; refresh and verify totals.",
+    "Print approved overtime and verify dates, yellow rows, two blank lines and submitter/approver.",
+    "Hi Service: verify the displayed Xero organisation before creating a real order; choose an item and check the account.",
+    "Create one intentional purchase order, then share its PDF without creating a duplicate.",
+    "Settings: check for updates, apply and verify the open app version."
+  ]
 }
