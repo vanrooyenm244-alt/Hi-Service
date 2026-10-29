@@ -309,26 +309,7 @@ function estCustomerDoc_(){
   return '<div class="estimateDoc" id="estimateCustomerDoc">'+(logo?'<img class="docLogo" src="'+logo+'">':'')+'<h2 style="margin:14px 0 2px">COST ESTIMATION / PROPOSAL</h2><div class="small">Hi Service Solutions</div><div style="margin-top:14px"><b>Customer:</b> '+esc(estCustomer.value||'Customer')+'<br><b>Date:</b> '+new Date().toLocaleDateString('en-ZA')+'<br><b>Work:</b> '+esc(estType.options[estType.selectedIndex].text)+'</div><table><thead><tr><th>Included items / work</th><th>Qty</th></tr></thead><tbody>'+rows+'</tbody></table><div class="docTotal">Total: '+estMoney_(total)+'</div><div style="text-align:right" class="small">'+(vat?'Includes '+Number(estVat.value)+'% VAT':'Excludes VAT')+'</div><div class="docNote">This is a cost estimation based on the information available before final site verification. Final quantities, appliance approval, pipe/regulator sizing, cylinder placement, flue/ventilation and compliance requirements are subject to site inspection. Gas installation and commissioning must be completed by an authorised registered gas practitioner, with the required Certificate of Conformity issued on completion.</div></div>';
 }
 function estReview_(){if(!EST.lines.length)return alert('Build or add estimate lines first.');estSave_();let card=$('estProposalCard');card.classList.remove('hidden');$('estProposalPreview').innerHTML=estCustomerDoc_();card.scrollIntoView({behavior:'smooth',block:'start'});}
-function estPrint_(){if(!EST.lines.length)return alert('Build or add estimate lines first.');let w=window.open('','_blank');if(!w)return alert('Allow pop-ups to preview the estimate.');w.document.write('<!doctype html><html><head><title>Hi Service Cost Estimation</title><style>body{font-family:Arial,sans-serif;color:#17201b;padding:20px}.estimateDoc{max-width:760px;margin:auto}.docLogo{max-width:360px;max-height:95px;object-fit:contain}table{width:100%;border-collapse:collapse;margin-top:18px}th,td{padding:8px;border-bottom:1px solid #ddd;text-align:left;font-size:12px}.docTotal{font-size:22px;font-weight:900;text-align:right;margin-top:16px}.small,.docNote{font-size:10px;color:#68736d}.docNote{margin-top:22px;line-height:1.45}@page{size:A4;margin:12mm}</style></head><body>'+estCustomerDoc_()+'<script>// Daily job descriptions are serialized into the existing server job field.
-const hiJobsBox=document.getElementById('hiClockJobs');
-const hiJobs=[];
-function hiRenderJobs(){
-  hiJobsBox.innerHTML='';
-  hiJobs.forEach((value,i)=>{
-    const wrap=document.createElement('label');wrap.className='field';
-    const title=document.createElement('span');title.textContent='Job '+(i+1);
-    const inp=document.createElement('input');inp.value=value;inp.placeholder='Job / site / work completed';
-    inp.addEventListener('input',()=>{hiJobs[i]=inp.value;hiClockJob.value=hiJobs.map(x=>x.trim().replace(/\|/g,'/')).filter(Boolean).join(' | ');});
-    wrap.append(title,inp);hiJobsBox.append(wrap);
-  });
-}
-hiJobs.push('','','');hiRenderJobs();
-document.getElementById('hiClockAddJob').addEventListener('click',()=>{
-  if(hiJobs.length>=20){alert('Maximum 20 jobs per day');return;}
-  hiJobs.push('');hiRenderJobs();
-  hiJobsBox.lastElementChild.querySelector('input').focus();
-});
-</script></body></html>');w.document.close();w.focus();setTimeout(()=>w.print(),300)}
+function estPrint_(){if(!EST.lines.length)return alert('Build or add estimate lines first.');let w=window.open('','_blank');if(!w)return alert('Allow pop-ups to preview the estimate.');w.document.write('<!doctype html><html><head><title>Hi Service Cost Estimation</title><style>body{font-family:Arial,sans-serif;color:#17201b;padding:20px}.estimateDoc{max-width:760px;margin:auto}.docLogo{max-width:360px;max-height:95px;object-fit:contain}table{width:100%;border-collapse:collapse;margin-top:18px}th,td{padding:8px;border-bottom:1px solid #ddd;text-align:left;font-size:12px}.docTotal{font-size:22px;font-weight:900;text-align:right;margin-top:16px}.small,.docNote{font-size:10px;color:#68736d}.docNote{margin-top:22px;line-height:1.45}@page{size:A4;margin:12mm}</style></head><body>'+estCustomerDoc_()+'</body></html>');w.document.close();w.focus();setTimeout(()=>w.print(),300)}
 function estLoadPdfLibs_(){if(window.jspdf&&window.html2canvas)return Promise.resolve();function load(src){return new Promise((res,rej)=>{let s=document.createElement('script');s.src=src;s.onload=res;s.onerror=rej;document.head.appendChild(s)})}return load('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js').then(()=>load('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'))}
 async function estPdfFile_(){
   await estLoadPdfLibs_();let holder=document.createElement('div');holder.style.cssText='position:fixed;left:-100000px;top:0;width:794px;background:#fff;z-index:-1';holder.innerHTML=estCustomerDoc_();document.body.appendChild(holder);
@@ -431,4 +412,23 @@ load();stockDbOpen().then(()=>loadCachedStock()).then(()=>flushStockQueue()).cat
  var prev=goPage;
  goPage=function(id){prev(id);if(id==='settings')check()};
 })();
-</script><script>window.AttendanceBridge={read:function(p){return apiGet(p.action,p)},request:function(p){return api(p)},worker:function(){return S.name||S.username}};</script><script src="attendance-review.js?release=hi-service-v40-attendance-po"></script></body></html>
+</script><script>window.AttendanceBridge={read:function(p){return apiGet(p.action,p)},request:function(p){return api(p)},worker:function(){return S.name||S.username}};</script><script src="attendance-review.js?release=hi-service-v40-attendance-po"></script><script>// Daily job descriptions are serialized into the existing server job field.
+const hiJobsBox=document.getElementById('hiClockJobs');
+const hiJobs=[];
+function hiRenderJobs(){
+  hiJobsBox.innerHTML='';
+  hiJobs.forEach((value,i)=>{
+    const wrap=document.createElement('label');wrap.className='field';
+    const title=document.createElement('span');title.textContent='Job '+(i+1);
+    const inp=document.createElement('input');inp.value=value;inp.placeholder='Job / site / work completed';
+    inp.addEventListener('input',()=>{hiJobs[i]=inp.value;hiClockJob.value=hiJobs.map(x=>x.trim().replace(/\|/g,'/')).filter(Boolean).join(' | ');});
+    wrap.append(title,inp);hiJobsBox.append(wrap);
+  });
+}
+hiJobs.push('','','');hiRenderJobs();
+document.getElementById('hiClockAddJob').addEventListener('click',()=>{
+  if(hiJobs.length>=20){alert('Maximum 20 jobs per day');return;}
+  hiJobs.push('');hiRenderJobs();
+  hiJobsBox.lastElementChild.querySelector('input').focus();
+});
+</script></body></html>
