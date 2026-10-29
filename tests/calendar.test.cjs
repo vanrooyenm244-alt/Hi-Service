@@ -5,7 +5,7 @@ test('shared recurrence view retains notes and marks explicit archives without d
 test('reopening shares in-flight request, keeps cached bookings on failure, and refresh bypasses freshness',async()=>{
  const elements={};function $(id){return elements[id]||(elements[id]={textContent:'',innerHTML:'',classList:{add(){}},setAttribute(){},querySelectorAll:()=>[]});}
  let calls=0,resolve,fail=false;const deferred=new Promise(r=>resolve=r),renders=[];
- const c={window:{},console,Intl,Date,JSON,Promise,Set,S:{url:'fixture',username:'first'},$,hiCan:()=>true,apiGet:()=>{calls++;return fail?Promise.reject(Error('offline')):deferred;},TimeTreeCalendar:{visible:()=>true,layout:events=>{renders.push(events.length);return {html:'',errors:[]}},details:()=>''}};
+ const c={window:{addEventListener(){}},console,Intl,Date,JSON,Promise,Set,S:{url:'fixture',username:'first'},$,hiCan:()=>true,apiGet:()=>{calls++;return fail?Promise.reject(Error('offline')):deferred;},TimeTreeCalendar:{visible:()=>true,layout:events=>{renders.push(events.length);return {html:'',errors:[]}},details:()=>''}};
  vm.createContext(c);c.loadHiCalendar=(...args)=>c.window.loadHiCalendar(...args);vm.runInContext(fs.readFileSync('calendar.js','utf8'),c);
  const a=c.window.loadHiCalendar(),b=c.window.loadHiCalendar();assert.equal(calls,1);resolve({events:[{id:'one'}],lastImportAt:'2026-10-07T00:00:00Z'});await Promise.all([a,b]);await c.window.loadHiCalendar();assert.equal(calls,1);assert.equal(renders.at(-1),1);
  fail=true;await c.window.loadHiCalendar(true);assert.equal(calls,2);assert.equal(renders.at(-1),1);assert.match(elements.hiCalMsg.textContent,/Showing saved bookings/);
