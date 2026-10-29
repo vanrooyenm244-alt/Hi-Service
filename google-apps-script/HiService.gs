@@ -9,6 +9,8 @@ var HI_MIGRATION_TARGETS_ = {
   Timesheets: '1sbNYYAA2kXA7net9MEeduOGNOtk3hjyBIoJfeVbDovU'
 };
 function hiTargetSpreadsheet_(name) {
+  var enabled=PropertiesService.getScriptProperties().getProperty('ENABLE_HI_SERVICE_SHEETS_CUTOVER')==='true';
+  if(!enabled)return SpreadsheetApp.getActiveSpreadsheet();
   var id=HI_MIGRATION_TARGETS_[name];
   if(!id) throw new Error('Missing explicit Hi Service Sheet route: '+name);
   return SpreadsheetApp.openById(id);
