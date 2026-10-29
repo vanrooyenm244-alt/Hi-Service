@@ -3,9 +3,9 @@
  * Stock staging and audit workbook are NOT interchangeable: do not cut over
  * without final backfill of live mutations and approval. */
 var HI_MIGRATION_TARGETS_ = {
-  HiService_Stock: '14LGYSmY0TNGOqfaKEe3cnujE4FVApm1tu9vSWkHWxQs',
-  HiService_Stock_Counts: '1Lwdpos3Uswtf97HRCJV3PbStJoJGiceIoo5nAh6arvc',
-  HiService_Stock_Movements: '1Zqc2R3GYGX7AN-9Oz-x6edj4W1Bp4SdyYQsoH7gWGhw',
+  HiService_Stock: '1NQC_6mruzvJczvR_oQyZT__ImQ3RV4NLs8Uo3eUSAh8',
+  HiService_Stock_Counts: '1NQC_6mruzvJczvR_oQyZT__ImQ3RV4NLs8Uo3eUSAh8',
+  HiService_Stock_Movements: '1NQC_6mruzvJczvR_oQyZT__ImQ3RV4NLs8Uo3eUSAh8',
   Timesheets: '1sbNYYAA2kXA7net9MEeduOGNOtk3hjyBIoJfeVbDovU'
 };
 function hiTargetSpreadsheet_(name) {
