@@ -46,4 +46,7 @@
   $('hiCalToday').onclick=()=>{month=new Date();day=month.toISOString().slice(0,10);if(mode==='day')mode='agenda';render();};$('hiCalRefresh').onclick=()=>loadHiCalendar(true);
   $('hiCalAgenda').onclick=()=>{mode='agenda';render();};$('hiCalMonth').onclick=()=>{mode='month';render();};
   $('hiCalClose').onclick=()=>$('hiCalDetailCard').classList.add('hidden');
+  window.addEventListener('load',function(){if(S&&S.username&&hiCan('calendar.view'))loadHiCalendar();});
+  var previousGoPage=window.goPage;
+  window.goPage=function(id){previousGoPage(id);if(id==='home'&&S&&S.username&&hiCan('calendar.view'))loadHiCalendar();};
 })();
