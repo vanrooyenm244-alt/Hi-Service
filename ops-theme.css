@@ -1,0 +1,10 @@
+/* Company branding: Hi Service grass green, graphite and grey. */
+:root[data-ops-theme="dark"]{--g:#159447;--gd:#0d6e36;--ink:#e2e6e3;--muted:#a9b1ab;--line:#3a443c;--bg:#111413;--white:#202522;--red:#f37f77;color-scheme:dark}
+[data-ops-theme="dark"] body,[data-ops-theme="dark"] .authgate{background:#111413;color:#e2e6e3}
+[data-ops-theme="dark"] .card,[data-ops-theme="dark"] .loginbox,[data-ops-theme="dark"] .page .card{background:#202522!important;color:#e2e6e3;border-color:#39443b}
+[data-ops-theme="dark"] input,[data-ops-theme="dark"] select,[data-ops-theme="dark"] textarea,[data-ops-theme="dark"] button:not(.primary):not(.on){background:#262c28!important;color:#e2e6e3!important;border-color:#455047!important}
+[data-ops-theme="dark"] .btn.primary,[data-ops-theme="dark"] .nav button.on{background:#159447!important;color:#fff!important;border-color:#159447!important}
+[data-ops-theme="dark"] table,[data-ops-theme="dark"] th,[data-ops-theme="dark"] td{color:#e2e6e3;border-color:#3a443c}
+[data-ops-theme="dark"] th{background:#29332b}
+[data-ops-theme="dark"] .small,[data-ops-theme="dark"] label{color:#abb4ad}
+.ops-theme-toggle{position:fixed;right:15px;bottom:calc(15px + env(safe-area-inset-bottom,0px));z-index:9999;border:1px solid #159447;border-radius:20px;padding:10px 15px;background:#159447;color:white;font-weight:700;box-shadow:0 3px 12px #0004;cursor:pointer}
