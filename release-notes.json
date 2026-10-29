@@ -1,7 +1,9 @@
 {
-  "version": "hi-service-v40-attendance-po",
-  "date": "2026-10-25",
+  "version": "hi-service-v41-dashboard",
+  "date": "2026-10-29",
   "changes": [
+    "New mobile-first operations dashboard with original Hi Service logo and light/dark themes.",
+    "Today’s bookings panel from the existing TimeTree-backed calendar; existing booking source preserved.",
     "Attendance review: correct/cancel pending and approved shifts with mandatory reason and retained original.",
     "Submitted by and Approved by with timestamps; yellow overtime rows.",
     "Printable approved overtime report with two blank rows between worker/pay-cycle groups.",
@@ -9,6 +11,8 @@
     "Reliable atomic app updates and explicit Apply update / Reload."
   ],
   "tests": [
+    "Open home with an authorised user and verify today's bookings match TimeTree; check no bookings and offline states.",
+    "Switch light/dark mode and open every stock and timesheet module; confirm no freezes.",
     "Clock in/out; verify shift belongs to the submitting employee.",
     "Admin: correct a Sunday/Saturday entry, approve/reject or cancel with a reason; refresh and verify totals.",
     "Print approved overtime and verify dates, yellow rows, two blank lines and submitter/approver.",
