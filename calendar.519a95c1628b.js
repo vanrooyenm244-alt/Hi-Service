@@ -12,7 +12,7 @@
     $('hiCalGrid').querySelectorAll('[data-cal-day]').forEach(b=>b.onclick=()=>{day=b.dataset.calDay;mode='day';render();});
     $('hiCalAgenda').setAttribute('aria-pressed',String(mode==='agenda'));$('hiCalMonth').setAttribute('aria-pressed',String(mode==='month'));
     if(view.errors.length)$('hiCalMsg').textContent='Some repeating bookings need review: '+view.errors.join('; ');
-    $('hiCalGrid').querySelectorAll('[data-hi-event]').forEach(b=>b.onclick=()=>{var e=events.find(e=>e.id===b.dataset.hiEvent);if(!e)return;$('hiCalDetails').textContent=TimeTreeCalendar.details(e);$('hiCalSource').href=e.sourceUrl;$('hiCalDetailCard').classList.remove('hidden');$('hiCalDetailCard').scrollIntoView({behavior:'smooth',block:'nearest'});});
+    $('hiCalGrid').querySelectorAll('[data-hi-event]').forEach(b=>b.onclick=()=>{var e=events.find(e=>e.id===b.dataset.hiEvent);if(!e)return;$('hiCalDetails').textContent=TimeTreeCalendar.details(e)+(e.jobLink?'\n\nQUOTE JOB LIST\nJob: '+e.jobLink.jobNo+'\nQuote: '+e.jobLink.quoteNo+'\nClient: '+e.jobLink.customer+'\nAddress: '+e.jobLink.address+'\nWork: '+e.jobLink.description+'\nPhone: '+e.jobLink.phone+'\nInvoice: '+e.jobLink.invoiceNo:'');$('hiCalSource').href=e.sourceUrl;$('hiCalDetailCard').classList.remove('hidden');$('hiCalDetailCard').scrollIntoView({behavior:'smooth',block:'nearest'});});
   }
   function status(j){return j.lastImportAt?'TimeTree updated '+new Date(j.lastImportAt).toLocaleString():'No TimeTree import yet.';}
   window.loadHiCalendar=async function(force){
