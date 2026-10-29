@@ -35,7 +35,7 @@
 <section id="estimate" class="page"><button class="btn backHome" data-go="home">← Home</button>
 <div class="card"><div class="head"><h2>Cost Estimation</h2><span class="small">Gas · Plumbing · Hi Service price list</span></div>
 <div class="estTop">
-<div class="field"><label>Customer</label><input id="estCustomer" placeholder="Customer name"></div>
+<div class="field"><label>Customer</label><input id="estCustomer" placeholder="Customer name"></div><div class="field"><label>Cost Estimation Number</label><div class="toolbar"><strong id="estReferenceLabel">Not allocated</strong><button type="button" class="btn" id="estAllocateJob">New Job Number</button></div><p class="small">A number is allocated only when you request one. Scheduling never requires a job number.</p></div>
 <div class="field" style="grid-column:1/-1"><label>Search existing Xero Contacts (name, email or phone)</label><div class="toolbar"><input id="estContactQuery" placeholder="Search Xero Contacts" style="flex:1;min-width:130px;padding:10px;border:1px solid #dce4df;border-radius:8px"><button type="button" class="btn" id="estContactFind">Find contact</button></div><div id="estContactResults" class="small" role="status"></div><div id="estContactSelected" class="small">No Xero contact selected</div></div>
 <div class="field"><label>WhatsApp number</label><input id="estPhone" placeholder="082 123 4567"></div>
 <div class="field"><label>Job type</label><select id="estType"><option value="stove">Gas stove / hob</option><option value="geyser">Gas geyser</option><option value="cupboard">Cupboard installation</option><option value="both">Stove + geyser</option><option value="custom">Custom gas work</option></select></div>
@@ -237,6 +237,20 @@ const EST_KEY='hiservice-estimate-v1';
 let EST={lines:[]};
 function estLoad_(){try{EST=Object.assign({lines:[]},JSON.parse(localStorage.getItem(EST_KEY)||'{}'))}catch(e){EST={lines:[]}};if(!Array.isArray(EST.lines))EST.lines=[];if(EST.jobType&&[...estType.options].some(x=>x.value===EST.jobType))estType.value=EST.jobType;}
 function estSave_(){localStorage.setItem(EST_KEY,JSON.stringify(EST))}
+function estReferenceRefresh_(){var label=document.getElementById('estReferenceLabel');if(label)label.textContent=EST.jobNo?'CS-'+EST.jobNo:'Not allocated';}
+async function estAllocateJob_(){
+ if(EST.jobNo){estReferenceRefresh_();return;}
+ var client=String(estCustomer.value||'').trim();
+ if(!client){alert('Enter the customer before allocating a job number.');return;}
+ var btn=document.getElementById('estAllocateJob');btn.disabled=true;
+ try{
+  var result=await api({action:'jobNumberAllocate',company:'Hi-Service',customer:client,description:String(estType.value||'Cost Estimation')});
+  if(!result||!result.jobNo)throw Error('The central Job List did not return a number.');
+  EST.jobNo=String(result.jobNo);estSave_();estReferenceRefresh_();estMsg.textContent='Allocated '+result.documentNo+' from central Job List.';
+ }catch(error){estMsg.textContent='Job number unavailable: '+String(error.message||error);}
+ finally{btn.disabled=false;}
+}
+
 function estNorm_(s){return String(s||'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim()}
 function estFind_(needles){
   let ns=(Array.isArray(needles)?needles:[needles]).map(estNorm_);
@@ -384,7 +398,7 @@ async function hiXeroSend_(){
   finally{hiXeroBusy_=false;estXeroSend.disabled=false;}
 }
 
-if($('estSearch')){$('estSearch').oninput=estSearch_;$('estBuild').onclick=estAuto_;$('estType').onchange=()=>{if(estType.value==='cupboard'){estPipeM.value='1';estAuto_()}else{EST.jobType=estType.value;estSave_()}};$('estClear').onclick=()=>{if(confirm('Clear this estimate?')){EST.lines=[];estSave_();estRender_()}};$('estCustom').onclick=()=>{let n=prompt('Custom item description');if(!n)return;let q=Number(prompt('Quantity','1'))||1,c=Number(prompt('Customer unit price excluding VAT','0'))||0;estAddCustom_(n,q,0,'');EST.lines[EST.lines.length-1].sellOverride=Math.max(0,c);estSave_();estRender_()};$('estReview').onclick=estReview_;$('estPrint').onclick=estPrint_;['estCustomer','estType'].forEach(id=>$(id).addEventListener('change',estRender_));$('estShare').onclick=estShare_;$('estXeroSend').onclick=hiXeroSend_;hiXeroStatus_();['estMarkup','estVat'].forEach(id=>$(id).oninput=estRender_);estRender_()}
+if($('estSearch')){$('estSearch').oninput=estSearch_;$('estBuild').onclick=estAuto_;$('estType').onchange=()=>{if(estType.value==='cupboard'){estPipeM.value='1';estAuto_()}else{EST.jobType=estType.value;estSave_()}};$('estClear').onclick=()=>{if(confirm('Clear this estimate?')){EST.lines=[];estSave_();estRender_()}};$('estCustom').onclick=()=>{let n=prompt('Custom item description');if(!n)return;let q=Number(prompt('Quantity','1'))||1,c=Number(prompt('Customer unit price excluding VAT','0'))||0;estAddCustom_(n,q,0,'');EST.lines[EST.lines.length-1].sellOverride=Math.max(0,c);estSave_();estRender_()};$('estReview').onclick=estReview_;$('estAllocateJob').onclick=estAllocateJob_;estReferenceRefresh_();$('estPrint').onclick=estPrint_;['estCustomer','estType'].forEach(id=>$(id).addEventListener('change',estRender_));$('estShare').onclick=estShare_;$('estXeroSend').onclick=hiXeroSend_;hiXeroStatus_();['estMarkup','estVat'].forEach(id=>$(id).oninput=estRender_);estRender_()}
 
 let STOCK_REPORT=null;
 function reportTime_(s){return String(s||'').split(' ')[1]||''}
