@@ -16,11 +16,36 @@
   }
   function renderToday(){
     var box=document.getElementById('hsTodayBookings');if(!box)return;
-    var today=new Intl.DateTimeFormat('en-CA',{timeZone:'Africa/Johannesburg',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
-    var jobs=events.filter(function(e){return TimeTreeCalendar.visible(e,'Hi Service',S)&&String(e.date||e.startDate||e.start||'').slice(0,10)===today;});
+    var dateParts=new Intl.DateTimeFormat('en-GB',{timeZone:'Africa/Johannesburg',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date()),p={};
+    dateParts.forEach(function(v){p[v.type]=v.value;});
+    var today=p.year+'-'+p.month+'-'+p.day;
+    var visible=events.filter(function(e){return TimeTreeCalendar.visible(e,'Hi Service',S);});
+    var view=TimeTreeCalendar.entries(visible,today,today);
     box.replaceChildren();
-    if(!jobs.length){box.textContent='No bookings shown for today. Open Calendar to see all appointments.';return;}
-    jobs.forEach(function(e){var row=document.createElement('div');row.className='hs-today-row';var time=document.createElement('b');time.textContent=String(e.startTime||e.time||'').slice(0,5)||'Today';var name=document.createElement('span');name.textContent=String(e.title||e.customer||e.name||e.jobType||'Booking');row.append(time,name);box.append(row);});
+    if(view.errors.length){var warning=document.createElement('p');warning.textContent='Recurring calendar warning: '+view.errors.join('; ');box.append(warning);}
+    if(!view.events.length){var msg=document.createElement('p');msg.textContent='No bookings shown for today. Open Calendar to see all appointments.';box.append(msg);return;}
+    view.events.forEach(function(e){
+      var row=document.createElement('div');row.className='hs-today-row';row.style.flexWrap='wrap';
+      var time=document.createElement('b');
+      time.textContent=e.source==='timetree'&&e.occurrenceStart?new Date(e.occurrenceStart).toLocaleTimeString('en-ZA',{timeZone:'Africa/Johannesburg',hour:'2-digit',minute:'2-digit'}):String(e.startTime||e.time||'').slice(0,5)||'Today';
+      var name=document.createElement('span');name.textContent=String(e.title||e.customer||e.name||e.jobType||'Booking');
+      var action=document.createElement('label');action.style.cssText='width:100%;display:flex;align-items:center;gap:8px;margin-left:8px;font-size:12px';
+      var tick=document.createElement('input');tick.type='checkbox';
+      var prior=e.completionByDate&&e.completionByDate[today];tick.checked=!!(prior&&prior.completed);
+      var caption=document.createElement('span');caption.textContent=tick.checked?'Job completed':'Mark job completed';action.append(tick,caption);
+      tick.addEventListener('change',function(){
+        var done=tick.checked;tick.disabled=true;caption.textContent='Saving…';
+        api({action:'calendarCompletionSet',company:'Hi Service',eventId:e.id,occurrenceDate:today,completed:done})
+          .then(function(result){
+            if(!result||result.ok===false)throw Error(result&&result.error||'Update failed');
+            caption.textContent=done?'Job completed':'Mark job completed';
+            if(!e.completionByDate)e.completionByDate={};
+            e.completionByDate[today]={completed:done,completedBy:result.completedBy||S.username};
+          }).catch(function(error){tick.checked=!done;caption.textContent='Could not save: '+String(error.message||error);})
+          .finally(function(){tick.disabled=false;});
+      });
+      row.append(time,name,action);box.append(row);
+    });
   }
   function status(j){return j.lastImportAt?'TimeTree updated '+new Date(j.lastImportAt).toLocaleString():'No TimeTree import yet.';}
   window.loadHiCalendar=async function(force){
