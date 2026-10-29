@@ -1,7 +1,8 @@
 {
-  "version": "hi-service-v41-dashboard",
+  "version": "hi-service-v42-job-completion",
   "date": "2026-10-29",
   "changes": [
+    "Today’s bookings correctly display recurring TimeTree appointments and a per-date Job Completed checkbox.",
     "New mobile-first operations dashboard with original Hi Service logo and light/dark themes.",
     "Today’s bookings panel from the existing TimeTree-backed calendar; existing booking source preserved.",
     "Attendance review: correct/cancel pending and approved shifts with mandatory reason and retained original.",
@@ -11,6 +12,8 @@
     "Reliable atomic app updates and explicit Apply update / Reload."
   ],
   "tests": [
+    "Mark one assigned TimeTree booking completed; refresh and confirm it persists. Reopen the job and confirm status resets.",
+    "Check that a recurring booking for another date is unaffected by today's completion.",
     "Open home with an authorised user and verify today's bookings match TimeTree; check no bookings and offline states.",
     "Switch light/dark mode and open every stock and timesheet module; confirm no freezes.",
     "Clock in/out; verify shift belongs to the submitting employee.",
