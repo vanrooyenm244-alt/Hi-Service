@@ -41,3 +41,10 @@
 .ops-theme-toggle{bottom:calc(91px + env(safe-area-inset-bottom,0px))}
 [data-ops-theme="dark"] .hs-bottom-nav{background:#202522;border-color:#39443b}
 @media(min-width:900px){.hs-bottom-nav{border-radius:16px 16px 0 0}}
+
+.hs-today{padding:18px;background:var(--white);border:1px solid var(--line);border-radius:16px;margin:14px 0 18px}
+.hs-today-top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:12px}
+.hs-today-top strong{font-size:16px}.hs-today-top .btn{font-size:12px}
+.hs-today-row{display:flex;gap:14px;align-items:center;padding:11px 3px;border-top:1px solid var(--line)}
+.hs-today-row b{color:#159447;min-width:46px}.hs-today-row span{line-height:1.4}
+[data-ops-theme="dark"] .hs-today{background:#202522;color:#e2e6e3;border-color:#39443b}
