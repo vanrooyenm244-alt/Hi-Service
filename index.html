@@ -25,7 +25,7 @@
 <div class="card"><div class="head"><h2>Clock In / Clock Out</h2><span class="small">Hi Service · server time</span></div>
 <p class="small">Clock In wanneer jy by die werk aankom. Clock Out wanneer jy vertrek. Jy hoef nie albei tye saam in te vul nie.</p>
 <div class="grid"><div><b id="hiClockDate">Today</b><div class="small" id="hiClockWorker"></div></div><div><b id="hiClockState">Loading…</b><div class="small" id="hiClockTimes"></div></div></div>
-<div class="field"><label>Job / reference (optional when clocking out)</label><input id="hiClockJob"><label>Break / lunch minutes</label><input id="hiClockLunch" type="number" min="0" value="60"></div>
+<div class="field"><label>Job / reference (optional when clocking out)</label><div id="hiClockJobs"></div><button type="button" class="btn" id="hiClockAddJob">+ Add more jobs</button><input type="hidden" id="hiClockJob"><label>Break / lunch minutes</label><input id="hiClockLunch" type="number" min="0" value="60"></div>
 <div class="field"><label>Note</label><textarea id="hiClockNote"></textarea></div>
 <div class="toolbar"><button class="btn primary" id="hiClockIn" type="button" disabled>Clock In</button><button class="btn primary" id="hiClockOut" type="button" disabled>Clock Out</button><button class="btn" id="hiClockRefresh" type="button">Refresh</button></div>
 <div class="msg" id="timeMsg"></div><p class="small">Ure gaan eers na admin approval wanneer jy uitklok. Saterdag het geen lunch deduction nie.</p></div></section>
@@ -412,4 +412,23 @@ load();stockDbOpen().then(()=>loadCachedStock()).then(()=>flushStockQueue()).cat
  var prev=goPage;
  goPage=function(id){prev(id);if(id==='settings')check()};
 })();
-</script><script>window.AttendanceBridge={read:function(p){return apiGet(p.action,p)},request:function(p){return api(p)},worker:function(){return S.name||S.username}};</script><script src="attendance-review.js?release=hi-service-v40-attendance-po"></script></body></html>
+</script><script>window.AttendanceBridge={read:function(p){return apiGet(p.action,p)},request:function(p){return api(p)},worker:function(){return S.name||S.username}};</script><script src="attendance-review.js?release=hi-service-v40-attendance-po"></script><script>// Daily job descriptions are serialized into the existing server job field.
+const hiJobsBox=document.getElementById('hiClockJobs');
+const hiJobs=[];
+function hiRenderJobs(){
+  hiJobsBox.innerHTML='';
+  hiJobs.forEach((value,i)=>{
+    const wrap=document.createElement('label');wrap.className='field';
+    const title=document.createElement('span');title.textContent='Job '+(i+1);
+    const inp=document.createElement('input');inp.value=value;inp.placeholder='Job / site / work completed';
+    inp.addEventListener('input',()=>{hiJobs[i]=inp.value;hiClockJob.value=hiJobs.map(x=>x.trim().replace(/\|/g,'/')).filter(Boolean).join(' | ');});
+    wrap.append(title,inp);hiJobsBox.append(wrap);
+  });
+}
+hiJobs.push('','','');hiRenderJobs();
+document.getElementById('hiClockAddJob').addEventListener('click',()=>{
+  if(hiJobs.length>=20){alert('Maximum 20 jobs per day');return;}
+  hiJobs.push('');hiRenderJobs();
+  hiJobsBox.lastElementChild.querySelector('input').focus();
+});
+</script></body></html>
