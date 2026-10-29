@@ -1,3 +1,19 @@
+/* Migration routing candidate. Staging branch only until data reconciliation and
+ * deploy-time smoke tests. Each logical Hi Service sheet gets an explicit ID.
+ * Stock staging and audit workbook are NOT interchangeable: do not cut over
+ * without final backfill of live mutations and approval. */
+var HI_MIGRATION_TARGETS_ = {
+  HiService_Stock: '14LGYSmY0TNGOqfaKEe3cnujE4FVApm1tu9vSWkHWxQs',
+  HiService_Stock_Counts: '1Lwdpos3Uswtf97HRCJV3PbStJoJGiceIoo5nAh6arvc',
+  HiService_Stock_Movements: '1Zqc2R3GYGX7AN-9Oz-x6edj4W1Bp4SdyYQsoH7gWGhw',
+  Timesheets: '1sbNYYAA2kXA7net9MEeduOGNOtk3hjyBIoJfeVbDovU'
+};
+function hiTargetSpreadsheet_(name) {
+  var id=HI_MIGRATION_TARGETS_[name];
+  if(!id) throw new Error('Missing explicit Hi Service Sheet route: '+name);
+  return SpreadsheetApp.openById(id);
+}
+
 /**
  * Hi Service stock + timesheets module for the SAME Apps Script project used by Flagship.
  * Add this file to that Apps Script project, then add the two router calls shown in README.
@@ -10,10 +26,10 @@ var HI_PLACES=['Stoor','CEY 59799','CEY 67212'];
 var HI_STOCK_HEAD=['Code','Description','Category','Supplier','Unit','Cost','Stoor','CEY 59799','CEY 67212','Total Stock','Active','Updated','By'];
 
 function setupHiService(){
-  var ss=SpreadsheetApp.getActiveSpreadsheet();
+  var ss=hiTargetSpreadsheet_(HI_STOCK_SHEET);
   hiSheet_(ss,HI_STOCK_SHEET,HI_STOCK_HEAD);
-  hiSheet_(ss,HI_COUNT_SHEET,['Timestamp','User','Location','Code','Description','Count']);
-  hiSheet_(ss,HI_MOVE_SHEET,['Timestamp','User','Type','From','To','Code','Description','Qty','Reason','Reference']);
+  hiSheet_(hiTargetSpreadsheet_(HI_COUNT_SHEET),HI_COUNT_SHEET,['Timestamp','User','Location','Code','Description','Count']);
+  hiSheet_(hiTargetSpreadsheet_(HI_MOVE_SHEET),HI_MOVE_SHEET,['Timestamp','User','Type','From','To','Code','Description','Qty','Reason','Reference']);
   hiTotals_();
   return 'Hi Service sheets ready';
 }
@@ -24,14 +40,14 @@ function hiSheet_(ss,name,head){
   sh.setFrozenRows(1);return sh;
 }
 function hiStockRows_(){
-  var sh=SpreadsheetApp.getActiveSpreadsheet().getSheetByName(HI_STOCK_SHEET);if(!sh)return[];
+  var sh=hiTargetSpreadsheet_(HI_STOCK_SHEET).getSheetByName(HI_STOCK_SHEET);if(!sh)return[];
   var n=sh.getLastRow()-1;if(n<1)return[];
   return sh.getRange(2,1,n,HI_STOCK_HEAD.length).getValues().map(function(r,i){
     return {row:i+2,code:String(r[0]||''),item:String(r[1]||''),description:String(r[1]||''),category:String(r[2]||''),supplier:String(r[3]||''),unit:String(r[4]||'each'),cost:Number(r[5])||0,'Stoor':Number(r[6])||0,'CEY 59799':Number(r[7])||0,'CEY 67212':Number(r[8])||0,total:Number(r[9])||0,active:String(r[10]||'Yes').toLowerCase()!=='no'};
   }).filter(function(x){return x.item&&x.active;});
 }
 function hiTotals_(){
-  var sh=SpreadsheetApp.getActiveSpreadsheet().getSheetByName(HI_STOCK_SHEET);if(!sh)return;
+  var sh=hiTargetSpreadsheet_(HI_STOCK_SHEET).getSheetByName(HI_STOCK_SHEET);if(!sh)return;
   var n=sh.getLastRow()-1;if(n<1)return;var f=[];for(var i=0;i<n;i++)f.push(['=SUM(G'+(i+2)+':I'+(i+2)+')']);sh.getRange(2,10,n,1).setFormulas(f);
 }
 function hiFind_(codeOrName){
@@ -41,19 +57,19 @@ function hiFind_(codeOrName){
 }
 function hiSetQty_(row,place,qty,user){
   var idx=HI_PLACES.indexOf(place);if(idx<0)throw new Error('Unknown Hi Service location');
-  var sh=SpreadsheetApp.getActiveSpreadsheet().getSheetByName(HI_STOCK_SHEET);
+  var sh=hiTargetSpreadsheet_(HI_STOCK_SHEET).getSheetByName(HI_STOCK_SHEET);
   sh.getRange(row,7+idx).setValue(Number(qty));sh.getRange(row,12).setValue(new Date());sh.getRange(row,13).setValue(user.username||user.name||'user');
 }
 function hiAdd_(u,it){
   var code=String(it.code||'').trim(),name=String(it.item||it.description||'').trim();if(!name)throw new Error('Description required');
   if((code&&hiFind_(code))||hiFind_(name))throw new Error('Item already exists');
   if(!code)code='HS-'+Utilities.getUuid().slice(0,8).toUpperCase();
-  SpreadsheetApp.getActiveSpreadsheet().getSheetByName(HI_STOCK_SHEET).appendRow([code,name,it.category||'Other',it.supplier||'',it.unit||'each',Number(it.cost)||0,0,0,0,'','Yes',new Date(),u.username||'']);
+  hiTargetSpreadsheet_(HI_STOCK_SHEET).getSheetByName(HI_STOCK_SHEET).appendRow([code,name,it.category||'Other',it.supplier||'',it.unit||'each',Number(it.cost)||0,0,0,0,'','Yes',new Date(),u.username||'']);
   hiTotals_();return {code:code,item:name};
 }
 function hiCount_(u,place,counts){
   if(HI_PLACES.indexOf(place)<0)throw new Error('Unknown location');
-  var changed=0,unknown=[],rejected=[],ss=SpreadsheetApp.getActiveSpreadsheet();
+  var changed=0,unknown=[],rejected=[],ss=hiTargetSpreadsheet_(HI_COUNT_SHEET);
   var sh=hiSheet_(ss,HI_COUNT_SHEET,['Timestamp','User','Location','Code','Description','Count','Old','Movement']);
   sh.getRange(1,7,1,2).setValues([['Old','Movement']]);
   Object.keys(counts||{}).forEach(function(key){
@@ -65,7 +81,7 @@ function hiCount_(u,place,counts){
   hiTotals_();return {changed:changed,unknown:unknown,rejected:rejected};
 }
 function hiMove_(u,from,to,lines,type,reason,ref,requestId){
-  var ss=SpreadsheetApp.getActiveSpreadsheet(),existingLog=ss.getSheetByName(HI_MOVE_SHEET);
+  var ss=hiTargetSpreadsheet_(HI_MOVE_SHEET),existingLog=ss.getSheetByName(HI_MOVE_SHEET);
   requestId=String(requestId||'').trim();
   if(requestId&&existingLog&&existingLog.getLastRow()>1){var logged=existingLog.getRange(2,1,existingLog.getLastRow()-1,Math.min(11,existingLog.getMaxColumns())).getValues().filter(function(r){return String(r[10])===requestId&&String(r[1])===String(u.username)&&String(r[2])===type;});if(logged.length)return {changed:logged.length,unchanged:true};}
   if(['transfer','receive','adjust','issue'].indexOf(type)<0)throw new Error('Unknown movement type');
@@ -87,7 +103,7 @@ function hiMove_(u,from,to,lines,type,reason,ref,requestId){
     if((type==='transfer'||type==='issue')&&it[from]<q)throw new Error(it.item+' only has '+it[from]+' in '+from);
     if(type==='adjust'&&it[from]+q<0)throw new Error(it.item+' would become negative');
   });
-  var log=hiSheet_(SpreadsheetApp.getActiveSpreadsheet(),HI_MOVE_SHEET,['Timestamp','User','Type','From','To','Code','Description','Qty','Reason','Reference','Request ID']),done=0;
+  var log=hiSheet_(hiTargetSpreadsheet_(HI_MOVE_SHEET),HI_MOVE_SHEET,['Timestamp','User','Type','From','To','Code','Description','Qty','Reason','Reference','Request ID']),done=0;
   log.getRange(1,11).setValue('Request ID');
   order.forEach(function(key){var p=plans[key],it=p.item,q=p.qty;if(!q)return;
     if(type==='transfer'){hiSetQty_(it.row,from,it[from]-q,u);hiSetQty_(it.row,to,it[to]+q,u);}
@@ -98,7 +114,7 @@ function hiMove_(u,from,to,lines,type,reason,ref,requestId){
   });hiTotals_();return {changed:done};
 }
 function hiTime_(u,row){
-  var ss=SpreadsheetApp.getActiveSpreadsheet(),tz=ss.getSpreadsheetTimeZone()||Session.getScriptTimeZone();
+  var ss=hiTargetSpreadsheet_(HI_TIME_SHEET),tz=ss.getSpreadsheetTimeZone()||Session.getScriptTimeZone();
   var d=String(row.date||'').trim(),today=Utilities.formatDate(new Date(),tz,'yyyy-MM-dd');
   if(d>today)throw new Error('Future timesheets are not allowed');
   if(d!==today&&u.role!=='Admin')throw new Error('Timesheets may only be submitted for today');
@@ -118,13 +134,13 @@ function hiTime_(u,row){
   return {saved:true,unchanged:!!result.unchanged,normalHours:c.normal,overtimeHours:c.overtime,totalHours:c.total};
 }
 function hiDailyStockReport_(dateText){
-  var ss=SpreadsheetApp.getActiveSpreadsheet(),tz=ss.getSpreadsheetTimeZone()||Session.getScriptTimeZone();
+  var ss=hiTargetSpreadsheet_(HI_COUNT_SHEET),tz=ss.getSpreadsheetTimeZone()||Session.getScriptTimeZone();
   var date=String(dateText||Utilities.formatDate(new Date(),tz,'yyyy-MM-dd')).trim();
   function sameDay_(v){if(!v)return false;var d=v instanceof Date?v:new Date(v);return !isNaN(d)&&Utilities.formatDate(d,tz,'yyyy-MM-dd')===date;}
   function stamp_(v){var d=v instanceof Date?v:new Date(v);return isNaN(d)?'':Utilities.formatDate(d,tz,'yyyy-MM-dd HH:mm:ss');}
   var counts=[],moves=[],sh=ss.getSheetByName(HI_COUNT_SHEET);
   if(sh&&sh.getLastRow()>1)sh.getRange(2,1,sh.getLastRow()-1,Math.min(8,sh.getMaxColumns())).getValues().forEach(function(r){if(sameDay_(r[0]))counts.push({timestamp:stamp_(r[0]),user:String(r[1]||''),location:String(r[2]||''),code:String(r[3]||''),description:String(r[4]||''),count:Number(r[5])||0,old:r[6]==null||r[6]===''?null:Number(r[6]),delta:r[7]==null||r[7]===''?null:Number(r[7])});});
-  sh=ss.getSheetByName(HI_MOVE_SHEET);
+  sh=hiTargetSpreadsheet_(HI_MOVE_SHEET).getSheetByName(HI_MOVE_SHEET);
   if(sh&&sh.getLastRow()>1)sh.getRange(2,1,sh.getLastRow()-1,10).getValues().forEach(function(r){if(sameDay_(r[0]))moves.push({timestamp:stamp_(r[0]),user:String(r[1]||''),type:String(r[2]||''),from:String(r[3]||''),to:String(r[4]||''),code:String(r[5]||''),description:String(r[6]||''),qty:Number(r[7])||0,reason:String(r[8]||''),reference:String(r[9]||'')});});
   return {date:date,counts:counts,movements:moves};
 }
