@@ -41,13 +41,45 @@ function open(e){
  add.onclick=function(){materialRow('',1);};materialRow('',1);
  el('h3',{text:'Work Requested (from TimeTree)'},editor);var requested=el('textarea',{rows:'3',readonly:'readonly'},editor);requested.value=info.workRequest||'';requested.style.width='100%';
  el('h3',{text:'Work Completed'},editor);var description=el('textarea',{rows:'4',placeholder:'Describe work completed'},editor);description.style.width='100%';
- el('p',{'class':'msg',text:'Before/After photo upload is pending secure storage integration. Photos are not saved by this form yet.'},editor);
+ var photos={before:[],after:[]};
+ function photoPicker(label,key){
+  el('h3',{text:label},editor);
+  var picker=el('input',{type:'file',accept:'image/*',multiple:'multiple'},editor);
+  var preview=el('div',{'class':'toolbar'},editor);
+  picker.addEventListener('change',async function(){
+   for(var file of Array.from(picker.files||[])){
+    if(file.size>12*1024*1024){msg.textContent='Photo exceeds 12 MB: '+file.name;continue;}
+    var url=await new Promise(function(resolve,reject){var rd=new FileReader();rd.onload=()=>resolve(rd.result);rd.onerror=reject;rd.readAsDataURL(file);});
+    photos[key].push({name:file.name,dataUrl:url});
+   }
+   preview.replaceChildren();
+   photos[key].forEach(function(p,i){var img=el('img',{alt:label+' '+(i+1)},preview);img.src=p.dataUrl;img.style.cssText='max-width:150px;max-height:125px;object-fit:contain;border:1px solid #ddd;border-radius:6px';});
+  });
+ }
+ photoPicker('Before Photos','before');photoPicker('After Photos','after');
+ el('p',{'class':'msg',text:'Photos are included in the PDF generated in this session. Persistent server photo storage and TimeTree attachment import are not yet available; do not close this form before generating the PDF.'},editor);
+ function exportPdf(job){
+   var w=window.open('','_blank');
+   if(!w){msg.textContent='Enable pop-ups to print or save the Job Card as PDF.';return;}
+   function escapeHtml(v){return String(v==null?'':v).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+   var svc=job.sections.service;
+   var materialRows=(svc.materials||[]).map(function(x){return '<tr><td>'+escapeHtml(x.name)+'</td><td>'+escapeHtml(x.quantity)+'</td></tr>';}).join('');
+   var pictures=['before','after'].map(function(k){return '<h2>'+ (k==='before'?'Before Photos':'After Photos') +'</h2><div class="photos">'+photos[k].map(function(p){return '<img alt="'+escapeHtml(p.name)+'" src="'+p.dataUrl+'">';}).join('')+'</div>';}).join('');
+   var html='<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Hi Service Gas Job Card</title><style>body{font:14px Arial,sans-serif;color:#17201b;padding:20px;max-width:850px;margin:auto}h1{color:#16723c}h2{font-size:16px;border-bottom:1px solid #ccc;padding-bottom:5px}table{border-collapse:collapse;width:100%}td,th{border:1px solid #ddd;padding:8px;text-align:left}.photos{display:flex;flex-wrap:wrap;gap:10px}.photos img{max-width:46%;max-height:300px;object-fit:contain;break-inside:avoid}p{white-space:pre-wrap}@page{size:A4;margin:14mm}</style></head><body>'+
+   '<h1>HI SERVICE — GAS JOB CARD</h1><p><b>Job Card:</b> '+escapeHtml(job.number)+'</p><p><b>Client:</b> '+escapeHtml(job.customer)+'</p><p><b>Address:</b> '+escapeHtml(job.site)+'</p><p><b>Contact Person:</b> '+escapeHtml(job.contactPerson)+'</p><p><b>Contact Number:</b> '+escapeHtml(job.contactNumber)+'</p><p><b>Technician:</b> '+escapeHtml(job.technicians)+'</p><p><b>Date:</b> '+escapeHtml(job.date)+'</p>'+
+   '<h2>Time on Site</h2><p>Arrived: '+escapeHtml(svc.timeArrived)+' | Departed: '+escapeHtml(svc.timeDeparted)+' | Break: '+escapeHtml(svc.breakMinutes)+' minutes | Total: '+escapeHtml(formatDuration(svc.totalMinutes))+'</p>'+
+   '<h2>Work Requested</h2><p>'+escapeHtml(job.jobRequest)+'</p><h2>Work Completed</h2><p>'+escapeHtml(svc.workDescription)+'</p><h2>Materials Used</h2><table><tr><th>Item</th><th>Quantity</th></tr>'+materialRows+'</table>'+pictures+
+   '<p style="font-size:11px;color:#777">Generated from Hi Service. Use Print / Save as PDF to share the document.</p></body></html>';
+   w.document.open();w.document.write(html);w.document.close();
+   w.addEventListener('load',function(){setTimeout(function(){w.focus();w.print();},400);});
+ }
  var toolbar=el('div',{'class':'toolbar'},editor);
+ var pdf=el('button',{'type':'button','class':'btn',text:'Print / Save PDF'},editor);pdf.onclick=function(){exportPdf(collect('SUBMITTED'));};
  var save=el('button',{'type':'button','class':'btn primary',text:'Save Draft'},toolbar);
  var submit=el('button',{'type':'button','class':'btn',text:'Submit Job Card'},toolbar);
  el('button',{'type':'button','class':'btn',text:'Close'},toolbar).onclick=function(){host.classList.add('hidden');};
  function collect(status){return {id:bookingId(e),number:bookingId(e),company:'Hi Service',sourceBookingId:e.id,customer:customer.value.trim(),site:site.value.trim(),contactPerson:contact.value.trim(),contactNumber:phone.value.trim(),jobRequest:requested.value,sourceNotes:e.notes||'',date:date.value.trim(),technicians:technician.value.trim(),types:['service'],sections:{service:{workDescription:description.value,timeArrived:arrival.value,timeDeparted:departure.value,breakMinutes:Number(breakTime.value)||0,totalMinutes:duration(arrival.value,departure.value,breakTime.value),materials:Array.from(items.children).map(function(row){return {name:row.children[0].value.trim(),quantity:Number(row.children[1].value)||0};}).filter(function(x){return x.name;})}},status:status};}
- function persist(status){if(status==='SUBMITTED'&&duration(arrival.value,departure.value,breakTime.value)===null){msg.textContent='Enter Time Arrived and Time Departed before submitting.';return;}if(!customer.value.trim()||!site.value.trim()||!date.value.trim()){msg.textContent='Client name, address and date are required.';return;}save.disabled=submit.disabled=true;msg.textContent='Saving Job Card…';api({action:'jobCardSave',jobCard:collect(status)}).then(function(r){if(!r||r.ok===false)throw Error(r&&r.error||'Save failed');msg.textContent=status==='SUBMITTED'?'Job Card submitted.':'Draft saved.';}).catch(function(err){msg.textContent='Could not save: '+String(err.message||err);}).finally(function(){save.disabled=submit.disabled=false;});}
+ function persist(status){if(status==='SUBMITTED'&&duration(arrival.value,departure.value,breakTime.value)===null){msg.textContent='Enter Time Arrived and Time Departed before submitting.';return;}if(!customer.value.trim()||!site.value.trim()||!date.value.trim()){msg.textContent='Client name, address and date are required.';return;}save.disabled=submit.disabled=true;msg.textContent='Saving Job Card…';api({action:'jobCardSave',jobCard:collect(status)}).then(function(r){if(!r||r.ok===false)throw Error(r&&r.error||'Save failed');msg.textContent=status==='SUBMITTED'?'Job Card submitted.':'Draft saved.';if(status==='SUBMITTED')exportPdf(collect(status));}).catch(function(err){msg.textContent='Could not save: '+String(err.message||err);}).finally(function(){save.disabled=submit.disabled=false;});}
  save.onclick=function(){persist('DRAFT');};submit.onclick=function(){persist('SUBMITTED');};
  apiGet('jobCards').then(function(result){var old=(result.jobCards||[]).find(function(x){return x.id===bookingId(e);});if(!old){msg.textContent='New Job Card — booking details prefilled.';return;}var j=old.data||{};card=j;customer.value=j.customer||e.customer;site.value=j.site||e.site;contact.value=j.contactPerson||info.contact;phone.value=j.contactNumber||info.phone;technician.value=j.technicians||e.technician;date.value=j.date||e.date;description.value=j.sections&&j.sections.service&&j.sections.service.workDescription||'';var service=j.sections&&j.sections.service||{};arrival.value=service.timeArrived||'';departure.value=service.timeDeparted||'';breakTime.value=service.breakMinutes==null?'0':String(service.breakMinutes);updateDuration();items.replaceChildren();(j.sections&&j.sections.service&&j.sections.service.materials||[]).forEach(function(x){materialRow(x.name,x.quantity);});msg.textContent='Existing Job Card loaded: '+(j.status||'DRAFT');}).catch(function(err){msg.textContent='Cannot check existing Job Cards: '+String(err.message||err)+'; saving may not be available.';save.disabled=submit.disabled=true;});
  host.scrollIntoView({behavior:'smooth',block:'start'});
