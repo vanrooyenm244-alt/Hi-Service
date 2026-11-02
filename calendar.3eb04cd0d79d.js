@@ -1,7 +1,6 @@
 (function(){
   'use strict';
   var month=new Date(),events=[],generation=0,mode='agenda',day=null,cache=null,inflight=null;
-  var selectedBooking=null;
   function owner(){return JSON.stringify([S.url,S.username,S.password]);}
   function cacheKey(){return 'hi-calendar:'+JSON.stringify([S.url,S.username]);}
   function render(){
@@ -13,7 +12,7 @@
     $('hiCalGrid').querySelectorAll('[data-cal-day]').forEach(b=>b.onclick=()=>{day=b.dataset.calDay;mode='day';render();});
     $('hiCalAgenda').setAttribute('aria-pressed',String(mode==='agenda'));$('hiCalMonth').setAttribute('aria-pressed',String(mode==='month'));
     if(view.errors.length)$('hiCalMsg').textContent='Some repeating bookings need review: '+view.errors.join('; ');
-    $('hiCalGrid').querySelectorAll('[data-hi-event]').forEach(b=>b.onclick=()=>{var e=events.find(e=>e.id===b.dataset.hiEvent);if(!e)return;selectedBooking=e;$('hiCalJobCard').disabled=e.source!=='timetree';$('hiCalDetails').textContent=TimeTreeCalendar.details(e);$('hiCalSource').href=e.sourceUrl;$('hiCalDetailCard').classList.remove('hidden');$('hiCalDetailCard').scrollIntoView({behavior:'smooth',block:'nearest'});});
+    $('hiCalGrid').querySelectorAll('[data-hi-event]').forEach(b=>b.onclick=()=>{var e=events.find(e=>e.id===b.dataset.hiEvent);if(!e)return;$('hiCalDetails').textContent=TimeTreeCalendar.details(e);$('hiCalSource').href=e.sourceUrl;$('hiCalDetailCard').classList.remove('hidden');$('hiCalDetailCard').scrollIntoView({behavior:'smooth',block:'nearest'});});
   }
   function renderToday(){
     var box=document.getElementById('hsTodayBookings');if(!box)return;
@@ -53,14 +52,14 @@
     var who=owner();$('hiCalDetailCard').classList.add('hidden');
     if(!hiCan('calendar.view')){events=[];cache=null;generation++;return;}
     if(!cache||cache.owner!==who){cache=null;events=[];try{var saved=JSON.parse(sessionStorage.getItem(cacheKey()));if(saved&&Array.isArray(saved.events))cache={owner:who,events:saved.events,lastImportAt:saved.lastImportAt,at:0};}catch(e){}}
-    if(cache){events=cache.events;window.hiCalendarBookings=events;render();renderToday();$('hiCalMsg').textContent=status(cache);}else{events=[];render();}
+    if(cache){events=cache.events;render();renderToday();$('hiCalMsg').textContent=status(cache);}else{events=[];render();}
     if(force!==true&&cache&&Date.now()-cache.at<60000)return;
     if(inflight&&inflight.owner===who)return inflight.promise;
     var mine=++generation;$('hiCalMsg').textContent=cache?'Showing saved bookings · Updating…':'Loading bookings…';
     var request=(async function(){try{
       var j=await apiGet('hiCalendar');if(mine!==generation||who!==owner()||!hiCan('calendar.view'))return;
       if(!Array.isArray(j.events))throw Error('Invalid calendar response');
-      cache={owner:who,events:j.events,lastImportAt:j.lastImportAt,at:Date.now()};events=j.events;window.hiCalendarBookings=events;
+      cache={owner:who,events:j.events,lastImportAt:j.lastImportAt,at:Date.now()};events=j.events;
       try{sessionStorage.setItem(cacheKey(),JSON.stringify({events:j.events,lastImportAt:j.lastImportAt}));}catch(e){}
       render();renderToday();$('hiCalMsg').textContent=status(j);
     }catch(e){if(mine===generation&&who===owner())$('hiCalMsg').textContent=(cache?'Showing saved bookings · Update failed: ':'Calendar unavailable: ')+e.message;
@@ -71,7 +70,6 @@
   $('hiCalNext').onclick=()=>{month.setDate(1);month.setMonth(month.getMonth()+1);if(mode==='day')mode='agenda';render();};
   $('hiCalToday').onclick=()=>{month=new Date();day=month.toISOString().slice(0,10);if(mode==='day')mode='agenda';render();};$('hiCalRefresh').onclick=()=>loadHiCalendar(true);
   $('hiCalAgenda').onclick=()=>{mode='agenda';render();};$('hiCalMonth').onclick=()=>{mode='month';render();};
-  $('hiCalJobCard').onclick=function(){if(selectedBooking&&window.hiOpenJobCard)window.hiOpenJobCard(selectedBooking);};
   $('hiCalClose').onclick=()=>$('hiCalDetailCard').classList.add('hidden');
   window.addEventListener('load',function(){if(S&&S.username&&hiCan('calendar.view'))loadHiCalendar();});
   var previousGoPage=window.goPage;
