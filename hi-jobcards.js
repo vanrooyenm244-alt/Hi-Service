@@ -1,6 +1,17 @@
 (function(){
 'use strict';
 var selected=null,card=null;
+// Jacobus' gas bookings may carry his technician label rather than a Hi Service label.
+// This only changes the calendar presentation. The backend authorizes every save.
+var originalVisibility=TimeTreeCalendar.visible;
+TimeTreeCalendar.visible=function(e,company,user){
+ if(originalVisibility(e,company,user))return true;
+ if(company!=='Hi Service'||e.source!=='timetree'||String(e.status)==='ARCHIVED')return false;
+ var label=TimeTreeCalendar.tagKey(e.jobType||'');
+ if(label!=='jacobus'||!/(gas|regulator|lpg)/i.test([e.customer,e.notes].join(' ')))return false;
+ if(!user||user.role==='Admin')return true;
+ return [user.name,user.username].some(function(n){return /^jacobus(?:\s|$)/i.test(String(n||'').trim());});
+};
 function minutes(t){if(!/^\\d{2}:\\d{2}$/.test(t||''))return null;var parts=t.split(':').map(Number);return parts[0]<24&&parts[1]<60?parts[0]*60+parts[1]:null;}
 function duration(start,end,breakMinutes){var a=minutes(start),b=minutes(end);if(a===null||b===null)return null;var total=b-a;if(total<0)total+=1440;return Math.max(0,total-(Number(breakMinutes)||0));}
 function formatDuration(n){return n===null?'Not yet recorded':Math.floor(n/60)+'h '+String(n%60).padStart(2,'0')+'m';}
