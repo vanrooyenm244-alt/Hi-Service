@@ -42,6 +42,20 @@ function open(e){
  host.scrollIntoView({behavior:'smooth',block:'start'});
 }
 window.hiOpenJobCard=open;
-function launchFromLink(){var p=new URLSearchParams(location.search),id=p.get('booking');if(p.get('source')!=='timetree'||!id)return;var tries=0;function retry(){if(!window.hiCalendarBookings||!window.hiCalendarBookings.length){if(++tries<10)setTimeout(retry,600);return;}var e=window.hiCalendarBookings.find(function(x){return x.id===id;});if(e){goPage('calendar');open(e);}}retry();}
+var lastSelectedId='';
+document.addEventListener('click',function(event){
+ var bookingButton=event.target.closest&&event.target.closest('[data-hi-event]');
+ if(bookingButton)lastSelectedId=bookingButton.getAttribute('data-hi-event')||'';
+});
+var jobButton=document.getElementById('hiCalJobCard');
+if(jobButton)jobButton.addEventListener('click',function(){
+ if(!lastSelectedId)return;
+ apiGet('hiCalendar').then(function(r){
+  var found=(r.events||[]).find(function(e){return e.id===lastSelectedId;});
+  if(!found)throw Error('Booking not available');
+  open(found);
+ }).catch(function(err){alert('Cannot load booking: '+String(err.message||err));});
+});
+function launchFromLink(){var p=new URLSearchParams(location.search),id=p.get('booking');if(p.get('source')!=='timetree'||!id)return;var tries=0;function retry(){apiGet('hiCalendar').then(function(r){var e=(r.events||[]).find(function(x){return x.id===id;});if(e){goPage('calendar');open(e);}}).catch(function(){});}retry();}
 window.addEventListener('load',launchFromLink);
 })();
