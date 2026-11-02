@@ -138,9 +138,13 @@ function renderOverview(){overviewTable.innerHTML='<table><thead><tr><th>Item</t
 function overviewPdfHtml_(items,createdAt){
   var order=HiStockCategories.ordered(items);
   var escPdf=function(x){return esc(String(x==null?'':x));};
+  var totalValue=0,unpriced=0,stockLines=0;
   var rows=order.map(function(x){
     var total=PLACES.reduce(function(n,p){return n+Number(x[p]||0);},0);
     var unitCost=HiStockCategories.price(x);
+    if(total>0)stockLines++;
+    if(unitCost===null&&total>0)unpriced++;
+    if(unitCost!==null&&total>0)totalValue+=total*unitCost;
     return '<tr><td>'+escPdf(x.code||'')+'</td><td>'+escPdf(HiStockCategories.name(x))+'</td><td>'+escPdf(x.unit||'each')+'</td>'+PLACES.map(function(p){return '<td class="number">'+Number(x[p]||0)+'</td>';}).join('')+'<td class="number"><b>'+total+'</b></td><td class="number">'+(unitCost===null?'—':estMoney_(unitCost))+'</td></tr>';
   }).join('');
   var totals=PLACES.map(function(p){return order.reduce(function(sum,x){return sum+Number(x[p]||0);},0);});
@@ -149,8 +153,8 @@ function overviewPdfHtml_(items,createdAt){
   return '<!doctype html><html><head><meta charset="utf-8"><title>Hi Service Stock Overview</title><style>'+
     'body{font-family:Arial,sans-serif;color:#17201b;margin:16px}header{display:flex;align-items:center;gap:20px;border-bottom:2px solid #159447;padding-bottom:12px}header img{width:190px;max-height:70px;object-fit:contain}h1{font-size:19px;margin:0 0 6px}.meta{font-size:11px;color:#4f5d54}table{border-collapse:collapse;width:100%;margin-top:18px}th,td{border:1px solid #ccd6cf;padding:5px;font-size:10px;text-align:left}th{background:#d9eee0}tr:nth-child(even){background:#f4f8f5}.number{text-align:right;white-space:nowrap}tfoot{font-weight:bold;background:#e4f2e9}.notice{margin-top:14px;font-size:10px;color:#536159}@page{size:A4 landscape;margin:12mm}@media print{header{break-after:avoid}thead{display:table-header-group}tr{break-inside:avoid}}</style></head><body>'+
     '<header>'+(logo?'<img src="'+logo+'" alt="Hi Service logo">':'')+'<div><h1>STOCK OVERVIEW</h1><div class="meta">Snapshot: '+escPdf(createdAt.toLocaleString('en-ZA',{timeZone:'Africa/Johannesburg'}))+'</div><div class="meta">Prepared by: '+escPdf(S.name||S.username)+' · '+order.length+' items</div></div></header>'+
-    '<table><thead><tr><th>Code</th><th>Stock item</th><th>Unit</th>'+PLACES.map(function(p){return '<th>'+escPdf(p)+'</th>';}).join('')+'<th>Total</th><th>Unit cost</th></tr></thead><tbody>'+rows+'</tbody><tfoot><tr><td colspan="3">Quantity totals by location</td>'+totals.map(function(v){return '<td class="number">'+v+'</td>';}).join('')+'<td class="number">'+all+'</td><td>—</td></tr></tfoot></table>'+
-    '<p class="notice">Current system stock quantities at report generation, not a physical stock count or month-end stock-take reconciliation. Unit totals may mix different units of measure.</p>'+
+    '<table><thead><tr><th>Code</th><th>Stock item</th><th>Unit</th>'+PLACES.map(function(p){return '<th>'+escPdf(p)+'</th>';}).join('')+'<th>Total</th><th>Unit cost</th><th>Stock value</th></tr></thead><tbody>'+rows+'</tbody><tfoot><tr><td colspan="3">Quantity totals by location</td>'+totals.map(function(v){return '<td class="number">'+v+'</td>';}).join('')+'<td class="number">'+all+'</td><td>—</td><td class="number">'+estMoney_(totalValue)+'</td></tr><tr><td colspan="7">Distinct stock lines with quantity: '+stockLines+' / '+order.length+' catalogue items</td><td colspan="2" class="number">Total valued stock: '+estMoney_(totalValue)+'</td></tr></tfoot></table>'+
+    '<p class="notice">Current system stock quantities at report generation, not a physical stock count or month-end stock-take reconciliation. Unit totals may mix different units of measure. Value uses unit cost, not selling price, and excludes VAT. '+(unpriced?unpriced+' stocked item(s) have no recorded unit cost; the rand value is therefore incomplete.':'All stocked items have a recorded unit cost.')+'</p>'+
     '<script>window.onload=function(){setTimeout(function(){window.print()},450)};<\/script></body></html>';
 }
 async function generateOverviewPdf_(){
