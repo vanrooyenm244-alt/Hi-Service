@@ -50,6 +50,8 @@ function open(e){
    else el('span',{'class':'small',text:'Source photo reference — image not stored'},wrap);
    var note=el('textarea',{rows:'2',placeholder:'Photo Note (Optional)',maxlength:'500'},wrap);note.value=p.note||'';
    note.addEventListener('input',function(){p.note=note.value;});
+   var move=el('button',{type:'button','class':'btn',text:key==='before'?'Move to After':'Move to Before'},wrap);
+   move.onclick=function(){var other=key==='before'?'after':'before';photos[key].splice(i,1);photos[other].push(p);renderPhotoList(key,photoViews[key]);renderPhotoList(other,photoViews[other]);};
    var remove=el('button',{type:'button','class':'btn',text:'Remove Photo'},wrap);
    remove.onclick=function(){photos[key].splice(i,1);renderPhotoList(key,preview);};
   });
@@ -85,7 +87,7 @@ function open(e){
   }).catch(function(err){status.textContent='TimeTree photo import unavailable: '+String(err.message||err);});
  }
 
- el('p',{'class':'msg',text:'Photo notes and source references are saved with the Job Card. Image files selected here are included in the PDF only during this session; TimeTree attachment download and permanent photo storage require a verified secure server endpoint.'},editor);
+ el('p',{'class':'msg',text:'Photo notes and source references are saved with the Job Card. Image files selected here are included in the PDF only during this session; TimeTree image import attempts to download source photos automatically; if the source is unavailable, add photos manually. Technician-selected photos are not permanently stored.'},editor);
  function exportPdf(job){
    var w=window.open('','_blank');
    if(!w){msg.textContent='Enable pop-ups to print or save the Job Card as PDF.';return;}
