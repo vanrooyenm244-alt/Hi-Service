@@ -1,7 +1,8 @@
 {
-  "version": "hi-service-v47-timetree-photos",
+  "version": "hi-service-v48-calendar-loader",
   "date": "2026-11-02",
   "changes": [
+    "Prevent calendar page crash when the module is missing and refresh the versioned calendar script.",
     "Job Card now attempts to download the booking's TimeTree photos; shows clear errors when the source does not provide accessible attachments.",
     "As employees type Brass Fitting or HS-001, show tappable matching stock item suggestions in each transfer, receive and adjustment row.",
     "Search existing items by stock code or description independently in each Transfer Stock, Stock Received and Stock Adjustment line.",
