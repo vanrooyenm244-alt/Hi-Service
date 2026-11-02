@@ -1,7 +1,8 @@
 {
-  "version": "hi-service-v44-stock-value",
+  "version": "hi-service-v45-stock-search",
   "date": "2026-11-02",
   "changes": [
+    "Search existing items by stock code or description independently in each Transfer Stock, Stock Received and Stock Adjustment line.",
     "Stock Overview PDF adds total quantity, stocked item lines and total stock value at recorded unit cost, with unpriced item warning.",
     "Generate an on-demand Stock Overview PDF showing quantities in Stoor, CEY 59799, CEY 67212 and totals. Live stock is fetched before generating; month-end Stock Take remains separate.",
     "Today’s bookings correctly display recurring TimeTree appointments and a per-date Job Completed checkbox.",
@@ -14,6 +15,7 @@
     "Reliable atomic app updates and explicit Apply update / Reload."
   ],
   "tests": [
+    "On a phone add two Transfer Stock rows, search different item codes, select items and enter separate quantities; repeat for Stock Received.",
     "Compare PDF total quantity and total cost valuation against all three stock locations, including missing cost items.",
     "Open Stock Overview, generate PDF and confirm code, description, unit and location columns match latest backend stock.",
     "Verify the report refuses stale offline data and that the month-end Stock Take process remains unchanged.",
