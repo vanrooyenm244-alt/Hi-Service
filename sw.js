@@ -1,8 +1,10 @@
 /* Atomic app shell. Versioned assets keep open pages consistent during updates. */
-const CACHE = 'hi-service-v46-autocomplete';
+const CACHE = 'hi-service-v47-timetree-photos';
 const SHELL = [
   "./",
   "./index.html",
+  "./hi-jobcards.js",
+  "./hi-booking-parser.js",
   "./release-notes.json",
   "./manifest.webmanifest",
   "./icon.svg",
