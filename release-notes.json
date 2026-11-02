@@ -1,7 +1,8 @@
 {
-  "version": "hi-service-v42-job-completion",
-  "date": "2026-10-29",
+  "version": "hi-service-v43-overview-pdf",
+  "date": "2026-11-02",
   "changes": [
+    "Generate an on-demand Stock Overview PDF showing quantities in Stoor, CEY 59799, CEY 67212 and totals. Live stock is fetched before generating; month-end Stock Take remains separate.",
     "Today’s bookings correctly display recurring TimeTree appointments and a per-date Job Completed checkbox.",
     "New mobile-first operations dashboard with original Hi Service logo and light/dark themes.",
     "Today’s bookings panel from the existing TimeTree-backed calendar; existing booking source preserved.",
@@ -12,6 +13,8 @@
     "Reliable atomic app updates and explicit Apply update / Reload."
   ],
   "tests": [
+    "Open Stock Overview, generate PDF and confirm code, description, unit and location columns match latest backend stock.",
+    "Verify the report refuses stale offline data and that the month-end Stock Take process remains unchanged.",
     "Mark one assigned TimeTree booking completed; refresh and confirm it persists. Reopen the job and confirm status resets.",
     "Check that a recurring booking for another date is unaffected by today's completion.",
     "Open home with an authorised user and verify today's bookings match TimeTree; check no bookings and offline states.",
