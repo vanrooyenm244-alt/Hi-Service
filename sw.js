@@ -1,5 +1,5 @@
 /* Atomic app shell. Versioned assets keep open pages consistent during updates. */
-const CACHE = 'hi-service-v44-stock-value';
+const CACHE = 'hi-service-v45-stock-search';
 const SHELL = [
   "./",
   "./index.html",
