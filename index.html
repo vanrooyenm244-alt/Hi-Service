@@ -13,7 +13,7 @@
 
 <section id="stock" class="page"><button class="btn backHome" data-go="home">← Home</button><div class="card"><div class="head"><h2>Stock Count</h2><span class="small" id="stCount">0 items</span></div><p class="small">Choose the vehicle/store you are physically counting. Blank items are not changed.</p><div class="locations" id="locations"></div><div class="toolbar"><button class="btn" id="addItem">+ Add Item</button><button class="btn" id="importCsv">Upload stock file</button><input id="csv" type="file" accept=".csv,text/csv,.xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" hidden><button class="btn primary" id="sendCount">Send to Sheet</button></div><div id="stockCategories" class="toolbar" aria-label="Stock categories"></div><div id="countJournal" class="msg"></div><input id="q" class="search" placeholder="Search stock..."><div id="stockList"></div><div class="msg" id="stockMsg"></div><div id="uploadProgress" class="uploadProgress hidden"><div class="progressHead"><b id="uploadProgressTitle">Updating stock…</b><span id="uploadProgressPct">0%</span></div><div class="progressTrack"><div id="uploadProgressBar" class="progressBar"></div></div><div id="uploadProgressText" class="progressText">Preparing update…</div><div id="uploadProgressSub" class="small"></div><div class="toolbar"><button class="btn danger" id="cancelUpload">Cancel Update</button></div></div></div></section>
 
-<section id="overview" class="page"><button class="btn backHome" data-go="home">← Home</button><div class="card"><div class="head"><h2>Stock Overview</h2><button class="btn" id="refresh">↻ Refresh Stock</button></div><div class="msg" id="refreshMsg"></div><p class="small">Each vehicle keeps its own stock. Total Stock is the sum across all three locations.</p><div class="overview" id="overviewTable"></div></div></section>
+<section id="overview" class="page"><button class="btn backHome" data-go="home">← Home</button><div class="card"><div class="head"><h2>Stock Overview</h2><div class="toolbar"><button class="btn" id="refresh">↻ Refresh Stock</button><button class="btn primary" id="overviewGeneratePdf" type="button">Generate Stock Overview PDF</button></div></div><div class="msg" id="refreshMsg"></div><p class="small">Each vehicle keeps its own stock. Total Stock is the sum across all three locations.</p><div class="overview" id="overviewTable"></div></div></section>
 
 <section id="report" class="page"><button class="btn backHome" data-go="home">← Home</button><div class="card"><div class="head"><h2>Daily Stock Report</h2><span class="small">Counts & movements</span></div><div class="grid"><div class="field"><label>Report date</label><input id="reportDate" type="date"></div></div><div class="toolbar"><button class="btn primary" id="loadReport">Load Report</button><button class="btn" id="printReport" disabled>Generate PDF</button></div><div class="msg" id="reportMsg"></div></div><div id="reportPreview"></div></section>
 
@@ -134,6 +134,45 @@ function renderStockCategories(){let counts={};S.items.forEach(x=>{let c=HiStock
 function renderStock(){renderStockCategories();let a=HiStockCategories.select(S.items,STOCK_CATEGORY,q.value);stCount.textContent=a.length+' / '+S.items.length+' items';let grouped=a,lastCategory='';stockList.innerHTML=grouped.length?grouped.map(x=>{let k=x.code||x.item,v=S.counts[k],category=HiStockCategories.section(x),heading=category!==lastCategory?'<h3 class="stockCategoryHeading">'+esc(category)+'</h3>':'';lastCategory=category;return heading+'<div class="stockrow" data-k="'+esc(k)+'"><div><b>'+esc(HiStockCategories.name(x))+'</b><span class="small">'+esc(x.code||'')+' · '+esc(HiStockCategories.category(x))+' · '+stockPriceLabel_(x)+' · last '+Number(x[S.place]||0)+'</span></div><input type="number" min="0" step="1" placeholder="'+Number(x[S.place]||0)+'" value="'+(v??'')+'"><span class="small">'+esc(x.unit||'each')+'</span></div>'}).join(''):'<p class="small">No stock items.</p>';stockList.querySelectorAll('.stockrow').forEach(r=>r.querySelector('input').oninput=e=>{if(e.target.value==='')delete S.counts[r.dataset.k];else S.counts[r.dataset.k]=Number(e.target.value);save();saveStockDraft().catch(e=>stockMsg.textContent='Draft storage failed: '+e.message);StockJournal.draw($('countJournal'),S.counts) });StockJournal.draw($('countJournal'),S.counts)}
 function stockPriceLabel_(item){let value=HiStockCategories.price(item);return value===null?'Price required':estMoney_(value)+' / '+esc(item.unit||'each')}
 function renderOverview(){overviewTable.innerHTML='<table><thead><tr><th>Item</th>'+PLACES.map(p=>'<th>'+p+'</th>').join('')+'<th>Total Stock</th><th>Unit cost</th></tr></thead><tbody>'+HiStockCategories.ordered(S.items).map(x=>{let t=PLACES.reduce((n,p)=>n+Number(x[p]||0),0);return '<tr><td><b>'+esc(HiStockCategories.name(x))+'</b><br><span class="small">'+esc(x.code||'')+'</span></td>'+PLACES.map(p=>'<td>'+Number(x[p]||0)+'</td>').join('')+'<td class="total">'+t+'</td><td>'+stockPriceLabel_(x)+'</td></tr>'}).join('')+'</tbody></table>'}
+/* An on-demand snapshot; intentionally separate from monthly stock-taking. */
+function overviewPdfHtml_(items,createdAt){
+  var order=HiStockCategories.ordered(items);
+  var escPdf=function(x){return esc(String(x==null?'':x));};
+  var rows=order.map(function(x){
+    var total=PLACES.reduce(function(n,p){return n+Number(x[p]||0);},0);
+    var unitCost=HiStockCategories.price(x);
+    return '<tr><td>'+escPdf(x.code||'')+'</td><td>'+escPdf(HiStockCategories.name(x))+'</td><td>'+escPdf(x.unit||'each')+'</td>'+PLACES.map(function(p){return '<td class="number">'+Number(x[p]||0)+'</td>';}).join('')+'<td class="number"><b>'+total+'</b></td><td class="number">'+(unitCost===null?'—':estMoney_(unitCost))+'</td></tr>';
+  }).join('');
+  var totals=PLACES.map(function(p){return order.reduce(function(sum,x){return sum+Number(x[p]||0);},0);});
+  var all=totals.reduce(function(a,b){return a+b;},0);
+  var logo=(document.querySelector('.brandLogo')||{}).src||'';
+  return '<!doctype html><html><head><meta charset="utf-8"><title>Hi Service Stock Overview</title><style>'+
+    'body{font-family:Arial,sans-serif;color:#17201b;margin:16px}header{display:flex;align-items:center;gap:20px;border-bottom:2px solid #159447;padding-bottom:12px}header img{width:190px;max-height:70px;object-fit:contain}h1{font-size:19px;margin:0 0 6px}.meta{font-size:11px;color:#4f5d54}table{border-collapse:collapse;width:100%;margin-top:18px}th,td{border:1px solid #ccd6cf;padding:5px;font-size:10px;text-align:left}th{background:#d9eee0}tr:nth-child(even){background:#f4f8f5}.number{text-align:right;white-space:nowrap}tfoot{font-weight:bold;background:#e4f2e9}.notice{margin-top:14px;font-size:10px;color:#536159}@page{size:A4 landscape;margin:12mm}@media print{header{break-after:avoid}thead{display:table-header-group}tr{break-inside:avoid}}</style></head><body>'+
+    '<header>'+(logo?'<img src="'+logo+'" alt="Hi Service logo">':'')+'<div><h1>STOCK OVERVIEW</h1><div class="meta">Snapshot: '+escPdf(createdAt.toLocaleString('en-ZA',{timeZone:'Africa/Johannesburg'}))+'</div><div class="meta">Prepared by: '+escPdf(S.name||S.username)+' · '+order.length+' items</div></div></header>'+
+    '<table><thead><tr><th>Code</th><th>Stock item</th><th>Unit</th>'+PLACES.map(function(p){return '<th>'+escPdf(p)+'</th>';}).join('')+'<th>Total</th><th>Unit cost</th></tr></thead><tbody>'+rows+'</tbody><tfoot><tr><td colspan="3">Quantity totals by location</td>'+totals.map(function(v){return '<td class="number">'+v+'</td>';}).join('')+'<td class="number">'+all+'</td><td>—</td></tr></tfoot></table>'+
+    '<p class="notice">Current system stock quantities at report generation, not a physical stock count or month-end stock-take reconciliation. Unit totals may mix different units of measure.</p>'+
+    '<script>window.onload=function(){setTimeout(function(){window.print()},450)};<\/script></body></html>';
+}
+async function generateOverviewPdf_(){
+  var win=window.open('','_blank');
+  if(!win){refreshMsg.textContent='Allow pop-ups so the PDF report can open.';return;}
+  win.document.write('<title>Loading stock overview</title><p>Loading latest stock quantities from Hi Service…</p>');
+  var button=document.getElementById('overviewGeneratePdf');button.disabled=true;
+  try{
+    if(!navigator.onLine)throw Error('Internet required for a current stock snapshot');
+    var response=await apiGet('hiStock');
+    if(!response||!Array.isArray(response.stock))throw Error('Invalid stock data returned');
+    var createdAt=new Date();
+    S.items=response.stock;await cacheStock().catch(function(){});renderOverview();
+    win.document.open();win.document.write(overviewPdfHtml_(response.stock,createdAt));win.document.close();
+    refreshMsg.textContent='Stock Overview PDF generated from current server stock at '+createdAt.toLocaleTimeString('en-ZA')+'.';
+  }catch(error){
+    refreshMsg.textContent='Stock Overview PDF failed: '+String(error.message||error);
+    win.document.open();win.document.write('<p>Could not generate a current Stock Overview PDF. '+esc(String(error.message||error))+'</p>');win.document.close();
+  }finally{button.disabled=false;}
+}
+document.getElementById('overviewGeneratePdf').onclick=generateOverviewPdf_;
+
 q.oninput=renderStock;
 async function refreshStock(){let cached=await loadCachedStock().catch(()=>false);if(cached)stockMsg.textContent='Stock available from this phone. Syncing…';else stockMsg.textContent='Downloading stock…';if(!navigator.onLine){stockMsg.textContent=cached?'Offline — using stock saved on this phone.':'Offline — connect once to download stock.';return false}try{let access=await apiGet('userAccess',{company:'Hi Service'}).catch(async e=>{if(!/unknown action/i.test(e.message))throw e;let old=await apiGet('me');return {user:old.user,permissions:null};});S.role=access.user.role;S.name=access.user.name;S.permissions=access.permissions;let j=hiNeedsStock()?await apiGet('hiStock'):{stock:[]};S.items=j.stock||[];await cacheStock().catch(()=>{});save();renderAll();applyHiPermissions();stockMsg.textContent='Stock synced.';return true}catch(e){stockMsg.textContent=cached?'Using phone copy. Sync failed: '+e.message:e.message;return false}}
 refresh.onclick=async()=>{refresh.disabled=true;refresh.textContent='↻ Refreshing…';refreshMsg.textContent='Getting latest stock from Google Sheet…';try{let synced=await refreshStock();renderOverview();refreshMsg.textContent=synced?'Latest stock loaded from Google Sheet.':stockMsg.textContent}catch(e){refreshMsg.textContent='Refresh failed: '+e.message}finally{refresh.disabled=false;refresh.textContent='↻ Refresh Stock'}};
