@@ -1,7 +1,8 @@
 {
-  "version": "hi-service-v45-stock-search",
+  "version": "hi-service-v46-autocomplete",
   "date": "2026-11-02",
   "changes": [
+    "As employees type Brass Fitting or HS-001, show tappable matching stock item suggestions in each transfer, receive and adjustment row.",
     "Search existing items by stock code or description independently in each Transfer Stock, Stock Received and Stock Adjustment line.",
     "Stock Overview PDF adds total quantity, stocked item lines and total stock value at recorded unit cost, with unpriced item warning.",
     "Generate an on-demand Stock Overview PDF showing quantities in Stoor, CEY 59799, CEY 67212 and totals. Live stock is fetched before generating; month-end Stock Take remains separate.",
@@ -15,6 +16,7 @@
     "Reliable atomic app updates and explicit Apply update / Reload."
   ],
   "tests": [
+    "On Android type Brass Fitting in Transfer Stock and tap a suggestion; verify correct HS code is selected and movement quantity remains intact.",
     "On a phone add two Transfer Stock rows, search different item codes, select items and enter separate quantities; repeat for Stock Received.",
     "Compare PDF total quantity and total cost valuation against all three stock locations, including missing cost items.",
     "Open Stock Overview, generate PDF and confirm code, description, unit and location columns match latest backend stock.",
