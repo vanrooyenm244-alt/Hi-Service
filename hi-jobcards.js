@@ -12,7 +12,7 @@ TimeTreeCalendar.visible=function(e,company,user){
  if(!user||user.role==='Admin')return true;
  return [user.name,user.username].some(function(n){return /^jacobus(?:\s|$)/i.test(String(n||'').trim());});
 };
-function minutes(t){if(!/^\\d{2}:\\d{2}$/.test(t||''))return null;var parts=t.split(':').map(Number);return parts[0]<24&&parts[1]<60?parts[0]*60+parts[1]:null;}
+function minutes(t){if(!/^[0-9]{2}:[0-9]{2}$/.test(t||''))return null;var parts=t.split(':').map(Number);return parts[0]<24&&parts[1]<60?parts[0]*60+parts[1]:null;}
 function duration(start,end,breakMinutes){var a=minutes(start),b=minutes(end);if(a===null||b===null)return null;var total=b-a;if(total<0)total+=1440;return Math.max(0,total-(Number(breakMinutes)||0));}
 function formatDuration(n){return n===null?'Not yet recorded':Math.floor(n/60)+'h '+String(n%60).padStart(2,'0')+'m';}
 function el(tag,attrs,parent){var n=document.createElement(tag);Object.keys(attrs||{}).forEach(function(k){if(k==='text')n.textContent=attrs[k];else n.setAttribute(k,attrs[k]);});if(parent)parent.appendChild(n);return n;}
@@ -50,6 +50,8 @@ function open(e){
    else el('span',{'class':'small',text:'Source photo reference — image not stored'},wrap);
    var note=el('textarea',{rows:'2',placeholder:'Photo Note (Optional)',maxlength:'500'},wrap);note.value=p.note||'';
    note.addEventListener('input',function(){p.note=note.value;});
+   var move=el('button',{type:'button','class':'btn',text:key==='before'?'Move to After':'Move to Before'},wrap);
+   move.onclick=function(){var other=key==='before'?'after':'before';photos[key].splice(i,1);photos[other].push(p);renderPhotoList(key,photoViews[key]);renderPhotoList(other,photoViews[other]);};
    var remove=el('button',{type:'button','class':'btn',text:'Remove Photo'},wrap);
    remove.onclick=function(){photos[key].splice(i,1);renderPhotoList(key,preview);};
   });
@@ -69,7 +71,23 @@ function open(e){
   });
  }
  photoPicker('Before Photos','before');photoPicker('After Photos','after');
- el('p',{'class':'msg',text:'Photo notes and source references are saved with the Job Card. Image files selected here are included in the PDF only during this session; TimeTree attachment download and permanent photo storage require a verified secure server endpoint.'},editor);
+
+ function importTimeTreePhotos(){
+  var status=el('p',{'class':'msg',text:'Importing TimeTree booking photos…'},editor);
+  apiGet('hiTimeTreePhotos',{bookingId:e.id}).then(function(result){
+   if(!result||result.ok===false)throw Error(result&&result.error||'Import failed');
+   (result.photos||[]).forEach(function(p){
+    if(!p.dataUrl||!/^data:image\/(?:jpeg|png|webp);base64,/.test(p.dataUrl))return;
+    var existing=photos.before.concat(photos.after).find(function(x){return x.name===p.name&&x.source==='timetree';});
+    if(existing){existing.dataUrl=p.dataUrl;return;}
+    photos.before.push({name:p.name||'TimeTree photo',dataUrl:p.dataUrl,note:'',source:'timetree'});
+   });
+   renderPhotoList('before',photoViews.before);renderPhotoList('after',photoViews.after);
+   status.textContent=result.downloaded?'Imported '+result.downloaded+' TimeTree photo(s). Move individual photos to After if required.':(result.note||'No downloadable TimeTree photos found for this booking.');
+  }).catch(function(err){status.textContent='TimeTree photo import unavailable: '+String(err.message||err);});
+ }
+
+ el('p',{'class':'msg',text:'Photo notes and source references are saved with the Job Card. Image files selected here are included in the PDF only during this session; TimeTree image import attempts to download source photos automatically; if the source is unavailable, add photos manually. Technician-selected photos are not permanently stored.'},editor);
  function exportPdf(job){
    var w=window.open('','_blank');
    if(!w){msg.textContent='Enable pop-ups to print or save the Job Card as PDF.';return;}
@@ -107,7 +125,7 @@ function open(e){
  function collect(status){return {id:bookingId(e),number:bookingId(e),company:'Hi Service',sourceBookingId:e.id,customer:customer.value.trim(),site:site.value.trim(),contactPerson:contact.value.trim(),contactNumber:phone.value.trim(),jobRequest:requested.value,sourceNotes:e.notes||'',date:date.value.trim(),technicians:technician.value.trim(),types:['service'],sections:{service:{workDescription:description.value,timeArrived:arrival.value,timeDeparted:departure.value,breakMinutes:Number(breakTime.value)||0,totalMinutes:duration(arrival.value,departure.value,breakTime.value),photoNotes:{before:photos.before.map(function(p){return {name:p.name||'',note:p.note||'',source:p.source||'technician'};}),after:photos.after.map(function(p){return {name:p.name||'',note:p.note||'',source:p.source||'technician'};})},materials:Array.from(items.children).map(function(row){return {name:row.children[0].value.trim(),quantity:Number(row.children[1].value)||0};}).filter(function(x){return x.name;})}},status:status};}
  function persist(status){if(status==='SUBMITTED'&&duration(arrival.value,departure.value,breakTime.value)===null){msg.textContent='Enter Time Arrived and Time Departed before submitting.';return;}if(!customer.value.trim()||!site.value.trim()||!date.value.trim()){msg.textContent='Client name, address and date are required.';return;}save.disabled=submit.disabled=true;msg.textContent='Saving Job Card…';api({action:'jobCardSave',jobCard:collect(status)}).then(function(r){if(!r||r.ok===false)throw Error(r&&r.error||'Save failed');msg.textContent=status==='SUBMITTED'?'Job Card submitted.':'Draft saved.';if(status==='SUBMITTED')exportPdf(collect(status));}).catch(function(err){msg.textContent='Could not save: '+String(err.message||err);}).finally(function(){save.disabled=submit.disabled=false;});}
  save.onclick=function(){persist('DRAFT');};submit.onclick=function(){persist('SUBMITTED');};
- apiGet('jobCards').then(function(result){var old=(result.jobCards||[]).find(function(x){return x.id===bookingId(e);});if(!old){msg.textContent='New Job Card — booking details prefilled.';return;}var j=old.data||{};card=j;customer.value=j.customer||e.customer;site.value=j.site||e.site;contact.value=j.contactPerson||info.contact;phone.value=j.contactNumber||info.phone;technician.value=j.technicians||e.technician;date.value=j.date||e.date;description.value=j.sections&&j.sections.service&&j.sections.service.workDescription||'';var service=j.sections&&j.sections.service||{};arrival.value=service.timeArrived||'';departure.value=service.timeDeparted||'';breakTime.value=service.breakMinutes==null?'0':String(service.breakMinutes);updateDuration();if(service.photoNotes){['before','after'].forEach(function(k){photos[k]=(service.photoNotes[k]||[]).map(function(p){return {name:p.name||'',note:p.note||'',source:p.source||'technician',dataUrl:null};});renderPhotoList(k,photoViews[k]);});}items.replaceChildren();(j.sections&&j.sections.service&&j.sections.service.materials||[]).forEach(function(x){materialRow(x.name,x.quantity);});msg.textContent='Existing Job Card loaded: '+(j.status||'DRAFT');}).catch(function(err){msg.textContent='Cannot check existing Job Cards: '+String(err.message||err)+'; saving may not be available.';save.disabled=submit.disabled=true;});
+ apiGet('jobCards').then(function(result){var old=(result.jobCards||[]).find(function(x){return x.id===bookingId(e);});if(!old){msg.textContent='New Job Card — booking details prefilled.';importTimeTreePhotos();return;}var j=old.data||{};card=j;customer.value=j.customer||e.customer;site.value=j.site||e.site;contact.value=j.contactPerson||info.contact;phone.value=j.contactNumber||info.phone;technician.value=j.technicians||e.technician;date.value=j.date||e.date;description.value=j.sections&&j.sections.service&&j.sections.service.workDescription||'';var service=j.sections&&j.sections.service||{};arrival.value=service.timeArrived||'';departure.value=service.timeDeparted||'';breakTime.value=service.breakMinutes==null?'0':String(service.breakMinutes);updateDuration();if(service.photoNotes){['before','after'].forEach(function(k){photos[k]=(service.photoNotes[k]||[]).map(function(p){return {name:p.name||'',note:p.note||'',source:p.source||'technician',dataUrl:null};});renderPhotoList(k,photoViews[k]);});}items.replaceChildren();(j.sections&&j.sections.service&&j.sections.service.materials||[]).forEach(function(x){materialRow(x.name,x.quantity);});msg.textContent='Existing Job Card loaded: '+(j.status||'DRAFT');importTimeTreePhotos();}).catch(function(err){msg.textContent='Cannot check existing Job Cards: '+String(err.message||err)+'; saving may not be available.';save.disabled=submit.disabled=true;});
  host.scrollIntoView({behavior:'smooth',block:'start'});
 }
 window.hiOpenJobCard=open;
