@@ -1,5 +1,5 @@
 /* Atomic app shell. Versioned assets keep open pages consistent during updates. */
-const CACHE = 'hi-service-v47-timetree-photos';
+const CACHE = 'hi-service-v48-calendar-loader';
 const SHELL = [
   "./",
   "./index.html",
@@ -16,7 +16,7 @@ const SHELL = [
   "./hi-app-updates-v31.js?release=hi-service-v40-attendance-po",
   "./vendor/rrule.min.js",
   "./timetree-calendar.071000ecf91b.js",
-  "./calendar.3eb04cd0d79d.js",
+  "./calendar.3eb04cd0d79d.js?release=hi-cal-loader-20261102",
   "./ops-theme.css?release=20261029",
   "./ops-theme.js?release=20261029",
   "./po-inventory.js?release=hi-service-v40-attendance-po",
