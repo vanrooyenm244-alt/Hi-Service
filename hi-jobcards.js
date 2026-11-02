@@ -12,7 +12,7 @@ TimeTreeCalendar.visible=function(e,company,user){
  if(!user||user.role==='Admin')return true;
  return [user.name,user.username].some(function(n){return /^jacobus(?:\s|$)/i.test(String(n||'').trim());});
 };
-function minutes(t){if(!/^\\d{2}:\\d{2}$/.test(t||''))return null;var parts=t.split(':').map(Number);return parts[0]<24&&parts[1]<60?parts[0]*60+parts[1]:null;}
+function minutes(t){if(!/^[0-9]{2}:[0-9]{2}$/.test(t||''))return null;var parts=t.split(':').map(Number);return parts[0]<24&&parts[1]<60?parts[0]*60+parts[1]:null;}
 function duration(start,end,breakMinutes){var a=minutes(start),b=minutes(end);if(a===null||b===null)return null;var total=b-a;if(total<0)total+=1440;return Math.max(0,total-(Number(breakMinutes)||0));}
 function formatDuration(n){return n===null?'Not yet recorded':Math.floor(n/60)+'h '+String(n%60).padStart(2,'0')+'m';}
 function el(tag,attrs,parent){var n=document.createElement(tag);Object.keys(attrs||{}).forEach(function(k){if(k==='text')n.textContent=attrs[k];else n.setAttribute(k,attrs[k]);});if(parent)parent.appendChild(n);return n;}
