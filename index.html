@@ -247,7 +247,7 @@ function addLine(box,qty=''){
   line.querySelector('button').onclick=()=>line.remove();
 }
 addTransfer.onclick=()=>addLine(transferLines);addReceive.onclick=()=>addLine(receiveLines);addAdjust.onclick=()=>addLine(adjustLines);
-function lines(box){return [...box.querySelectorAll('.line')].map(r=>({code:r.querySelector('select').value,qty:Number(r.querySelector('.stock-item-qty').value)})).filter(x=>x.code&&x.qty)}
+function lines(box){return [...box.querySelectorAll('.line')].map(r=>{let code=r.querySelector('select').value,qty=Number(r.querySelector('.stock-item-qty').value);if(!code&&qty)throw Error('Select an existing stock item from the search results before submitting.');return {code,qty};}).filter(x=>x.code&&x.qty)}
 async function submitMovement(body,button){
   if(button.disabled)throw Error('This movement is still uploading');
   S.pendingMovements=S.pendingMovements||{};
