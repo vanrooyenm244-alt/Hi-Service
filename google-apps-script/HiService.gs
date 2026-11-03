@@ -48,8 +48,8 @@ function hiTotals_(){
   var sh=hiTargetSpreadsheet_(HI_STOCK_SHEET).getSheetByName(HI_STOCK_SHEET);if(!sh)return;
   var n=sh.getLastRow()-1;if(n<1)return;var f=[];for(var i=0;i<n;i++)f.push(['=SUM(G'+(i+2)+':I'+(i+2)+')']);sh.getRange(2,10,n,1).setFormulas(f);
 }
-function hiFind_(codeOrName){
-  var q=String(codeOrName||'').trim().toLowerCase(),matches=hiStockRows_().filter(function(x){return x.code.trim().toLowerCase()===q||x.item.trim().toLowerCase()===q;});
+function hiFind_(codeOrName,snapshot){
+  var q=String(codeOrName||'').trim().toLowerCase(),matches=(snapshot||hiStockRows_()).filter(function(x){return x.code.trim().toLowerCase()===q||x.item.trim().toLowerCase()===q;});
   if(matches.length>1)throw new Error('Duplicate stock code/description: '+codeOrName+'; review the stock sheet');
   return matches[0]||null;
 }
@@ -65,18 +65,33 @@ function hiAdd_(u,it){
   hiTargetSpreadsheet_(HI_STOCK_SHEET).getSheetByName(HI_STOCK_SHEET).appendRow([code,name,it.category||'Other',it.supplier||'',it.unit||'each',Number(it.cost)||0,0,0,0,'','Yes',new Date(),u.username||'']);
   hiTotals_();return {code:code,item:name};
 }
+function hiAppendBatch_(sh,rows){
+  if(!rows.length)return;var at=sh.getLastRow()+1;
+  if(typeof sh.getMaxRows==='function'&&sh.getMaxRows()<at+rows.length-1)sh.insertRowsAfter(sh.getMaxRows(),at+rows.length-1-sh.getMaxRows());
+  sh.getRange(at,1,rows.length,rows[0].length).setValues(rows);
+}
+function hiApplyQtyBatch_(changed,u){
+  var items=Object.keys(changed).map(function(k){return changed[k];}).sort(function(a,b){return a.row-b.row;});
+  if(!items.length)return;
+  var sh=hiTargetSpreadsheet_(HI_STOCK_SHEET).getSheetByName(HI_STOCK_SHEET),now=new Date();
+  for(var i=0;i<items.length;){var start=items[i].row,count=1;while(i+count<items.length&&items[i+count].row===start+count)count++;
+    var group=items.slice(i,i+count);
+    sh.getRange(start,7,count,3).setValues(group.map(function(it){return HI_PLACES.map(function(place){return Number(it[place])||0;});}));
+    sh.getRange(start,12,count,2).setValues(group.map(function(){return [now,u.username||u.name||'user'];}));i+=count;
+  }
+}
 function hiCount_(u,place,counts){
   if(HI_PLACES.indexOf(place)<0)throw new Error('Unknown location');
-  var changed=0,unknown=[],rejected=[],ss=hiTargetSpreadsheet_(HI_COUNT_SHEET);
+  var changed=0,unknown=[],rejected=[],ss=hiTargetSpreadsheet_(HI_COUNT_SHEET),snapshot=hiStockRows_(),updates={},logs=[],now=new Date();
   var sh=hiSheet_(ss,HI_COUNT_SHEET,['Timestamp','User','Location','Code','Description','Count','Old','Movement']);
   sh.getRange(1,7,1,2).setValues([['Old','Movement']]);
   Object.keys(counts||{}).forEach(function(key){
-    var it;try{it=hiFind_(key);}catch(e){rejected.push(key);return;}var raw=counts[key],q=Number(raw);if(!it){unknown.push(key);return;}
+    var it;try{it=hiFind_(key,snapshot);}catch(e){rejected.push(key);return;}var raw=counts[key],q=Number(raw);if(!it){unknown.push(key);return;}
     if(raw===null||raw===undefined||typeof raw==='boolean'||String(raw).trim()===''||!isFinite(q)||q<0||Math.floor(q)!==q){rejected.push(key);return;}
-    var old=it[place];if(old!==q){hiSetQty_(it.row,place,q,u);changed++;}
-    sh.appendRow([new Date(),u.username||'',place,it.code,it.item,q,old,q-old]);
+    var old=it[place];if(old!==q){it[place]=q;updates[it.row]=it;changed++;}
+    logs.push([now,u.username||'',place,it.code,it.item,q,old,q-old]);
   });
-  hiTotals_();return {changed:changed,unknown:unknown,rejected:rejected};
+  hiApplyQtyBatch_(updates,u);hiAppendBatch_(sh,logs);hiTotals_();return {changed:changed,unknown:unknown,rejected:rejected};
 }
 function hiMove_(u,from,to,lines,type,reason,ref,requestId){
   var ss=hiTargetSpreadsheet_(HI_MOVE_SHEET),existingLog=ss.getSheetByName(HI_MOVE_SHEET);
@@ -89,9 +104,9 @@ function hiMove_(u,from,to,lines,type,reason,ref,requestId){
   if(type==='issue'&&(to!=='Kleinmond'||!String(ref||'').trim()))throw new Error('Kleinmond destination and job/reference required');
   if(!Array.isArray(lines)||!lines.length)throw new Error('Add stock lines first');
   // Validate the entire request, including repeated lines, before changing quantities.
-  var plans=Object.create(null),order=[];
+  var plans=Object.create(null),order=[],snapshot=hiStockRows_();
   lines.forEach(function(l){
-    var it=hiFind_(l.code||l.item),raw=l.qty,q=Number(raw);
+    var it=hiFind_(l.code||l.item,snapshot),raw=l.qty,q=Number(raw);
     if(!it)throw new Error('Unknown stock item: '+(l.code||l.item));
     if(raw===null||raw===undefined||typeof raw==='boolean'||String(raw).trim()===''||!isFinite(q)||Math.floor(q)!==q||q===0||(type!=='adjust'&&q<0))throw new Error('Invalid quantity: '+it.item);
     if(!plans[it.row]){plans[it.row]={item:it,qty:0};order.push(it.row);}
@@ -102,14 +117,14 @@ function hiMove_(u,from,to,lines,type,reason,ref,requestId){
     if(type==='adjust'&&it[from]+q<0)throw new Error(it.item+' would become negative');
   });
   var log=hiSheet_(hiTargetSpreadsheet_(HI_MOVE_SHEET),HI_MOVE_SHEET,['Timestamp','User','Type','From','To','Code','Description','Qty','Reason','Reference','Request ID']),done=0;
-  log.getRange(1,11).setValue('Request ID');
+  log.getRange(1,11).setValue('Request ID');var updates={},logs=[],now=new Date();
   order.forEach(function(key){var p=plans[key],it=p.item,q=p.qty;if(!q)return;
-    if(type==='transfer'){hiSetQty_(it.row,from,it[from]-q,u);hiSetQty_(it.row,to,it[to]+q,u);}
-    else if(type==='issue')hiSetQty_(it.row,from,it[from]-q,u);
-    else if(type==='receive')hiSetQty_(it.row,to,it[to]+q,u);
-    else hiSetQty_(it.row,from,it[from]+q,u);
-    log.appendRow([new Date(),u.username||'',type,from||'',to||'',it.code,it.item,q,reason||'',ref||'',requestId]);done++;
-  });hiTotals_();return {changed:done};
+    if(type==='transfer'){it[from]-=q;it[to]+=q;}
+    else if(type==='issue')it[from]-=q;
+    else if(type==='receive')it[to]+=q;
+    else it[from]+=q;
+    updates[it.row]=it;logs.push([now,u.username||'',type,from||'',to||'',it.code,it.item,q,reason||'',ref||'',requestId]);done++;
+  });hiApplyQtyBatch_(updates,u);hiAppendBatch_(log,logs);hiTotals_();return {changed:done};
 }
 function hiTime_(u,row){
   var ss=hiTargetSpreadsheet_(HI_TIME_SHEET),tz=ss.getSpreadsheetTimeZone()||Session.getScriptTimeZone();
@@ -149,6 +164,11 @@ function hiServiceGet_(p,body){
   return out_({ok:true,stock:hiStockRows_(),places:HI_PLACES,categories:['Gas','Plumbing','Geyser','Consumable','Tools','Other']});
 }
 function hiServicePost_(body){
+  if(!/^hiStock(?:Count|Add|Transfer|Issue|Adjust|Receive)$/.test(String(body.action||'')))return hiServicePostLocked_(body);
+  var lock=LockService.getScriptLock();lock.waitLock(30000);
+  try{return hiServicePostLocked_(body);}finally{lock.releaseLock();}
+}
+function hiServicePostLocked_(body){
   var a=body.action;if(['hiStockCount','hiStockAdd','hiStockTransfer','hiStockIssue','hiStockAdjust','hiStockReceive','hiTimesheet'].indexOf(a)<0)return null;
   var u=auth_(body);
   if(a==='hiStockCount'){var r=hiCount_(u,String(body.place||''),body.counts||{});return out_({ok:true,changed:r.changed,unknown:r.unknown,rejected:r.rejected});}
@@ -159,3 +179,4 @@ function hiServicePost_(body){
   if(a==='hiStockReceive')return out_({ok:true,result:hiMove_(u,'',body.place,body.lines,'receive','Invoice',body.reference,body.requestId)});
   if(a==='hiTimesheet')return out_({ok:true,result:hiTime_(u,body.row||{})});
 }
+

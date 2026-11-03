@@ -2,6 +2,7 @@
   'use strict';
   var month=new Date(),events=[],generation=0,mode='agenda',day=null,cache=null,inflight=null;
   function owner(){return JSON.stringify([S.url,S.username,S.password]);}
+  function requestWindow(){function key(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}var today=new Date(),from=new Date(month.getFullYear(),month.getMonth(),-6),to=new Date(month.getFullYear(),month.getMonth()+1,7);return {from:key(from),to:key(to)};}
   function cacheKey(){return 'hi-calendar:'+JSON.stringify([S.url,S.username]);}
   function render(){
     $('hiCalTitle').textContent=month.toLocaleString(undefined,{month:'long',year:'numeric'});
@@ -14,12 +15,12 @@
     if(view.errors.length)$('hiCalMsg').textContent='Some repeating bookings need review: '+view.errors.join('; ');
     $('hiCalGrid').querySelectorAll('[data-hi-event]').forEach(b=>b.onclick=()=>{var e=events.find(e=>e.id===b.dataset.hiEvent);if(!e)return;$('hiCalDetails').textContent=TimeTreeCalendar.details(e);$('hiCalSource').href=e.sourceUrl;$('hiCalDetailCard').classList.remove('hidden');$('hiCalDetailCard').scrollIntoView({behavior:'smooth',block:'nearest'});});
   }
-  function renderToday(){
+  function renderToday(todayEvents){
     var box=document.getElementById('hsTodayBookings');if(!box)return;
     var dateParts=new Intl.DateTimeFormat('en-GB',{timeZone:'Africa/Johannesburg',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date()),p={};
     dateParts.forEach(function(v){p[v.type]=v.value;});
     var today=p.year+'-'+p.month+'-'+p.day;
-    var visible=events.filter(function(e){return TimeTreeCalendar.visible(e,'Hi Service',S);});
+    var visible=(todayEvents||events).filter(function(e){return TimeTreeCalendar.visible(e,'Hi Service',S);});
     var view=TimeTreeCalendar.entries(visible,today,today);
     box.replaceChildren();
     if(view.errors.length){var warning=document.createElement('p');warning.textContent='Recurring calendar warning: '+view.errors.join('; ');box.append(warning);}
@@ -49,29 +50,39 @@
   }
   function status(j){return j.lastImportAt?'TimeTree updated '+new Date(j.lastImportAt).toLocaleString():'No TimeTree import yet.';}
   window.loadHiCalendar=async function(force){
-    var who=owner();$('hiCalDetailCard').classList.add('hidden');
+    var who=owner(),window=requestWindow(),rangeKey=window.from+'|'+window.to;$('hiCalDetailCard').classList.add('hidden');
     if(!hiCan('calendar.view')){events=[];cache=null;generation++;return;}
     if(!cache||cache.owner!==who){cache=null;events=[];try{var saved=JSON.parse(sessionStorage.getItem(cacheKey()));if(saved&&Array.isArray(saved.events))cache={owner:who,events:saved.events,lastImportAt:saved.lastImportAt,at:0};}catch(e){}}
     if(cache){events=cache.events;render();renderToday();$('hiCalMsg').textContent=status(cache);}else{events=[];render();}
-    if(force!==true&&cache&&Date.now()-cache.at<60000)return;
-    if(inflight&&inflight.owner===who)return inflight.promise;
+    if(force!==true&&cache&&cache.rangeKey===rangeKey&&Date.now()-cache.at<60000)return;
+    if(inflight&&inflight.owner===who&&inflight.rangeKey===rangeKey)return inflight.promise;
     var mine=++generation;$('hiCalMsg').textContent=cache?'Showing saved bookings · Updating…':'Loading bookings…';
     var request=(async function(){try{
-      var j=await apiGet('hiCalendar');if(mine!==generation||who!==owner()||!hiCan('calendar.view'))return;
+      var j=await apiGet('hiCalendar',window);if(mine!==generation||who!==owner()||!hiCan('calendar.view'))return;
       if(!Array.isArray(j.events))throw Error('Invalid calendar response');
-      cache={owner:who,events:j.events,lastImportAt:j.lastImportAt,at:Date.now()};events=j.events;
+      cache={owner:who,rangeKey:rangeKey,events:j.events,lastImportAt:j.lastImportAt,at:Date.now()};events=j.events;
       try{sessionStorage.setItem(cacheKey(),JSON.stringify({events:j.events,lastImportAt:j.lastImportAt}));}catch(e){}
       render();renderToday();$('hiCalMsg').textContent=status(j);
     }catch(e){if(mine===generation&&who===owner())$('hiCalMsg').textContent=(cache?'Showing saved bookings · Update failed: ':'Calendar unavailable: ')+e.message;
     }finally{if(inflight&&inflight.promise===request)inflight=null;}})();
-    inflight={owner:who,promise:request};return request;
+    inflight={owner:who,rangeKey:rangeKey,promise:request};return request;
   };
-  $('hiCalPrev').onclick=()=>{month.setDate(1);month.setMonth(month.getMonth()-1);if(mode==='day')mode='agenda';render();};
-  $('hiCalNext').onclick=()=>{month.setDate(1);month.setMonth(month.getMonth()+1);if(mode==='day')mode='agenda';render();};
-  $('hiCalToday').onclick=()=>{month=new Date();day=month.toISOString().slice(0,10);if(mode==='day')mode='agenda';render();};$('hiCalRefresh').onclick=()=>loadHiCalendar(true);
-  $('hiCalAgenda').onclick=()=>{mode='agenda';render();};$('hiCalMonth').onclick=()=>{mode='month';render();};
+  $('hiCalPrev').onclick=()=>{month.setDate(1);month.setMonth(month.getMonth()-1);if(mode==='day')mode='agenda';loadHiCalendar();};
+  $('hiCalNext').onclick=()=>{month.setDate(1);month.setMonth(month.getMonth()+1);if(mode==='day')mode='agenda';loadHiCalendar();};
+  $('hiCalToday').onclick=()=>{month=new Date();day=month.toISOString().slice(0,10);if(mode==='day')mode='agenda';loadHiCalendar();};$('hiCalRefresh').onclick=()=>loadHiCalendar(true);
+  $('hiCalAgenda').onclick=()=>{mode='agenda';loadHiCalendar();};$('hiCalMonth').onclick=()=>{mode='month';render();};
   $('hiCalClose').onclick=()=>$('hiCalDetailCard').classList.add('hidden');
   window.addEventListener('load',function(){if(S&&S.username&&hiCan('calendar.view'))loadHiCalendar();});
+  var todayRead=null,todayAt=0,todayOwner='';
+  window.loadHiToday=function(){
+    var who=owner();if(!hiCan('calendar.view'))return Promise.resolve();
+    if(todayOwner===who&&Date.now()-todayAt<60000)return Promise.resolve();
+    if(todayRead&&todayRead.owner===who)return todayRead.promise;
+    var date=new Intl.DateTimeFormat('en-CA',{timeZone:'Africa/Johannesburg',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
+    var request=apiGet('hiCalendar',{from:date,to:date}).then(function(j){if(owner()!==who)return;renderToday(j.events||[]);todayOwner=who;todayAt=Date.now();}).catch(function(e){var box=$('hsTodayBookings');if(box&&owner()===who)box.textContent='Could not load today’s bookings: '+e.message;}).finally(function(){if(todayRead&&todayRead.promise===request)todayRead=null;});
+    todayRead={owner:who,promise:request};return request;
+  };
   var previousGoPage=window.goPage;
-  window.goPage=function(id){previousGoPage(id);if(id==='home'&&S&&S.username&&hiCan('calendar.view'))loadHiCalendar();};
+  window.goPage=function(id){previousGoPage(id);if(id==='home'&&S&&S.username&&hiCan('calendar.view'))loadHiToday();};
 })();
+

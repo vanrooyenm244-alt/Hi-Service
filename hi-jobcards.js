@@ -72,9 +72,9 @@ function open(e){
  }
  photoPicker('Before Photos','before');photoPicker('After Photos','after');
 
- function importTimeTreePhotos(){
+ function importTimeTreePhotos(refresh){
   var status=el('p',{'class':'msg',text:'Importing TimeTree booking photos…'},editor);
-  apiGet('hiTimeTreePhotos',{bookingId:e.id}).then(function(result){
+  apiGet('hiTimeTreePhotos',{bookingId:e.id,refresh:refresh===true}).then(function(result){
    if(!result||result.ok===false)throw Error(result&&result.error||'Import failed');
    (result.photos||[]).forEach(function(p){
     if(!p.dataUrl||!/^data:image\/(?:jpeg|png|webp);base64,/.test(p.dataUrl))return;
@@ -125,7 +125,7 @@ function open(e){
  function collect(status){return {id:bookingId(e),number:bookingId(e),company:'Hi Service',sourceBookingId:e.id,customer:customer.value.trim(),site:site.value.trim(),contactPerson:contact.value.trim(),contactNumber:phone.value.trim(),jobRequest:requested.value,sourceNotes:e.notes||'',date:date.value.trim(),technicians:technician.value.trim(),types:['service'],sections:{service:{workDescription:description.value,timeArrived:arrival.value,timeDeparted:departure.value,breakMinutes:Number(breakTime.value)||0,totalMinutes:duration(arrival.value,departure.value,breakTime.value),photoNotes:{before:photos.before.map(function(p){return {name:p.name||'',note:p.note||'',source:p.source||'technician'};}),after:photos.after.map(function(p){return {name:p.name||'',note:p.note||'',source:p.source||'technician'};})},materials:Array.from(items.children).map(function(row){return {name:row.children[0].value.trim(),quantity:Number(row.children[1].value)||0};}).filter(function(x){return x.name;})}},status:status};}
  function persist(status){if(status==='SUBMITTED'&&duration(arrival.value,departure.value,breakTime.value)===null){msg.textContent='Enter Time Arrived and Time Departed before submitting.';return;}if(!customer.value.trim()||!site.value.trim()||!date.value.trim()){msg.textContent='Client name, address and date are required.';return;}save.disabled=submit.disabled=true;msg.textContent='Saving Job Card…';api({action:'jobCardSave',jobCard:collect(status)}).then(function(r){if(!r||r.ok===false)throw Error(r&&r.error||'Save failed');msg.textContent=status==='SUBMITTED'?'Job Card submitted.':'Draft saved.';if(status==='SUBMITTED')exportPdf(collect(status));}).catch(function(err){msg.textContent='Could not save: '+String(err.message||err);}).finally(function(){save.disabled=submit.disabled=false;});}
  save.onclick=function(){persist('DRAFT');};submit.onclick=function(){persist('SUBMITTED');};
- apiGet('jobCards').then(function(result){var old=(result.jobCards||[]).find(function(x){return x.id===bookingId(e);});if(!old){msg.textContent='New Job Card — booking details prefilled.';importTimeTreePhotos();return;}var j=old.data||{};card=j;customer.value=j.customer||e.customer;site.value=j.site||e.site;contact.value=j.contactPerson||info.contact;phone.value=j.contactNumber||info.phone;technician.value=j.technicians||e.technician;date.value=j.date||e.date;description.value=j.sections&&j.sections.service&&j.sections.service.workDescription||'';var service=j.sections&&j.sections.service||{};arrival.value=service.timeArrived||'';departure.value=service.timeDeparted||'';breakTime.value=service.breakMinutes==null?'0':String(service.breakMinutes);updateDuration();if(service.photoNotes){['before','after'].forEach(function(k){photos[k]=(service.photoNotes[k]||[]).map(function(p){return {name:p.name||'',note:p.note||'',source:p.source||'technician',dataUrl:null};});renderPhotoList(k,photoViews[k]);});}items.replaceChildren();(j.sections&&j.sections.service&&j.sections.service.materials||[]).forEach(function(x){materialRow(x.name,x.quantity);});msg.textContent='Existing Job Card loaded: '+(j.status||'DRAFT');importTimeTreePhotos();}).catch(function(err){msg.textContent='Cannot check existing Job Cards: '+String(err.message||err)+'; saving may not be available.';save.disabled=submit.disabled=true;});
+ apiGet('jobCards',{id:bookingId(e)}).then(function(result){var old=(result.jobCards||[]).find(function(x){return x.id===bookingId(e);});if(!old){msg.textContent='New Job Card — booking details prefilled.';importTimeTreePhotos();return;}var j=old.data||{};card=j;customer.value=j.customer||e.customer;site.value=j.site||e.site;contact.value=j.contactPerson||info.contact;phone.value=j.contactNumber||info.phone;technician.value=j.technicians||e.technician;date.value=j.date||e.date;description.value=j.sections&&j.sections.service&&j.sections.service.workDescription||'';var service=j.sections&&j.sections.service||{};arrival.value=service.timeArrived||'';departure.value=service.timeDeparted||'';breakTime.value=service.breakMinutes==null?'0':String(service.breakMinutes);updateDuration();if(service.photoNotes){['before','after'].forEach(function(k){photos[k]=(service.photoNotes[k]||[]).map(function(p){return {name:p.name||'',note:p.note||'',source:p.source||'technician',dataUrl:null};});renderPhotoList(k,photoViews[k]);});}items.replaceChildren();(j.sections&&j.sections.service&&j.sections.service.materials||[]).forEach(function(x){materialRow(x.name,x.quantity);});msg.textContent='Existing Job Card loaded: '+(j.status||'DRAFT');importTimeTreePhotos();}).catch(function(err){msg.textContent='Cannot check existing Job Cards: '+String(err.message||err)+'; saving may not be available.';save.disabled=submit.disabled=true;});
  host.scrollIntoView({behavior:'smooth',block:'start'});
 }
 window.hiOpenJobCard=open;
@@ -137,12 +137,13 @@ document.addEventListener('click',function(event){
 var jobButton=document.getElementById('hiCalJobCard');
 if(jobButton)jobButton.addEventListener('click',function(){
  if(!lastSelectedId)return;
- apiGet('hiCalendar').then(function(r){
+ apiGet('hiCalendar',{bookingId:lastSelectedId}).then(function(r){
   var found=(r.events||[]).find(function(e){return e.id===lastSelectedId;});
   if(!found)throw Error('Booking not available');
   open(found);
  }).catch(function(err){alert('Cannot load booking: '+String(err.message||err));});
 });
-function launchFromLink(){var p=new URLSearchParams(location.search),id=p.get('booking');if(p.get('source')!=='timetree'||!id)return;var tries=0;function retry(){apiGet('hiCalendar').then(function(r){var e=(r.events||[]).find(function(x){return x.id===id;});if(e){goPage('calendar');open(e);}}).catch(function(){});}retry();}
+function launchFromLink(){var p=new URLSearchParams(location.search),id=p.get('booking');if(p.get('source')!=='timetree'||!id)return;var tries=0;function retry(){apiGet('hiCalendar',{bookingId:id}).then(function(r){var e=(r.events||[]).find(function(x){return x.id===id;});if(e){goPage('calendar');open(e);}}).catch(function(){});}retry();}
 window.addEventListener('load',launchFromLink);
 })();
+
