@@ -73,6 +73,7 @@ function open(e){
  photoPicker('Before Photos','before');photoPicker('After Photos','after');
 
  function importTimeTreePhotos(refresh){
+  if(e.source!=='timetree')return;
   var status=el('p',{'class':'msg',text:'Importing TimeTree booking photos…'},editor);
   apiGet('hiTimeTreePhotos',{bookingId:e.id,refresh:refresh===true}).then(function(result){
    if(!result||result.ok===false)throw Error(result&&result.error||'Import failed');
@@ -146,4 +147,5 @@ if(jobButton)jobButton.addEventListener('click',function(){
 function launchFromLink(){var p=new URLSearchParams(location.search),id=p.get('booking');if(p.get('source')!=='timetree'||!id)return;var tries=0;function retry(){apiGet('hiCalendar',{bookingId:id}).then(function(r){var e=(r.events||[]).find(function(x){return x.id===id;});if(e){goPage('calendar');open(e);}}).catch(function(){});}retry();}
 window.addEventListener('load',launchFromLink);
 })();
+
 

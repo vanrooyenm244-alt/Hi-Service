@@ -1,6 +1,7 @@
 /* Atomic app shell. Versioned assets keep open pages consistent during updates. */
-const CACHE = 'hi-service-v49-performance';
+const CACHE = 'hi-service-v50-calendar-backup';
 const SHELL = [
+  "./schedule-jobs.js?release=20261103-calendar-backup",
   "./",
   "./index.html",
   "./hi-jobcards.js",
@@ -16,7 +17,7 @@ const SHELL = [
   "./hi-app-updates-v31.js?release=hi-service-v40-attendance-po",
   "./vendor/rrule.min.js",
   "./timetree-calendar.071000ecf91b.js",
-  "./calendar.4b107aa1b2c6.js",
+  "./calendar.0d55005d6fbb.js",
   "./ops-theme.css?release=20261029",
   "./ops-theme.js?release=20261029",
   "./po-inventory.js?release=hi-service-v40-attendance-po",
@@ -68,3 +69,4 @@ self.addEventListener('fetch',event=>{
   return fetch(event.request,{cache:'no-store'}).then(r=>r.ok?r:Response.error()).catch(()=>Response.error());
  })());
 });
+
