@@ -4,7 +4,7 @@ const SHELL = [
   "./schedule-jobs.js?release=20261104-calendar-team-notifications-bg",
   "./",
   "./index.html",
-  "./hi-jobcards.js",
+  "./hi-jobcards.js?release=hi-jobcards-20261104-photo-retry",
   "./hi-booking-parser.js",
   "./release-notes.json",
   "./manifest.webmanifest",
