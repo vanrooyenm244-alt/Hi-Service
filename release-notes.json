@@ -1,7 +1,8 @@
 {
-  "version": "hi-service-v49-performance",
-  "date": "2026-11-03",
+  "version": "hi-service-v50-share-app",
+  "date": "2026-11-04",
   "changes": [
+    "Settings: Admin users can copy a Hi Service team link with the Apps Script connection prefilled; each teammate still signs in and requires approval.",
     "Load calendar date ranges and individual job cards without transferring the full history.",
     "Reuse server TimeTree sessions, pause failed sign-ins, and read archived photos without reconnecting to TimeTree.",
     "Batch stock reads and writes; limit request waits without retrying writes automatically.",
@@ -21,6 +22,7 @@
     "Reliable atomic app updates and explicit Apply update / Reload."
   ],
   "tests": [
+    "Admin: open Settings, copy the team link, open it on a second device and confirm the app URL is prefilled without signing the person in.",
     "Open a TimeTree booking with photos and verify each photo actually appears, before submitting a Job Card.",
     "On Android type Brass Fitting in Transfer Stock and tap a suggestion; verify correct HS code is selected and movement quantity remains intact.",
     "On a phone add two Transfer Stock rows, search different item codes, select items and enter separate quantities; repeat for Stock Received.",
