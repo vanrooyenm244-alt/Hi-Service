@@ -1,5 +1,5 @@
 /* Atomic app shell. Versioned assets keep open pages consistent during updates. */
-const CACHE = 'hi-service-v50-calendar-backup';
+const CACHE = 'hi-service-v51-share-app';
 const SHELL = [
   "./schedule-jobs.js?release=20261103-calendar-backup",
   "./",
