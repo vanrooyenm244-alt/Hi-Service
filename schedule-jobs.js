@@ -2,13 +2,15 @@
   'use strict';
   var page=document.getElementById('calendar');if(!page)return;
   var button=document.createElement('button');button.type='button';button.className='btn primary';button.id='hiScheduleNew';button.textContent='+ Schedule job';
-  page.querySelector('.head').append(button);
+  var notifyButton=document.createElement('button');notifyButton.type='button';notifyButton.className='btn';notifyButton.id='hiEnableNotifications';notifyButton.textContent='Enable notifications';
+  var notifyStatus=document.createElement('span');notifyStatus.className='small';notifyStatus.id='hiNotificationStatus';notifyStatus.setAttribute('role','status');
+  page.querySelector('.head').append(button,notifyButton,notifyStatus);
   var form=document.createElement('form');form.className='card hidden';form.id='hiScheduleForm';
   form.innerHTML='<h3>Schedule job</h3><div class="grid">'+
     '<label class="field">Customer<input name="customer" required maxlength="500"></label>'+
     '<label class="field">Site / address<input name="site" maxlength="500"></label>'+
     '<label class="field">Date<input name="date" type="date" required></label>'+
-    '<label class="field">Technician<input name="technician" maxlength="500"></label>'+
+    '<div class="field"><label>Technicians</label><details id="hiTechPicker"><summary id="hiTechSummary">Choose technicians</summary><div id="hiTechOptions" style="display:grid;gap:8px;padding:10px 4px"></div></details><small class="small">Select each person assigned to this job.</small></div>'+
     '<label class="field">Start time<input name="startTime" type="time"></label>'+
     '<label class="field">End time<input name="endTime" type="time"></label>'+
     '<label class="field">Job number (optional)<input name="jobNo" maxlength="500"></label>'+
@@ -17,13 +19,22 @@
     '<div class="toolbar"><button type="submit" class="btn primary">Save job</button><button type="button" class="btn" data-cancel>Cancel</button></div><p role="status" class="msg"></p>';
   page.querySelector('.card').after(form);
   var requestId=null,save=form.querySelector('[type=submit]'),msg=form.querySelector('[role=status]');
+  function refreshTechSummary(){var picked=Array.from(form.querySelectorAll('#hiTechOptions input:checked')).map(function(x){return x.dataset.name;});$('hiTechSummary').textContent=picked.length?picked.join(', '):'Choose technicians';}
+  async function loadTechs(){var options=$('hiTechOptions');options.textContent='Loading active technicians…';try{var result=await api({action:'hiCalendarTechnicians'});var users=Array.isArray(result.technicians)?result.technicians:[];options.replaceChildren();if(!users.length){options.textContent='No active technicians are available.';return;}users.forEach(function(person){var label=document.createElement('label');label.style.cssText='display:flex;align-items:center;gap:8px;font-weight:500';var input=document.createElement('input');input.type='checkbox';input.value=person.username;input.dataset.name=person.name;var text=document.createElement('span');text.textContent=person.name+(person.role==='Worker'?' · Worker':'');label.append(input,text);options.append(label);input.addEventListener('change',refreshTechSummary);});refreshTechSummary();}catch(error){options.textContent='Could not load users: '+String(error.message||error);}}
+  function updateNotifyStatus(){if(!('Notification' in window)){notifyButton.disabled=true;notifyStatus.textContent='This browser does not support notifications.';return;}var p=Notification.permission;notifyButton.textContent=p==='granted'?'Notifications enabled':p==='denied'?'Notifications blocked':'Enable notifications';notifyStatus.textContent=p==='granted'?'Appointment alerts are on.':p==='denied'?'Allow notifications in browser settings.':'Turn this on to receive job and appointment alerts.';}
+  async function enableNotifications(){if(!('Notification' in window)){updateNotifyStatus();return;}try{var p=await Notification.requestPermission();updateNotifyStatus();if(p==='granted')pollNotifications();}catch(e){notifyStatus.textContent='Could not enable notifications.';}}
+  function showNotification(n){if(Notification.permission!=='granted')return Promise.resolve(false);var options={body:n.body||'',tag:n.id,data:{url:location.origin+location.pathname+'#app-calendar'},icon:'./icon.svg',badge:'./icon.svg'};if('serviceWorker' in navigator)return navigator.serviceWorker.ready.then(function(reg){return reg.showNotification(n.title||'Appointment',options)}).then(function(){return true});new Notification(n.title||'Appointment',options);return Promise.resolve(true);}
+  async function pollNotifications(){if(!S||!S.username||document.hidden||!('Notification' in window)||Notification.permission!=='granted'||!hiCan('calendar.view'))return;try{var result=await api({action:'hiCalendarNotifications'}),items=Array.isArray(result.notifications)?result.notifications:[];if(!items.length)return;var delivered=[];for(var i=0;i<items.length;i++)if(await showNotification(items[i]))delivered.push(items[i].id);if(delivered.length)await api({action:'hiCalendarNotificationsAck',notificationIds:delivered});}catch(e){}}
+  notifyButton.addEventListener('click',enableNotifications);updateNotifyStatus();
   function permitted(){return S&&S.role!=='Worker'&&hiCan('calendar.edit');}
   function permissions(){button.classList.toggle('hidden',!permitted());if(!permitted())form.classList.add('hidden');}
-  button.onclick=function(){if(!permitted())return;form.reset();requestId='hi-cal-'+Date.now()+'-'+Math.random().toString(36).slice(2,10);form.elements.date.value=new Intl.DateTimeFormat('en-CA',{timeZone:'Africa/Johannesburg',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());msg.textContent='';form.classList.remove('hidden');form.scrollIntoView({behavior:'smooth'});};
+  button.onclick=function(){if(!permitted())return;form.reset();requestId='hi-cal-'+Date.now()+'-'+Math.random().toString(36).slice(2,10);form.elements.date.value=new Intl.DateTimeFormat('en-CA',{timeZone:'Africa/Johannesburg',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());msg.textContent='';$('hiTechOptions').textContent='';$('hiTechSummary').textContent='Choose technicians';form.classList.remove('hidden');loadTechs();form.scrollIntoView({behavior:'smooth'});};
   form.querySelector('[data-cancel]').onclick=function(){form.classList.add('hidden');};
   form.onsubmit=async function(event){
     event.preventDefault();if(!permitted()||save.disabled)return;
     var data={id:requestId,company:'Hi Service'};new FormData(form).forEach(function(value,key){data[key]=String(value).trim();});
+    var selected=Array.from(form.querySelectorAll('#hiTechOptions input:checked'));data.assignedUsernames=selected.map(function(x){return x.value;});data.technician=selected.map(function(x){return x.dataset.name;}).join(', ');
+    if(!data.assignedUsernames.length){msg.textContent='Select at least one technician.';return;}
     if(data.endTime&&(!data.startTime||data.endTime<=data.startTime)){msg.textContent='End time must be after start time.';return;}
     save.disabled=true;msg.textContent='Saving job…';
     try{var result=await api({action:'hiScheduleJob',event:data});if(result.id!==requestId)throw Error('Booking was not acknowledged');form.classList.add('hidden');await loadHiCalendar(true);document.getElementById('hiCalMsg').textContent='Job scheduled and synced.';if(window.loadHiToday)loadHiToday();}
@@ -34,4 +45,5 @@
   window.addEventListener('load',permissions);permissions();
   // Refresh visible calendars on the same cadence as the server backup.
   setInterval(function(){if(!document.hidden&&page.classList.contains('on')&&S&&S.username)loadHiCalendar(true);},300000);
+  updateNotifyStatus();pollNotifications();setInterval(pollNotifications,30000);
 })();
