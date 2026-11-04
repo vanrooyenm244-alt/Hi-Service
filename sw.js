@@ -1,5 +1,5 @@
 /* Atomic app shell. Versioned assets keep open pages consistent during updates. */
-const CACHE = 'hi-service-v53-calendar-notifications-bg';
+const CACHE = 'hi-service-v54-calendar-photo-retry';
 const SHELL = [
   "./schedule-jobs.js?release=20261104-calendar-team-notifications-bg",
   "./",
