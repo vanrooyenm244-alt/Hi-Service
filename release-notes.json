@@ -1,7 +1,8 @@
 {
-  "version": "hi-service-v58-global-search",
+  "version": "hi-service-v59-manual-updates",
   "date": "2026-11-05",
   "changes": [
+    "App updates are manual only. New releases install and reload only after the user taps Update in Settings.",
     "Calendar search scans all archived TimeTree and app bookings, across dates, by customer name or site address.",
     "Calendar search now finds bookings by part of a customer name or site address.",
     "Schedule jobs by selecting active technicians; assigned users receive a job notification and 30-minute and 5-minute appointment reminders.",

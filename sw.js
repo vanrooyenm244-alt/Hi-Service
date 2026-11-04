@@ -1,5 +1,5 @@
 /* Atomic app shell. Versioned assets keep open pages consistent during updates. */
-const CACHE = 'hi-service-v58-global-search';
+const CACHE = 'hi-service-v59-manual-updates';
 const SHELL = [
   "./quote-job-calendar.js?release=20261104-step1-query",
   "./schedule-jobs.js?release=20261104-step1-query",
@@ -26,8 +26,17 @@ const SHELL = [
   "./calendar-ui.9682a845278e.css"
 ];
 const REQUIRED = SHELL.filter(p=>/\.(?:js|css)(?:\?|$)/.test(p)||p==='./index.html'||p==='./');
+const MANUAL_GRANT_CACHE='manual-update-approval-hi-service';
+async function requireManualUpdateApproval(){
+ const gate=await caches.open(MANUAL_GRANT_CACHE),url=new URL('./__manual_update_grant__',self.registration.scope).href,grant=await gate.match(url);
+ if(!grant)throw Error('Manual update approval required.');
+ await gate.delete(url);
+ const at=Number(await grant.text());
+ if(!at||Date.now()-at>120000)throw Error('Manual update approval expired. Tap Update again.');
+}
 self.addEventListener('install',event=>{
  event.waitUntil((async()=>{
+  await requireManualUpdateApproval();
   const cache=await caches.open(CACHE);
   try{
    await Promise.all(SHELL.map(async path=>{
@@ -69,7 +78,7 @@ self.addEventListener('fetch',event=>{
  if(url.origin!==self.location.origin)return;
  const exact=SHELL.some(p=>new URL(p,self.registration.scope).href===url.href);
  if(event.request.mode==='navigate'&&!url.search){
-  event.respondWith(fetch(event.request,{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('Navigation failed.');return r;}).catch(async()=>{const cache=await caches.open(CACHE);return cache.match('./index.html');}));
+  event.respondWith((async()=>{const cache=await caches.open(CACHE),saved=await cache.match('./index.html');if(saved)return saved;const response=await fetch(event.request,{cache:'no-store'});if(!response.ok)throw Error('Navigation failed.');return response;})());
   return;
  }
  if(!exact)return; // API/auth/query requests and other apps never enter this shell cache.
