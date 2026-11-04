@@ -1,7 +1,8 @@
 {
-  "version": "hi-service-v54-calendar-photo-retry",
-  "date": "2026-11-04",
+  "version": "hi-service-v57-calendar-search",
+  "date": "2026-11-05",
   "changes": [
+    "Calendar search now finds bookings by part of a customer name or site address.",
     "Schedule jobs by selecting active technicians; assigned users receive a job notification and 30-minute and 5-minute appointment reminders.",
     "Settings: Admin users can copy a Hi Service team link with the Apps Script connection prefilled; each teammate still signs in and requires approval.",
     "Load calendar date ranges and individual job cards without transferring the full history.",

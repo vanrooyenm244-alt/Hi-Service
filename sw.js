@@ -1,5 +1,5 @@
 /* Atomic app shell. Versioned assets keep open pages consistent during updates. */
-const CACHE = 'hi-service-v56-quote-job-links';
+const CACHE = 'hi-service-v57-calendar-search';
 const SHELL = [
   "./quote-job-calendar.js?release=20261104-step1-query",
   "./schedule-jobs.js?release=20261104-step1-query",
@@ -17,13 +17,13 @@ const SHELL = [
   "./attendance-review.js?release=hi-service-v40-attendance-po",
   "./hi-app-updates-v31.js?release=hi-service-v40-attendance-po",
   "./vendor/rrule.min.js",
-  "./timetree-calendar.071000ecf91b.js",
-  "./calendar.0d55005d6fbb.js",
+  "./timetree-calendar.41b98ef6109d.js",
+  "./calendar.41b98ef6109d.js",
   "./ops-theme.css?release=20261029",
   "./ops-theme.js?release=20261029",
   "./po-inventory.js?release=hi-service-v40-attendance-po",
   "./purchase-orders.js?release=hi-service-v40-attendance-po",
-  "./calendar-ui.364cf824c602.css"
+  "./calendar-ui.3af45a53ee89.css"
 ];
 const REQUIRED = SHELL.filter(p=>/\.(?:js|css)(?:\?|$)/.test(p)||p==='./index.html'||p==='./');
 self.addEventListener('install',event=>{

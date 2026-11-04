@@ -6,7 +6,9 @@
   function cacheKey(){return 'hi-calendar:'+JSON.stringify([S.url,S.username]);}
   function render(){
     $('hiCalTitle').textContent=month.toLocaleString(undefined,{month:'long',year:'numeric'});
-    var visible=events.filter(e=>TimeTreeCalendar.visible(e,'Hi Service',S));
+    var query=String($('hiCalSearch').value||'').trim().toLocaleLowerCase();
+    var visible=events.filter(e=>TimeTreeCalendar.visible(e,'Hi Service',S)).filter(e=>!query||[e.customer,e.title,e.name,e.site,e.address].filter(Boolean).join(' ').toLocaleLowerCase().indexOf(query)!==-1);
+    if(query&&!visible.length){$('hiCalGrid').textContent='No bookings match your search.';return;}
     var view=TimeTreeCalendar.layout(visible,month,mode,'data-hi-event',day);
     if(mode==='day')$('hiCalTitle').textContent=new Date(day+'T12:00:00').toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long'});
     $('hiCalGrid').innerHTML=view.html;
@@ -67,6 +69,7 @@
     }finally{if(inflight&&inflight.promise===request)inflight=null;}})();
     inflight={owner:who,rangeKey:rangeKey,promise:request};return request;
   };
+  var searchBox=$('hiCalSearch');if(searchBox&&typeof searchBox.addEventListener==='function')searchBox.addEventListener('input',render);
   $('hiCalPrev').onclick=()=>{month.setDate(1);month.setMonth(month.getMonth()-1);if(mode==='day')mode='agenda';loadHiCalendar();};
   $('hiCalNext').onclick=()=>{month.setDate(1);month.setMonth(month.getMonth()+1);if(mode==='day')mode='agenda';loadHiCalendar();};
   $('hiCalToday').onclick=()=>{month=new Date();day=month.toISOString().slice(0,10);if(mode==='day')mode='agenda';loadHiCalendar();};$('hiCalRefresh').onclick=()=>loadHiCalendar(true);
