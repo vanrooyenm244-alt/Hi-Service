@@ -1,5 +1,5 @@
 /* Atomic app shell. Versioned assets keep open pages consistent during updates. */
-const CACHE = 'hi-service-v57-calendar-search';
+const CACHE = 'hi-service-v58-global-search';
 const SHELL = [
   "./quote-job-calendar.js?release=20261104-step1-query",
   "./schedule-jobs.js?release=20261104-step1-query",
@@ -18,7 +18,7 @@ const SHELL = [
   "./hi-app-updates-v31.js?release=hi-service-v40-attendance-po",
   "./vendor/rrule.min.js",
   "./timetree-calendar.071000ecf91b.js",
-  "./calendar.f6d2abc04c0d.js",
+  "./calendar.fa3dc6e4269e.js",
   "./ops-theme.css?release=20261029",
   "./ops-theme.js?release=20261029",
   "./po-inventory.js?release=hi-service-v40-attendance-po",
