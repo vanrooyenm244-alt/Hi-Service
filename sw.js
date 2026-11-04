@@ -18,12 +18,12 @@ const SHELL = [
   "./hi-app-updates-v31.js?release=hi-service-v40-attendance-po",
   "./vendor/rrule.min.js",
   "./timetree-calendar.071000ecf91b.js",
-  "./calendar.41b98ef6109d.js",
+  "./calendar.f6d2abc04c0d.js",
   "./ops-theme.css?release=20261029",
   "./ops-theme.js?release=20261029",
   "./po-inventory.js?release=hi-service-v40-attendance-po",
   "./purchase-orders.js?release=hi-service-v40-attendance-po",
-  "./calendar-ui.3af45a53ee89.css"
+  "./calendar-ui.9682a845278e.css"
 ];
 const REQUIRED = SHELL.filter(p=>/\.(?:js|css)(?:\?|$)/.test(p)||p==='./index.html'||p==='./');
 self.addEventListener('install',event=>{
