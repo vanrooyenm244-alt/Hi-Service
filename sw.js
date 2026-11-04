@@ -1,7 +1,7 @@
 /* Atomic app shell. Versioned assets keep open pages consistent during updates. */
-const CACHE = 'hi-service-v51-share-app';
+const CACHE = 'hi-service-v52-calendar-notifications';
 const SHELL = [
-  "./schedule-jobs.js?release=20261103-calendar-backup",
+  "./schedule-jobs.js?release=20261104-calendar-team-notifications",
   "./",
   "./index.html",
   "./hi-jobcards.js",
@@ -53,6 +53,15 @@ self.addEventListener('activate',event=>{
 self.addEventListener('message',event=>{
  if(event.data&&event.data.type==='GET_VERSION'&&event.ports&&event.ports[0])event.ports[0].postMessage({version:CACHE});
 });
+
+self.addEventListener('notificationclick',event=>{
+ event.notification.close();
+ event.waitUntil(self.clients.matchAll({type:'window',includeUncontrolled:true}).then(async clients=>{
+  for(const client of clients){if(new URL(client.url).origin===self.location.origin){await client.focus();return;}}
+  return self.clients.openWindow(self.registration.scope);
+ }));
+});
+
 self.addEventListener('fetch',event=>{
  if(event.request.method!=='GET')return;
  const url=new URL(event.request.url);
