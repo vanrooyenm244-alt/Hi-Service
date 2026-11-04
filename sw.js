@@ -1,7 +1,8 @@
 /* Atomic app shell. Versioned assets keep open pages consistent during updates. */
-const CACHE = 'hi-service-v54-calendar-photo-retry';
+const CACHE = 'hi-service-v55-quote-job-calendar';
 const SHELL = [
-  "./schedule-jobs.js?release=20261104-calendar-team-notifications-bg",
+  "./quote-job-calendar.js?release=20261104-step1",
+  "./schedule-jobs.js?release=20261104-step1",
   "./",
   "./index.html",
   "./hi-jobcards.js?release=hi-jobcards-20261104-photo-retry",
@@ -78,4 +79,5 @@ self.addEventListener('fetch',event=>{
   return fetch(event.request,{cache:'no-store'}).then(r=>r.ok?r:Response.error()).catch(()=>Response.error());
  })());
 });
+
 
