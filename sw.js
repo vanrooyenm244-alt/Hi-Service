@@ -17,7 +17,7 @@ const SHELL = [
   "./attendance-review.js?release=hi-service-v40-attendance-po",
   "./hi-app-updates-v31.js?release=hi-service-v40-attendance-po",
   "./vendor/rrule.min.js",
-  "./timetree-calendar.41b98ef6109d.js",
+  "./timetree-calendar.071000ecf91b.js",
   "./calendar.41b98ef6109d.js",
   "./ops-theme.css?release=20261029",
   "./ops-theme.js?release=20261029",
