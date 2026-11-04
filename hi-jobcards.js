@@ -75,8 +75,15 @@ function open(e){
  function importTimeTreePhotos(refresh){
   if(e.source!=='timetree')return;
   var status=el('p',{'class':'msg',text:'Importing TimeTree booking photos…'},editor);
-  apiGet('hiTimeTreePhotos',{bookingId:e.id,refresh:refresh===true}).then(function(result){
-   if(!result||result.ok===false)throw Error(result&&result.error||'Import failed');
+  (async function(){
+   async function readPhotos(){var result=await apiGet('hiTimeTreePhotos',{bookingId:e.id,refresh:refresh===true});if(!result||result.ok===false)throw Error(result&&result.error||'Import failed');return result;}
+   try{return await readPhotos();}catch(firstError){
+    if(!navigator.onLine||!/(?:read request|timed?\s*out|temporarily unavailable|failed to fetch)/i.test(String(firstError.message||firstError)))throw firstError;
+    status.textContent='TimeTree was slow to respond. Retrying once…';
+    await new Promise(function(resolve){setTimeout(resolve,900);});
+    return readPhotos();
+   }
+  })().then(function(result){
    (result.photos||[]).forEach(function(p){
     if(!p.dataUrl||!/^data:image\/(?:jpeg|png|webp);base64,/.test(p.dataUrl))return;
     var existing=photos.before.concat(photos.after).find(function(x){return x.name===p.name&&x.source==='timetree';});
