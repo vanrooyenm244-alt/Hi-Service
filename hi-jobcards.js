@@ -143,12 +143,14 @@ document.addEventListener('click',function(event){
 });
 var jobButton=document.getElementById('hiCalJobCard');
 if(jobButton)jobButton.addEventListener('click',function(){
- if(!lastSelectedId)return;
- apiGet('hiCalendar',{bookingId:lastSelectedId}).then(function(r){
-  var found=(r.events||[]).find(function(e){return e.id===lastSelectedId;});
+ if(!lastSelectedId){var idle=document.getElementById('hiCalMsg');if(idle)idle.textContent='Select a calendar booking before opening a Job Card.';return;}
+ var bookingId=lastSelectedId,originalText=jobButton.textContent;jobButton.disabled=true;jobButton.textContent='Opening Job Card…';
+ apiGet('hiCalendar',{bookingId:bookingId}).then(function(r){
+  var found=(r.events||[]).find(function(e){return e.id===bookingId;});
   if(!found)throw Error('Booking not available');
+  if(found.source!=='timetree')throw Error('This Job Card action currently opens TimeTree bookings only.');
   open(found);
- }).catch(function(err){alert('Cannot load booking: '+String(err.message||err));});
+ }).catch(function(err){var status=document.getElementById('hiCalMsg');if(status)status.textContent='Cannot open Job Card: '+String(err.message||err);}).finally(function(){jobButton.disabled=false;jobButton.textContent=originalText;});
 });
 function launchFromLink(){var p=new URLSearchParams(location.search),id=p.get('booking');if(p.get('source')!=='timetree'||!id)return;var tries=0;function retry(){apiGet('hiCalendar',{bookingId:id}).then(function(r){var e=(r.events||[]).find(function(x){return x.id===id;});if(e){goPage('calendar');open(e);}}).catch(function(){});}retry();}
 window.addEventListener('load',launchFromLink);

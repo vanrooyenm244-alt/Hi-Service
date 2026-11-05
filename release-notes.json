@@ -1,7 +1,8 @@
 {
-  "version": "hi-service-v63-tech-groups",
+  "version": "hi-service-v64-jobcard-open",
   "date": "2026-11-05",
   "changes": [
+    "Calendar search results retain the selected booking for the Create / Open Job Card action, with visible loading and error feedback.",
     "Corrects technician name matching in the Hi Service and Flagship calendar groups.",
     "Calendar technician selection is grouped into Hi Service and Flagship columns, with the requested staff order.",
     "Technician checkbox rows align correctly on mobile, and Job Card actions retain the selected booking when opened from calendar search.",
