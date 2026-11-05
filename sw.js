@@ -1,11 +1,11 @@
 /* Atomic app shell. Versioned assets keep open pages consistent during updates. */
-const CACHE = 'hi-service-v64-jobcard-open';
+const CACHE = 'hi-service-v65-jobcard-open';
 const SHELL = [
   "./quote-job-calendar.js?release=20261104-step1-query",
   "./schedule-jobs.js?release=20261105-company-groups-fix",
   "./",
   "./index.html",
-  "./hi-jobcards.js?release=hi-jobcards-20261105-open-fix",
+  "./hi-jobcards.js?release=hi-jobcards-20261105-open-fix2",
   "./hi-booking-parser.js",
   "./release-notes.json",
   "./manifest.webmanifest",
@@ -15,10 +15,10 @@ const SHELL = [
   "./stock-import.js?release=hi-service-v40-attendance-po",
   "./stock-count.js",
   "./attendance-review.js?release=hi-service-v40-attendance-po",
-  "./hi-app-updates-v31.js?release=hi-service-v64-jobcard-open",
+  "./hi-app-updates-v31.js?release=hi-service-v65-jobcard-open",
   "./vendor/rrule.min.js",
   "./timetree-calendar.071000ecf91b.js",
-  "./calendar.fa3dc6e4269e.js",
+  "./calendar.92346ca3f691.js",
   "./ops-theme.css?release=20261029",
   "./ops-theme.js?release=20261029",
   "./po-inventory.js?release=hi-service-v40-attendance-po",
