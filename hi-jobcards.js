@@ -1,6 +1,6 @@
 (function(){
 'use strict';
-var selected=null,card=null;
+var selected=null,card=null,lastSelectedId='';
 // Jacobus' gas bookings may carry his technician label rather than a Hi Service label.
 // This only changes the calendar presentation. The backend authorizes every save.
 var originalVisibility=TimeTreeCalendar.visible;
@@ -20,7 +20,7 @@ function field(box,label,value){var wrap=el('label',{'class':'field'},box);el('s
 function bookingId(e){return 'hi:'+e.id;}
 function open(e){
  if(!e||e.source!=='timetree'||!TimeTreeCalendar.visible(e,'Hi Service',S))return;
- selected=e;var host=document.getElementById('hiJobCardHost');if(!host)return;
+ selected=e;lastSelectedId=e.id;var host=document.getElementById('hiJobCardHost');if(!host)return;
  host.replaceChildren();host.classList.remove('hidden');
  el('h2',{text:'Hi Service Job Card'},host);
  var msg=el('p',{'class':'msg',role:'status',text:'Loading existing Job Card…'},host);
@@ -137,7 +137,6 @@ function open(e){
  host.scrollIntoView({behavior:'smooth',block:'start'});
 }
 window.hiOpenJobCard=open;
-var lastSelectedId='';
 document.addEventListener('click',function(event){
  var bookingButton=event.target.closest&&event.target.closest('[data-hi-event]');
  if(bookingButton)lastSelectedId=bookingButton.getAttribute('data-hi-event')||'';
