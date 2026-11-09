@@ -1,5 +1,5 @@
 {
-  "version": "hi-service-v67-calendar-contrast",
+  "version": "hi-service-v68-calendar-verified",
   "date": "2026-11-09",
   "changes": [
     "Calendar opens with the month view; Google Calendar bookings are stored centrally under mjflagship@gmail.com and read back with updates and cancellation.",
@@ -25,9 +25,9 @@
     "Search existing items by stock code or description independently in each Transfer Stock, Stock Received and Stock Adjustment line.",
     "Stock Overview PDF adds total quantity, stocked item lines and total stock value at recorded unit cost, with unpriced item warning.",
     "Generate an on-demand Stock Overview PDF showing quantities in Stoor, CEY 59799, CEY 67212 and totals. Live stock is fetched before generating; month-end Stock Take remains separate.",
-    "Today\u2019s bookings correctly display recurring TimeTree appointments and a per-date Job Completed checkbox.",
+    "Today’s bookings correctly display recurring TimeTree appointments and a per-date Job Completed checkbox.",
     "New mobile-first operations dashboard with original Hi Service logo and light/dark themes.",
-    "Today\u2019s bookings panel from the existing TimeTree-backed calendar; existing booking source preserved.",
+    "Today’s bookings panel from the existing TimeTree-backed calendar; existing booking source preserved.",
     "Attendance review: correct/cancel pending and approved shifts with mandatory reason and retained original.",
     "Submitted by and Approved by with timestamps; yellow overtime rows.",
     "Printable approved overtime report with two blank rows between worker/pay-cycle groups.",
